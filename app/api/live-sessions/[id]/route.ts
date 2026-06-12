@@ -10,7 +10,12 @@ export async function GET(
 
     const liveSession = await prisma.liveSession.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        startsAt: true,
+        endsAt: true,
+        link: true,
         course: {
           select: {
             id: true,
@@ -27,15 +32,22 @@ export async function GET(
       );
     }
 
-    const durationMinutes = liveSession.endsAt
-      ? Math.round((liveSession.endsAt.getTime() - liveSession.startsAt.getTime()) / (1000 * 60))
+    const startsAtMs = new Date(liveSession.startsAt).getTime();
+    const endsAtMs = liveSession.endsAt
+      ? new Date(liveSession.endsAt).getTime()
+      : null;
+
+    const durationMinutes = endsAtMs
+      ? Math.round((endsAtMs - startsAtMs) / (1000 * 60))
       : null;
 
     return NextResponse.json({
       id: liveSession.id,
       title: liveSession.title,
-      startsAt: liveSession.startsAt.toISOString(),
-      endsAt: liveSession.endsAt?.toISOString(),
+      startsAt: new Date(liveSession.startsAt).toISOString(),
+      endsAt: liveSession.endsAt
+        ? new Date(liveSession.endsAt).toISOString()
+        : null,
       durationMinutes,
       link: liveSession.link,
       course: liveSession.course,
@@ -48,3 +60,4 @@ export async function GET(
     );
   }
 }
+

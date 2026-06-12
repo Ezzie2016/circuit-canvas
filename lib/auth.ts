@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { Notification, Role as UserRole, NotificationAudience, User } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -26,8 +25,7 @@ export function verifyJwt(token: string) {
   }
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-const adapter = new PrismaPg(pool);
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 export const prisma = new PrismaClient({ adapter });
 
 export async function hashPassword(password: string): Promise<string> {
