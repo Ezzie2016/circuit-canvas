@@ -1,14 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -22,12 +18,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  taughtCourses     Course[]           @relation("TeacherCourses")
-  enrollments       Enrollment[]
-  submissions       Submission[]
-  sentMessages      CourseMessage[]
-  attendanceRecords AttendanceRecord[]
-  notificationReads NotificationRead[]
+  taughtCourses         Course[]           @relation("TeacherCourses")
+  enrollments           Enrollment[]
+  submissions           Submission[]
+  sentMessages          CourseMessage[]
+  attendanceRecords     AttendanceRecord[]
+  notificationReads     NotificationRead[]
   notificationsReceived Notification[]
 }
 
@@ -51,7 +47,7 @@ model Course {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  teacher      User             @relation("TeacherCourses", fields: [teacherId], references: [id])
+  teacher      User               @relation("TeacherCourses", fields: [teacherId], references: [id])
   teacherId    String
   enrollments  Enrollment[]
   assignments  Assignment[]
@@ -112,17 +108,17 @@ enum SubmissionStatus {
 }
 
 model LiveSession {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   title     String
   startsAt  DateTime
-  endsAt    DateTime?            // Optional end time for duration calculation
-  link      String               // Student/participant join link
-  hostLink  String?              // Teacher/host link (for Zoom, Google Meet, etc.)
-  createdAt DateTime @default(now())
+  endsAt    DateTime?
+  link      String
+  hostLink  String?
+  createdAt DateTime  @default(now())
 
-  course              Course              @relation(fields: [courseId], references: [id])
-  courseId            String
-  attendanceRecords   AttendanceRecord[]
+  course            Course             @relation(fields: [courseId], references: [id])
+  courseId          String
+  attendanceRecords AttendanceRecord[]
 }
 
 model CourseResource {
@@ -140,14 +136,14 @@ model CourseResource {
 }
 
 model AttendanceRecord {
-  id                String            @id @default(cuid())
-  date              DateTime          @default(now())
+  id                String           @id @default(cuid())
+  date              DateTime         @default(now())
   status            AttendanceStatus
-  attendedAt        DateTime?         // When student joined
-  leftAt            DateTime?         // When student left
-  durationMinutes   Int?              // Calculated duration in minutes
-  verifiedByTeacher Boolean           @default(false)
-  notes             String?           // Teacher notes (e.g., "Late arrival approved")
+  attendedAt        DateTime?
+  leftAt            DateTime?
+  durationMinutes   Int?
+  verifiedByTeacher Boolean          @default(false)
+  notes             String?
 
   student       User         @relation(fields: [studentId], references: [id])
   studentId     String
@@ -165,13 +161,13 @@ enum AttendanceStatus {
 }
 
 model Notification {
-  id        String               @id @default(cuid())
-  title     String
-  message   String
-  audience  NotificationAudience
-  recipient User?                @relation(fields: [recipientId], references: [id])
+  id          String               @id @default(cuid())
+  title       String
+  message     String
+  audience    NotificationAudience
+  recipient   User?                @relation(fields: [recipientId], references: [id])
   recipientId String?
-  createdAt DateTime             @default(now())
+  createdAt   DateTime             @default(now())
 
   readBy NotificationRead[]
 }
