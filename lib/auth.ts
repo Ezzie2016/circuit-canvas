@@ -26,7 +26,7 @@ export function verifyJwt(token: string) {
   }
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 const adapter = new PrismaPg(pool);
 export const prisma = new PrismaClient({ adapter });
 
