@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  password     String
+  role         Role
+  status       Status   @default(ACTIVE)
+  profileImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  taughtCourses     Course[]           @relation("TeacherCourses")
+  enrollments       Enrollment[]
+  submissions       Submission[]
+  sentMessages      CourseMessage[]
+  attendanceRecords AttendanceRecord[]
+  notificationReads NotificationRead[]
+  notificationsReceived Notification[]
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  meetingLink String?
+  thumbnail   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  teacher      User             @relation("TeacherCourses", fields: [teacherId], references: [id])
+  teacherId    String
+  enrollments  Enrollment[]
+  assignments  Assignment[]
+  liveSessions LiveSession[]
+  resources    CourseResource[]
+  messages     CourseMessage[]
+  attendance   AttendanceRecord[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  student   User   @relation(fields: [studentId], references: [id])
+  studentId String
+  course    Course @relation(fields: [courseId], references: [id])
+  courseId  String
+
+  @@unique([studentId, courseId])
+}
+
+model Assignment {
+  id           String   @id @default(cuid())
+  title        String
+  instructions String
+  dueDate      DateTime
+  createdAt    DateTime @default(now())
+
+  course      Course       @relation(fields: [courseId], references: [id])
+  courseId    String
+  submissions Submission[]
+}
+
+model Submission {
+  id        String           @id @default(cuid())
+  response  String
+  status    SubmissionStatus @default(SUBMITTED)
+  grade     String?
+  feedback  String?
+  fileUrl   String?
+  fileName  String?
+  fileSize  Int?
+  fileType  String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  student      User       @relation(fields: [studentId], references: [id])
+  studentId    String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId String
+
+  @@unique([studentId, assignmentId])
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  REVIEWED
+}
+
+model LiveSession {
+  id        String   @id @default(cuid())
+  title     String
+  startsAt  DateTime
+  endsAt    DateTime?            // Optional end time for duration calculation
+  link      String               // Student/participant join link
+  hostLink  String?              // Teacher/host link (for Zoom, Google Meet, etc.)
+  createdAt DateTime @default(now())
+
+  course              Course              @relation(fields: [courseId], references: [id])
+  courseId            String
+  attendanceRecords   AttendanceRecord[]
+}
+
+model CourseResource {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  fileUrl     String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  createdAt   DateTime @default(now())
+
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String
+}
+
+model AttendanceRecord {
+  id                String            @id @default(cuid())
+  date              DateTime          @default(now())
+  status            AttendanceStatus
+  attendedAt        DateTime?         // When student joined
+  leftAt            DateTime?         // When student left
+  durationMinutes   Int?              // Calculated duration in minutes
+  verifiedByTeacher Boolean           @default(false)
+  notes             String?           // Teacher notes (e.g., "Late arrival approved")
+
+  student       User         @relation(fields: [studentId], references: [id])
+  studentId     String
+  course        Course       @relation(fields: [courseId], references: [id])
+  courseId      String
+  liveSession   LiveSession? @relation(fields: [liveSessionId], references: [id])
+  liveSessionId String?
+
+  @@unique([studentId, courseId, date])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+model Notification {
+  id        String               @id @default(cuid())
+  title     String
+  message   String
+  audience  NotificationAudience
+  recipient User?                @relation(fields: [recipientId], references: [id])
+  recipientId String?
+  createdAt DateTime             @default(now())
+
+  readBy NotificationRead[]
+}
+
+model NotificationRead {
+  id             String   @id @default(cuid())
+  readAt         DateTime @default(now())
+
+  user           User         @relation(fields: [userId], references: [id])
+  userId         String
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId String
+
+  @@unique([userId, notificationId])
+}
+
+enum NotificationAudience {
+  ALL
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+model CourseMessage {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId String
+}
