@@ -86,6 +86,11 @@ export default function StudentCourseDetailPage() {
 
   return (
     <div className="space-y-6">
+      {course.thumbnail && (
+        <div className="w-full overflow-hidden rounded-3xl border border-slate-200 shadow-sm" style={{ aspectRatio: "16/5" }}>
+          <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
+        </div>
+      )}
       <div>
         <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
