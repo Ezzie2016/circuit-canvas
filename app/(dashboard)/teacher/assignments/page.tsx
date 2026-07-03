@@ -67,20 +67,12 @@ export default function TeacherAssignmentsPage() {
             Manage coursework and track student submissions.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Live</span>
-            {lastUpdated && (
-              <span>· {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-            )}
-          </div>
-          <Link
-            href="/teacher/assignments/create"
-            className="inline-flex items-center justify-center rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#124e40]"
-          >
-            + Create assignment
-          </Link>
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Live</span>
+          {lastUpdated && (
+            <span>· {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+          )}
         </div>
       </div>
 
