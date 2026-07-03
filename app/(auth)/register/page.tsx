@@ -1,11 +1,8 @@
-// app/(auth)/register/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-type Role = "STUDENT" | "TEACHER" | "ADMIN";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -13,7 +10,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<Role>("STUDENT");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +38,7 @@ export default function RegisterPage() {
           name,
           email,
           password,
-          role,
+          role: "STUDENT",
         }),
       });
 
@@ -197,21 +194,7 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="role" className="mb-2 block text-sm font-medium text-slate-700">
-                  Role
-                </label>
-                <select
-                  id="role"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as Role)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                >
-                  <option value="STUDENT">Student</option>
-                  <option value="TEACHER">Teacher</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
+
 
               <button
                 type="submit"

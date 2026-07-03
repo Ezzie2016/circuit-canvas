@@ -7,7 +7,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password, name, role } = body;
 
+    // Only students can register publicly.
+    if (role !== "STUDENT") {
+      return NextResponse.json({ error: "Only student registration is allowed" }, { status: 403 });
+    }
+
     if (!email || !password || !name || !role) {
+
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },

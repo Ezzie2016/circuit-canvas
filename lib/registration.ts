@@ -1,24 +1,24 @@
-import fs from "fs/promises";
-import path from "path";
+import { prisma } from "@/lib/auth";
 
-const REG_FILE = path.join(process.cwd(), "data", "registration.json");
+const KEY = "registration_open";
 
 export async function getRegistrationOpen(): Promise<boolean> {
   try {
-    const raw = await fs.readFile(REG_FILE, "utf-8");
-    const obj = JSON.parse(raw);
-    return Boolean(obj.open);
-  } catch (err) {
-    // default to open if file missing or unreadable
-    console.error("Failed to read registration flag, defaulting to open:", err);
+    const setting = await prisma.setting.findUnique({ where: { key: KEY } });
+    if (!setting) return true; // default open
+    return setting.value === "true";
+  } catch {
     return true;
   }
 }
 
 export async function setRegistrationOpen(open: boolean): Promise<void> {
-  const payload = { open };
-  await fs.mkdir(path.dirname(REG_FILE), { recursive: true });
-  await fs.writeFile(REG_FILE, JSON.stringify(payload, null, 2), "utf-8");
+  await prisma.setting.upsert({
+    where: { key: KEY },
+    update: { value: String(open) },
+    create: { key: KEY, value: String(open) },
+  });
 }
 
-export default { getRegistrationOpen, setRegistrationOpen };
+const registration = { getRegistrationOpen, setRegistrationOpen };
+export default registration;

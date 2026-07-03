@@ -4,7 +4,7 @@ import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { getRegistrationOpen } from "@/lib/registration";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("authToken")?.value;
@@ -55,8 +55,10 @@ export async function GET(request: Request) {
       students: course.enrollments.length,
       enrolled:
         decoded.role === "STUDENT"
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ? course.enrollments.some((enrollment: any) => (enrollment.student?.id ?? enrollment.studentId) === decoded.id)
           : false,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       studentList: (course.enrollments || []).map((e: any) => e.student ?? { id: e.studentId, name: "", email: "" }),
       status: "Open",
       meetingLink: course.meetingLink,

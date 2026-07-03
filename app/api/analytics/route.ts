@@ -159,7 +159,7 @@ export async function GET(request: Request) {
       });
 
       const totalCourses = courses.length;
-      const totalStudents = courses.reduce((sum, course) => sum + course.enrollments.length, 0);
+      const totalStudentsCount = courses.reduce((sum, course) => sum + course.enrollments.length, 0);
       const assignments = courses.flatMap((course) => course.assignments);
       const submissions = assignments.flatMap((assignment) => assignment.submissions);
       const completedSubmissions = submissions.filter((s) => s.status === "REVIEWED").length;
@@ -203,7 +203,7 @@ export async function GET(request: Request) {
 
       return NextResponse.json({
         totalCourses,
-        totalStudents: courses.reduce((sum, course) => sum + course.enrollments.length, 0),
+        totalStudents: totalStudentsCount,
         pendingAssignments: assignments.filter((a) => new Date(a.dueDate) > new Date()).length,
         totalAssignments: assignments.length,
         submittedCount: submissions.filter((s) => s.status === "SUBMITTED").length,

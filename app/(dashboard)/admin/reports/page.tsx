@@ -31,7 +31,7 @@ type ReportsData = {
 
 export default function AdminReportsPage() {
   const [reports, setReports] = useState<ReportsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadReports() {

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/auth";
 import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("authToken")?.value;
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       }),
     ]);
 
-    const activities: any[] = [];
+    const activities: { id: string; type: string; description: string; user: string; timestamp: string; severity: string }[] = [];
 
     // Add user activities
     recentUsers.forEach((user) => {

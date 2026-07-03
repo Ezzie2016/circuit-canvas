@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface CoursePerformance {
@@ -14,7 +13,6 @@ interface CoursePerformance {
 }
 
 export default function ClassPerformancePage() {
-  const router = useRouter();
   const [courses, setCourses] = useState<CoursePerformance[]>([]);
   const [loading, setLoading] = useState(true);
 

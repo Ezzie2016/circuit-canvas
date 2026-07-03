@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     let records;
     if (decoded.role === "STUDENT") {
       records = await prisma.attendanceRecord.findMany({
-        where: { studentId: decoded.id },
+        where: { studentId: decoded.id, ...(courseId ? { courseId } : {}) },
         include: {
           student: true,
           course: true,
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       });
     } else if (decoded.role === "TEACHER") {
       records = await prisma.attendanceRecord.findMany({
-        where: { course: { teacherId: decoded.id } },
+        where: { course: { teacherId: decoded.id }, ...(courseId ? { courseId } : {}) },
         include: {
           student: true,
           course: true,
@@ -38,6 +38,7 @@ export async function GET(request: Request) {
       });
     } else {
       records = await prisma.attendanceRecord.findMany({
+        where: courseId ? { courseId } : {},
         include: {
           student: true,
           course: true,

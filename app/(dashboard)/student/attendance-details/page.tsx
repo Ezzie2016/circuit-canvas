@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface AttendanceRecord {
@@ -12,7 +11,6 @@ interface AttendanceRecord {
 }
 
 export default function AttendanceDetailsPage() {
-  const router = useRouter();
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,6 +75,7 @@ export default function AttendanceDetailsPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-100 border-b">
               <tr>
@@ -105,6 +104,7 @@ export default function AttendanceDetailsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

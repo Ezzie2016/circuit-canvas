@@ -7,23 +7,161 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  password     String
-  role         Role
-  status       Status   @default(ACTIVE)
-  profileImage String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  taughtCourses         Course[]           @relation("TeacherCourses")
-  enrollments           Enrollment[]
-  submissions           Submission[]
-  sentMessages          CourseMessage[]
+  id                    String             @id @default(cuid())
+  name                  String
+  email                 String             @unique
+  password              String
+  role                  Role
+  status                Status             @default(ACTIVE)
+  profileImage          String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
   attendanceRecords     AttendanceRecord[]
-  notificationReads     NotificationRead[]
+  taughtCourses         Course[]           @relation("TeacherCourses")
+  sentMessages          CourseMessage[]
+  enrollments           Enrollment[]
   notificationsReceived Notification[]
+  notificationReads     NotificationRead[]
+  submissions           Submission[]
+}
+
+model Course {
+  id           String             @id @default(cuid())
+  title        String
+  description  String
+  meetingLink  String?
+  thumbnail    String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  teacherId    String
+  assignments  Assignment[]
+  attendance   AttendanceRecord[]
+  teacher      User               @relation("TeacherCourses", fields: [teacherId], references: [id])
+  messages     CourseMessage[]
+  resources    CourseResource[]
+  enrollments  Enrollment[]
+  liveSessions LiveSession[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  studentId String
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  student   User     @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, courseId])
+}
+
+model Assignment {
+  id           String       @id @default(cuid())
+  title        String
+  instructions String
+  dueDate      DateTime
+  createdAt    DateTime     @default(now())
+  courseId     String
+  totalMarks   Int          @default(10)
+  course       Course       @relation(fields: [courseId], references: [id])
+  submissions  Submission[]
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  response     String
+  status       SubmissionStatus @default(SUBMITTED)
+  grade        String?
+  feedback     String?
+  fileUrl      String?
+  fileName     String?
+  fileSize     Int?
+  fileType     String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  studentId    String
+  assignmentId String
+  earnedMarks  Int?
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id])
+  student      User             @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, assignmentId])
+}
+
+model LiveSession {
+  id                String             @id @default(cuid())
+  title             String
+  startsAt          DateTime
+  link              String
+  createdAt         DateTime           @default(now())
+  courseId          String
+  endsAt            DateTime?
+  hostLink          String?
+  attendanceRecords AttendanceRecord[]
+  course            Course             @relation(fields: [courseId], references: [id])
+}
+
+model CourseResource {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  fileUrl     String
+  fileName    String
+  fileSize    Int
+  fileType    String
+  createdAt   DateTime @default(now())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+}
+
+model AttendanceRecord {
+  id                String           @id @default(cuid())
+  date              DateTime         @default(now())
+  status            AttendanceStatus
+  studentId         String
+  courseId          String
+  attendedAt        DateTime?
+  durationMinutes   Int?
+  leftAt            DateTime?
+  liveSessionId     String?
+  notes             String?
+  verifiedByTeacher Boolean          @default(false)
+  course            Course           @relation(fields: [courseId], references: [id])
+  liveSession       LiveSession?     @relation(fields: [liveSessionId], references: [id])
+  student           User             @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, courseId, date])
+}
+
+model Notification {
+  id          String               @id @default(cuid())
+  title       String
+  message     String
+  audience    NotificationAudience
+  createdAt   DateTime             @default(now())
+  recipientId String?
+  recipient   User?                @relation(fields: [recipientId], references: [id])
+  readBy      NotificationRead[]
+}
+
+model NotificationRead {
+  id             String       @id @default(cuid())
+  readAt         DateTime     @default(now())
+  userId         String
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, notificationId])
+}
+
+model CourseMessage {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+  senderId  String
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
 }
 
 enum Role {
@@ -37,150 +175,14 @@ enum Status {
   INACTIVE
 }
 
-model Course {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  meetingLink String?
-  thumbnail   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  teacher      User               @relation("TeacherCourses", fields: [teacherId], references: [id])
-  teacherId    String
-  enrollments  Enrollment[]
-  assignments  Assignment[]
-  liveSessions LiveSession[]
-  resources    CourseResource[]
-  messages     CourseMessage[]
-  attendance   AttendanceRecord[]
-}
-
-model Enrollment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  student   User   @relation(fields: [studentId], references: [id])
-  studentId String
-  course    Course @relation(fields: [courseId], references: [id])
-  courseId  String
-
-  @@unique([studentId, courseId])
-}
-
-model Assignment {
-  id           String   @id @default(cuid())
-  title        String
-  instructions String
-  dueDate      DateTime
-  createdAt    DateTime @default(now())
-
-  course      Course       @relation(fields: [courseId], references: [id])
-  courseId    String
-  submissions Submission[]
-}
-
-model Submission {
-  id        String           @id @default(cuid())
-  response  String
-  status    SubmissionStatus @default(SUBMITTED)
-  grade     String?
-  feedback  String?
-  fileUrl   String?
-  fileName  String?
-  fileSize  Int?
-  fileType  String?
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  student      User       @relation(fields: [studentId], references: [id])
-  studentId    String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  assignmentId String
-
-  @@unique([studentId, assignmentId])
-}
-
 enum SubmissionStatus {
   SUBMITTED
   REVIEWED
 }
 
-model LiveSession {
-  id        String    @id @default(cuid())
-  title     String
-  startsAt  DateTime
-  endsAt    DateTime?
-  link      String
-  hostLink  String?
-  createdAt DateTime  @default(now())
-
-  course            Course             @relation(fields: [courseId], references: [id])
-  courseId          String
-  attendanceRecords AttendanceRecord[]
-}
-
-model CourseResource {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  fileUrl     String
-  fileName    String
-  fileSize    Int
-  fileType    String
-  createdAt   DateTime @default(now())
-
-  course   Course @relation(fields: [courseId], references: [id])
-  courseId String
-}
-
-model AttendanceRecord {
-  id                String           @id @default(cuid())
-  date              DateTime         @default(now())
-  status            AttendanceStatus
-  attendedAt        DateTime?
-  leftAt            DateTime?
-  durationMinutes   Int?
-  verifiedByTeacher Boolean          @default(false)
-  notes             String?
-
-  student       User         @relation(fields: [studentId], references: [id])
-  studentId     String
-  course        Course       @relation(fields: [courseId], references: [id])
-  courseId      String
-  liveSession   LiveSession? @relation(fields: [liveSessionId], references: [id])
-  liveSessionId String?
-
-  @@unique([studentId, courseId, date])
-}
-
 enum AttendanceStatus {
   PRESENT
   ABSENT
-}
-
-model Notification {
-  id          String               @id @default(cuid())
-  title       String
-  message     String
-  audience    NotificationAudience
-  recipient   User?                @relation(fields: [recipientId], references: [id])
-  recipientId String?
-  createdAt   DateTime             @default(now())
-
-  readBy NotificationRead[]
-}
-
-model NotificationRead {
-  id             String   @id @default(cuid())
-  readAt         DateTime @default(now())
-
-  user           User         @relation(fields: [userId], references: [id])
-  userId         String
-  notification   Notification @relation(fields: [notificationId], references: [id])
-  notificationId String
-
-  @@unique([userId, notificationId])
 }
 
 enum NotificationAudience {
@@ -190,13 +192,8 @@ enum NotificationAudience {
   ADMIN
 }
 
-model CourseMessage {
-  id        String   @id @default(cuid())
-  body      String
-  createdAt DateTime @default(now())
-
-  sender   User   @relation(fields: [senderId], references: [id])
-  senderId String
-  course   Course @relation(fields: [courseId], references: [id])
-  courseId String
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }

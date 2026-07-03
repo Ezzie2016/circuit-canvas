@@ -94,7 +94,7 @@ export async function POST(
       return NextResponse.json({ error: "Already enrolled" }, { status: 200 });
     }
 
-    const enrollment = await prisma.enrollment.create({
+    await prisma.enrollment.create({
       data: {
         studentId: decoded.id,
         courseId: params.courseId,

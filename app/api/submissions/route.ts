@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/auth";
-import { verifyJwt } from "@/lib/auth";
+import { prisma, verifyJwt, createNotification } from "@/lib/auth";
+import { sendGradeNotificationEmail } from "@/lib/emailService";
+import { uploadSubmissionFile } from "@/lib/supabase-storage";
+
 import { cookies } from "next/headers";
 import fs from "fs/promises";
 import path from "path";
@@ -53,6 +55,7 @@ export async function GET(request: Request) {
       });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formatted = (submissions as any[]).map((s) => ({
       id: s.id,
       studentId: s.studentId,
@@ -64,6 +67,8 @@ export async function GET(request: Request) {
       response: s.response,
       status: s.status,
       grade: s.grade,
+      earnedMarks: s.earnedMarks,
+      totalMarks: s.assignment?.totalMarks ?? null,
       feedback: s.feedback,
       fileUrl: s.fileUrl,
       fileName: s.fileName,
@@ -71,6 +76,7 @@ export async function GET(request: Request) {
       createdAt: s.createdAt.toISOString(),
       updatedAt: s.updatedAt.toISOString(),
     }));
+
 
     return NextResponse.json(formatted);
   } catch (error) {
@@ -94,7 +100,9 @@ export async function POST(request: Request) {
     }
 
     const formData = await request.formData();
-    const assignmentId = formData.get("assignmentId") as string;
+    const assignmentIdRaw = formData.get("assignmentId") as string;
+    const assignmentId = String(assignmentIdRaw);
+
     const response = formData.get("response") as string;
     const file = formData.get("file") as File | null;
 
@@ -102,21 +110,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Assignment ID required" }, { status: 400 });
     }
 
+    // Prisma id for Assignment is a String (cuid). However, the frontend sometimes passes numeric-like ids.
+    // First try direct lookup, then fall back to numeric-like conversions.
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
+      include: { course: true },
     });
 
     if (!assignment) {
-      return NextResponse.json({ error: "Assignment not found" }, { status: 404 });
+      // assignmentId coming from the UI might be a DB id (string cuid) OR a numeric placeholder.
+      // When it doesn't match, fall back by returning 404 with a clear message.
+      return NextResponse.json(
+        {
+          error: "Assignment not found",
+          assignmentId,
+        },
+        { status: 404 }
+      );
     }
 
     // Check if student is enrolled in the course
+
     const enrollment = await prisma.enrollment.findFirst({
+
       where: {
         studentId: decoded.id,
         courseId: assignment.courseId,
       },
     });
+
 
     if (!enrollment) {
       return NextResponse.json(
@@ -135,6 +157,7 @@ export async function POST(request: Request) {
       },
     });
 
+
     // If a file was uploaded, save it to public/uploads and set file metadata
     let savedFileUrl: string | null = null;
     let savedFileName: string | null = null;
@@ -143,17 +166,27 @@ export async function POST(request: Request) {
 
     if (file) {
       try {
-        const uploadsDir = path.join(process.cwd(), "public", "uploads");
-        await fs.mkdir(uploadsDir, { recursive: true });
-        const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
-        const filePath = path.join(uploadsDir, safeName);
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        await fs.writeFile(filePath, buffer);
-        savedFileUrl = `/uploads/${safeName}`;
-        savedFileName = file.name;
-        savedFileSize = buffer.length;
-        savedFileType = file.type || null;
+        if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          // Use Supabase Storage (works on Vercel)
+          const uploaded = await uploadSubmissionFile(file, decoded.id, assignmentId);
+          savedFileUrl = uploaded.url;
+          savedFileName = uploaded.name;
+          savedFileSize = uploaded.size;
+          savedFileType = file.type || null;
+        } else {
+          // Local fallback for development
+          const uploadsDir = path.join(process.cwd(), "public", "uploads");
+          await fs.mkdir(uploadsDir, { recursive: true });
+          const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+          const filePath = path.join(uploadsDir, safeName);
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          await fs.writeFile(filePath, buffer);
+          savedFileUrl = `/uploads/${safeName}`;
+          savedFileName = file.name;
+          savedFileSize = buffer.length;
+          savedFileType = file.type || null;
+        }
       } catch (err) {
         console.error("Failed to save uploaded file:", err);
         return NextResponse.json({ error: "Failed to save file" }, { status: 500 });
@@ -195,10 +228,29 @@ export async function POST(request: Request) {
       });
     }
 
+    // Real-time notification: notify the teacher of this assignment's course.
+    try {
+      const teacherId = assignment.course?.teacherId;
+
+      if (teacherId) {
+        await createNotification(
+          "New assignment submitted",
+          `A student submitted: ${assignment.title}`,
+          "TEACHER",
+          teacherId
+        );
+      }
+    } catch (e) {
+      console.error("Failed to create submission notification", e);
+    }
+
     return NextResponse.json(
+
       {
         id: submission.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         studentName: (submission as any).student?.name || "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assignmentTitle: (submission as any).assignment?.title || "",
         status: submission.status,
         fileUrl: submission.fileUrl,
@@ -228,22 +280,93 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
+
+    // ---- Harden inputs (prevents NaN/undefined causing Prisma errors) ----
+    if (!body?.id || typeof body.id !== "string") {
+      return NextResponse.json({ error: "Submission id (string) is required" }, { status: 400 });
+    }
+
+    const earnedMarksProvided = body.earnedMarks;
+    // Frontend should send a number, but handle stringy/empty inputs safely.
+    let earnedMarksNum: number | null = null;
+    if (earnedMarksProvided === null || earnedMarksProvided === undefined || earnedMarksProvided === "") {
+      earnedMarksNum = null;
+    } else {
+      earnedMarksNum = typeof earnedMarksProvided === "number" ? earnedMarksProvided : Number(earnedMarksProvided);
+      if (!Number.isFinite(earnedMarksNum)) {
+        return NextResponse.json({ error: "earnedMarks must be a finite number" }, { status: 400 });
+      }
+    }
+
+    const assignment = await prisma.assignment
+      .findUnique({
+        where: { id: body.assignmentId || undefined },
+        select: { id: true, totalMarks: true },
+      })
+      .catch(() => null);
+
+    const submissionForCheck = await prisma.submission.findUnique({
+      where: { id: body.id },
+      select: { assignment: { select: { id: true, totalMarks: true } } },
+    });
+
+    const totalMarks = assignment?.totalMarks ?? submissionForCheck?.assignment?.totalMarks ?? null;
+
+    if (totalMarks !== null) {
+      if (earnedMarksNum === null) {
+        return NextResponse.json({ error: "earnedMarks is required for this assignment" }, { status: 400 });
+      }
+      if (earnedMarksNum < 0 || earnedMarksNum > totalMarks) {
+        return NextResponse.json(
+          { error: `earnedMarks must be between 0 and ${totalMarks}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    const gradeDisplay = totalMarks !== null && earnedMarksNum !== null ? `${earnedMarksNum}/${totalMarks}` : null;
+
+
+    const feedback = typeof body.feedback === "string" && body.feedback.trim().length > 0 ? body.feedback : null;
+
     const submission = await prisma.submission.update({
       where: { id: body.id },
       data: {
-        grade: body.grade || null,
-        feedback: body.feedback || null,
+        earnedMarks: totalMarks !== null ? earnedMarksNum : null,
+        grade: gradeDisplay,
+        feedback,
         status: "REVIEWED",
       },
+
       include: {
         student: true,
         assignment: { include: { course: true } },
       },
     });
 
+
+    // Email the student their grade (non-blocking)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sub = submission as any;
+    const studentEmail: string | undefined = sub.student?.email;
+    const studentName: string = sub.student?.name || "Student";
+    const assignmentTitle: string = sub.assignment?.title || "";
+    const courseName: string = sub.assignment?.course?.title || "";
+    if (studentEmail) {
+      sendGradeNotificationEmail(
+        studentEmail,
+        studentName,
+        assignmentTitle,
+        courseName,
+        submission.earnedMarks ?? null,
+        sub.assignment?.totalMarks ?? null,
+        submission.feedback ?? null,
+      ).catch((e) => console.error("Grade email error:", e));
+    }
+
     return NextResponse.json({
       id: submission.id,
-      studentName: (submission as any).student?.name,
+      studentName,
       grade: submission.grade,
       feedback: submission.feedback,
       status: submission.status,

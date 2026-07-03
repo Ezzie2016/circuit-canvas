@@ -155,7 +155,7 @@ export default function AdminAnalyticsPage() {
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">Insights</h2>
-            <p className="mt-3 text-slate-600">Monitor {selectedTeacher.name}'s class engagement, submission rates, and attendance patterns. Use this data to identify students needing support and to plan course adjustments.</p>
+            <p className="mt-3 text-slate-600">Monitor {selectedTeacher.name}&apos;s class engagement, submission rates, and attendance patterns. Use this data to identify students needing support and to plan course adjustments.</p>
           </div>
         </>
       )}

@@ -11,7 +11,9 @@ export default function TeacherAssignmentCreatePage() {
   const [title, setTitle] = useState("");
   const [courseId, setCourseId] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [totalMarks, setTotalMarks] = useState<number>(10);
   const [courses, setCourses] = useState<CourseOption[]>([]);
+
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,8 +41,9 @@ export default function TeacherAssignmentCreatePage() {
     const response = await fetch("/api/assignments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, courseId, dueDate }),
+      body: JSON.stringify({ title, courseId, dueDate, totalMarks }),
     });
+
     const data = await response.json();
 
     if (!response.ok) {
@@ -98,6 +101,19 @@ export default function TeacherAssignmentCreatePage() {
             className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
           />
         </label>
+
+        <label className="space-y-2 text-sm text-slate-700">
+          Total marks (e.g. 10)
+          <input
+            type="number"
+            min={0}
+            step={1}
+            value={totalMarks}
+            onChange={(e) => setTotalMarks(Number(e.target.value))}
+            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          />
+        </label>
+
 
         <button
           type="submit"

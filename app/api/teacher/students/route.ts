@@ -19,8 +19,9 @@ export async function GET() {
       include: { enrollments: { include: { student: true } } },
     });
 
-    const studentsMap: Record<string, any> = {};
+    const studentsMap: Record<string, { id: string; name: string; email: string }> = {};
     courses.forEach((course) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (course.enrollments || []).forEach((e: any) => {
         const s = e.student || { id: e.studentId };
         if (s && s.id) studentsMap[String(s.id)] = { id: s.id, name: s.name || "", email: s.email || "" };

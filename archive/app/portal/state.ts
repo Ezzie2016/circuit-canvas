@@ -1,3 +1,4 @@
+/* eslint-disable */
 type Role = "Student" | "Teacher" | "Admin";
 type AuthMode = "login" | "register";
 type SubmissionStatus = "Submitted" | "Reviewed";

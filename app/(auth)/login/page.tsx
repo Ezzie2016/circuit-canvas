@@ -22,7 +22,7 @@ export default function LoginPage() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, selectedRole: selectedRole.toUpperCase() }),
+        body: JSON.stringify({ email, password }),
       });
 
       const contentType = response.headers.get("content-type") || "";
@@ -44,12 +44,18 @@ export default function LoginPage() {
       }
 
       const roleRedirects: Record<string, string> = {
-        STUDENT: "/student",
-        TEACHER: "/teacher",
-        ADMIN: "/admin",
+        Student: "/student",
+        Teacher: "/teacher",
+        Admin: "/admin",
       };
       const userRole = responseData?.user?.role;
-      const redirectPath = userRole ? roleRedirects[userRole] ?? "/" : "/";
+      const normalizedRole =
+        typeof userRole === "string"
+          ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase()
+          : undefined;
+      const redirectPath = normalizedRole
+        ? roleRedirects[normalizedRole] ?? "/"
+        : "/";
       router.push(redirectPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
@@ -126,26 +132,6 @@ export default function LoginPage() {
               <p className="text-sm text-slate-500">
                 Use your school email and password to access student, teacher, or admin dashboards.
               </p>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Continue as</p>
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  {(["Student", "Teacher", "Admin"] as const).map((role) => (
-                    <button
-                      key={role}
-                      type="button"
-                      onClick={() => setSelectedRole(role)}
-                      className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                        selectedRole === role
-                          ? "border-[#1d6d58] bg-[#1d6d58] text-white"
-                          : "border-slate-200 bg-white text-slate-700 hover:border-[#1d6d58] hover:bg-slate-50"
-                      }`}
-                    >
-                      {role}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {error && (
@@ -155,6 +141,26 @@ export default function LoginPage() {
             )}
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+              <div className="mb-4">
+                <p className="mb-2 text-sm font-medium text-slate-700">Role</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["Student", "Teacher", "Admin"] as const).map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => setSelectedRole(role)}
+                      className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                        selectedRole === role
+                          ? "border-[#1d6d58] bg-emerald-50 text-[#1d6d58]"
+                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-white"
+                      }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
                   Email address
@@ -171,26 +177,33 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
-                  Password
-                </label>
+                <div className="mb-2 flex items-center justify-between">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                    Password
+                  </label>
+                  <a href="/forgot-password" className="text-xs font-medium text-[#1d6d58] hover:underline">
+                    Forgot password?
+                  </a>
+                </div>
                 <input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Any password works"
+                  placeholder="Enter your password"
                   required
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
                 />
               </div>
 
               <button
+
+
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-xl bg-[#1d6d58] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Signing in..." : `Continue as ${selectedRole}`}
+                {loading ? "Signing in..." : "Access Portal"}
               </button>
             </form>
 

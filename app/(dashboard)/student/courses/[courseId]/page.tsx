@@ -43,7 +43,7 @@ export default function StudentCourseDetailPage() {
         const res = await fetch("/api/admin/registration");
         const json = await res.json();
         setRegistrationOpen(json.open ?? true);
-      } catch (err) {
+      } catch {
         setRegistrationOpen(true);
       }
     })();

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma, verifyJwt, createNotification } from "@/lib/auth";
 import { cookies } from "next/headers";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("authToken")?.value;
@@ -52,7 +52,8 @@ export async function GET(request: Request) {
       });
     }
 
-    const formatted = assignments.map((a) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formatted = assignments.map((a: any) => ({
       id: a.id,
       title: a.title,
       course: a.course.title,
@@ -60,8 +61,11 @@ export async function GET(request: Request) {
       dueDate: a.dueDate.toISOString().split("T")[0],
       status: a.submissions && a.submissions.length > 0 ? "Submitted" : "Pending",
       instructions: a.instructions,
+      totalMarks: a.totalMarks,
       submissionCount: a.submissions?.length || 0,
     }));
+
+
 
     return NextResponse.json(formatted);
   } catch (error) {
@@ -99,12 +103,15 @@ export async function POST(request: Request) {
         title: body.title,
         instructions: body.instructions || "",
         dueDate: new Date(body.dueDate),
+        totalMarks: typeof body.totalMarks === "number" ? body.totalMarks : Number(body.totalMarks || 10),
+
         courseId: body.courseId,
       },
       include: {
         course: true,
       },
     });
+
 
     const dueDateText = assignment.dueDate.toISOString().split("T")[0];
     const message = `New assignment posted for ${assignment.course.title}: ${assignment.title} is due ${dueDateText}.`;
@@ -126,10 +133,14 @@ export async function POST(request: Request) {
         course: assignment.course.title,
         courseId: assignment.course.id,
         dueDate: dueDateText,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        totalMarks: (assignment as any).totalMarks,
         status: "Pending",
       },
       { status: 201 }
     );
+
+
   } catch (error) {
     console.error("Error creating assignment:", error);
     return NextResponse.json({ error: "Failed to create assignment" }, { status: 500 });

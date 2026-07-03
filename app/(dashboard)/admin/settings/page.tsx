@@ -31,9 +31,9 @@ export default function AdminSettingsPage() {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed to load registration status');
         setOpen(Boolean(json.open));
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
-        setError(err?.message || 'Failed to load settings');
+        setError(err instanceof Error ? err.message : 'Failed to load settings');
       } finally {
         setUserChecked(true);
         setLoading(false);
@@ -56,9 +56,9 @@ export default function AdminSettingsPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to update');
       setOpen(Boolean(json.open));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err?.message || 'Failed to update registration status');
+      setError(err instanceof Error ? err.message : 'Failed to update registration status');
     } finally {
       setSaving(false);
     }
