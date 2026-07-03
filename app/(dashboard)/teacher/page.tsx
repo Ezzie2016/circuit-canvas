@@ -37,7 +37,6 @@ interface Submission {
   assignmentTitle: string;
   courseName: string;
   status: string;
-  grade: string | null;
   createdAt: string;
 }
 
@@ -98,11 +97,11 @@ export default function TeacherDashboard() {
         analyticsRes.json(),
       ]);
 
-      setCourses(coursesData);
-      setAssignments(assignmentsData);
-      setSubmissions(submissionsData);
-      setLiveSessions(liveData);
-      setAnalytics(analyticsData);
+      setCourses(Array.isArray(coursesData) ? coursesData : []);
+      setAssignments(Array.isArray(assignmentsData) ? assignmentsData : []);
+      setSubmissions(Array.isArray(submissionsData) ? submissionsData : []);
+      setLiveSessions(Array.isArray(liveData) ? liveData : []);
+      setAnalytics(analyticsData?.totalCourses !== undefined ? analyticsData : null);
       setLoading(false);
     }
 
@@ -121,7 +120,7 @@ export default function TeacherDashboard() {
   if (loading) return <div className="p-8">Loading...</div>;
   if (!user) return null;
 
-  const pendingSubmissions = submissions.filter((s) => !s.grade).length;
+  const pendingSubmissions = submissions.filter((s) => s.status !== "REVIEWED").length;
   const upcomingSessions = liveSessions.filter((s) => new Date(s.start) > new Date()).length;
 
   return (
@@ -191,9 +190,9 @@ export default function TeacherDashboard() {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Pending Submissions</h2>
             <ul className="space-y-3">
-              {submissions.filter((s) => !s.grade).length > 0 ? (
+              {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
                 submissions
-                  .filter((s) => !s.grade)
+                  .filter((s) => s.status !== "REVIEWED")
                   .slice(0, 5)
                   .map((submission) => (
                     <li key={submission.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
@@ -214,7 +213,7 @@ export default function TeacherDashboard() {
         {/* Grading Panel */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
           <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Recent Submissions to Grade</h2>
-          {submissions.filter((s) => !s.grade).length > 0 ? (
+          {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-100 border-b">
@@ -228,7 +227,7 @@ export default function TeacherDashboard() {
                 </thead>
                 <tbody>
                   {submissions
-                    .filter((s) => !s.grade)
+                    .filter((s) => s.status !== "REVIEWED")
                     .slice(0, 10)
                     .map((sub) => (
                       <tr key={sub.id} className="border-b hover:bg-gray-50">
