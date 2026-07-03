@@ -1,18 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function TeacherCourseCreatePage() {
+  const router = useRouter();
   const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
+  const [instructor, setInstructor] = useState("");
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [meetingLink, setMeetingLink] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/admin/registration");
-        const json = await res.json();
-        setRegistrationOpen(json.open ?? true);
+        const [regRes, sessionRes] = await Promise.all([
+          fetch("/api/admin/registration"),
+          fetch("/api/auth/session"),
+        ]);
+        const regJson = await regRes.json();
+        const sessionJson = await sessionRes.json();
+        setRegistrationOpen(regJson.open ?? true);
+        setInstructor(sessionJson.user?.name || "");
       } catch {
         setRegistrationOpen(true);
       }
@@ -25,15 +37,20 @@ export default function TeacherCourseCreatePage() {
       setMessage("Cannot create courses while registration is closed.");
       return;
     }
-
+    setSubmitting(true);
+    setMessage(null);
     const response = await fetch("/api/courses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, description, meetingLink, thumbnail }),
     });
     const data = await response.json();
-    setMessage(`Course created: ${data.title}`);
-    setTitle("");
+    setSubmitting(false);
+    if (!response.ok) {
+      setMessage(data.error || "Failed to create course.");
+      return;
+    }
+    router.push("/teacher/courses");
   }
 
   return (
@@ -48,22 +65,66 @@ export default function TeacherCourseCreatePage() {
           <label className="space-y-2 text-sm text-slate-700">
             Course title
             <input
+              required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Introduction to English Language"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Instructor
+            <input
+              value={instructor}
+              disabled
+              className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-500"
             />
           </label>
         </div>
 
+        <label className="space-y-2 text-sm text-slate-700">
+          Description
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            rows={4}
+          />
+        </label>
+
+        <label className="space-y-2 text-sm text-slate-700">
+          Meeting link
+          <input
+            value={meetingLink}
+            onChange={(e) => setMeetingLink(e.target.value)}
+            placeholder="https://meet.google.com/..."
+            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          />
+        </label>
+
+        <label className="space-y-2 text-sm text-slate-700">
+          Thumbnail URL
+          <input
+            value={thumbnail}
+            onChange={(e) => setThumbnail(e.target.value)}
+            placeholder="https://..."
+            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          />
+        </label>
+
         <button
           type="submit"
-          disabled={registrationOpen === false}
-          className={`rounded-xl px-5 py-3 text-sm font-semibold text-white ${registrationOpen === false ? "bg-slate-300 cursor-not-allowed" : "bg-[#1d6d58] hover:bg-[#124e40]"}`}
+          disabled={registrationOpen === false || submitting}
+          className={`rounded-xl px-5 py-3 text-sm font-semibold text-white transition ${
+            registrationOpen === false
+              ? "bg-slate-300 cursor-not-allowed"
+              : "bg-[#1d6d58] hover:bg-[#124e40] disabled:opacity-60"
+          }`}
         >
-          {registrationOpen === false ? "Registration closed" : "Publish course"}
+          {registrationOpen === false ? "Registration closed" : submitting ? "Creating…" : "Publish course"}
         </button>
 
-        {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
+        {message && <p className="text-sm text-red-600">{message}</p>}
       </form>
     </div>
   );
