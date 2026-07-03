@@ -70,7 +70,6 @@ model Submission {
   id           String           @id @default(cuid())
   response     String
   status       SubmissionStatus @default(SUBMITTED)
-  grade        String?
   feedback     String?
   fileUrl      String?
   fileName     String?

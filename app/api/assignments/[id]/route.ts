@@ -31,6 +31,7 @@ export async function GET(
               select: { id: true, name: true, email: true },
             },
           },
+          orderBy: { createdAt: "asc" },
         },
       },
     });
@@ -56,6 +57,9 @@ export async function GET(
 
     const studentSubmissionStatus = enrolledStudents.map((e) => {
       const submission = submissionMap.get(e.studentId);
+      const isLate = submission && assignment.dueDate
+        ? submission.createdAt > assignment.dueDate
+        : false;
       return {
         studentId: e.student.id,
         studentName: e.student.name,
@@ -63,9 +67,13 @@ export async function GET(
         submitted: !!submission,
         submissionId: submission?.id,
         status: submission?.status || "NOT_SUBMITTED",
-        grade: submission?.grade,
-        feedback: submission?.feedback,
-        submittedAt: submission?.createdAt.toISOString(),
+        earnedMarks: submission?.earnedMarks ?? null,
+        feedback: submission?.feedback ?? null,
+        response: submission?.response ?? null,
+        fileUrl: submission?.fileUrl ?? null,
+        fileName: submission?.fileName ?? null,
+        submittedAt: submission?.createdAt?.toISOString() ?? null,
+        isLate,
       };
     });
 
@@ -74,6 +82,7 @@ export async function GET(
       title: assignment.title,
       instructions: assignment.instructions,
       dueDate: assignment.dueDate.toISOString(),
+      totalMarks: assignment.totalMarks,
       courseName: assignment.course.title,
       courseId: assignment.courseId,
       totalStudents: enrolledStudents.length,

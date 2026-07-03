@@ -66,7 +66,6 @@ export async function GET(request: Request) {
       assignmentDueDate: s.assignment?.dueDate?.toISOString().split("T")[0] || null,
       response: s.response,
       status: s.status,
-      grade: s.grade,
       earnedMarks: s.earnedMarks,
       totalMarks: s.assignment?.totalMarks ?? null,
       feedback: s.feedback,
@@ -324,16 +323,12 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const gradeDisplay = totalMarks !== null && earnedMarksNum !== null ? `${earnedMarksNum}/${totalMarks}` : null;
-
-
     const feedback = typeof body.feedback === "string" && body.feedback.trim().length > 0 ? body.feedback : null;
 
     const submission = await prisma.submission.update({
       where: { id: body.id },
       data: {
         earnedMarks: totalMarks !== null ? earnedMarksNum : null,
-        grade: gradeDisplay,
         feedback,
         status: "REVIEWED",
       },
@@ -367,7 +362,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({
       id: submission.id,
       studentName,
-      grade: submission.grade,
+      earnedMarks: submission.earnedMarks,
       feedback: submission.feedback,
       status: submission.status,
     });
