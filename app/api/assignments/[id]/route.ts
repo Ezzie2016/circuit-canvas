@@ -83,6 +83,7 @@ export async function GET(
       instructions: assignment.instructions,
       dueDate: assignment.dueDate.toISOString(),
       totalMarks: assignment.totalMarks,
+      type: assignment.type,
       courseName: assignment.course.title,
       courseId: assignment.courseId,
       totalStudents: enrolledStudents.length,

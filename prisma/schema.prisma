@@ -55,14 +55,15 @@ model Enrollment {
 }
 
 model Assignment {
-  id           String       @id @default(cuid())
+  id           String         @id @default(cuid())
   title        String
   instructions String
   dueDate      DateTime
-  createdAt    DateTime     @default(now())
+  createdAt    DateTime       @default(now())
   courseId     String
-  totalMarks   Int          @default(10)
-  course       Course       @relation(fields: [courseId], references: [id])
+  totalMarks   Int            @default(10)
+  type         AssignmentType @default(ASSIGNMENT)
+  course       Course         @relation(fields: [courseId], references: [id])
   submissions  Submission[]
 }
 
@@ -191,6 +192,13 @@ enum NotificationAudience {
   STUDENT
   TEACHER
   ADMIN
+}
+
+enum AssignmentType {
+  ASSIGNMENT
+  QUIZ
+  MID_SEMESTER
+  EXAM
 }
 
 model Setting {

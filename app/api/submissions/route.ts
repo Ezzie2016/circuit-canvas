@@ -62,6 +62,7 @@ export async function GET(request: Request) {
       studentName: s.student?.name || "",
       assignmentId: s.assignmentId,
       assignmentTitle: s.assignment?.title || "",
+      assignmentType: s.assignment?.type || "ASSIGNMENT",
       courseName: s.assignment?.course?.title || "",
       assignmentDueDate: s.assignment?.dueDate?.toISOString().split("T")[0] || null,
       response: s.response,

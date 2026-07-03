@@ -62,6 +62,7 @@ export async function GET() {
       status: a.submissions && a.submissions.length > 0 ? "Submitted" : "Pending",
       instructions: a.instructions,
       totalMarks: a.totalMarks,
+      type: a.type,
       submissionCount: a.submissions?.length || 0,
     }));
 
@@ -98,13 +99,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
+    const validTypes = ["ASSIGNMENT", "QUIZ", "MID_SEMESTER", "EXAM"];
+    const assignmentType = validTypes.includes(body.type) ? body.type : "ASSIGNMENT";
+
     const assignment = await prisma.assignment.create({
       data: {
         title: body.title,
         instructions: body.instructions || "",
         dueDate: new Date(body.dueDate),
         totalMarks: typeof body.totalMarks === "number" ? body.totalMarks : Number(body.totalMarks || 10),
-
+        type: assignmentType,
         courseId: body.courseId,
       },
       include: {
