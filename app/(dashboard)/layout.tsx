@@ -17,6 +17,7 @@ const navLinks: Record<string, { href: string; label: string }[]> = {
     { href: "/student/assignments", label: "Assignments" },
     { href: "/student/live", label: "Live Classes" },
     { href: "/student/grades", label: "Grades" },
+    { href: "/student/attendance-history", label: "Attendance" },
     { href: "/student/progress", label: "Progress" },
     { href: "/profile", label: "My Profile" },
   ],

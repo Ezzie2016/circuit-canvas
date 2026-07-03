@@ -20,14 +20,9 @@ export default function ClassPerformancePage() {
     async function loadPerformance() {
       try {
         const response = await fetch("/api/analytics");
-
         if (response.ok) {
           const analyticsData = await response.json();
-          const performance = analyticsData.courseStats || [];
-          setCourses(performance);
-        } else {
-          const errorData = await response.json();
-          console.error("Failed to load performance:", errorData);
+          setCourses(analyticsData.courseStats || []);
         }
       } catch (error) {
         console.error("Failed to load performance:", error);
@@ -35,62 +30,83 @@ export default function ClassPerformancePage() {
         setLoading(false);
       }
     }
-
     loadPerformance();
   }, []);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-slate-500">Loading performance data…</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <Link href="/teacher" className="text-[#1d6d58] hover:underline mb-4 inline-block">
-        ← Back to Dashboard
-      </Link>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-[#1d6d58] mb-8">Class Performance Analytics</h1>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Link href="/teacher" className="text-sm font-medium text-[#1d6d58] hover:underline">
+          ← Back to Dashboard
+        </Link>
+      </div>
 
-        <div className="grid grid-cols-1 gap-6">
+      <div>
+        <h1 className="text-3xl font-semibold text-slate-900">Class Performance Analytics</h1>
+        <p className="mt-2 text-slate-600">Submission rates, grades, and attendance across your courses.</p>
+      </div>
+
+      {courses.length === 0 ? (
+        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+          <p className="text-slate-500">No course data available yet.</p>
+        </div>
+      ) : (
+        <div className="grid gap-6">
           {courses.map((course) => (
-            <div key={course.courseId} className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-bold text-[#1d6d58] mb-4">{course.courseName}</h2>
+            <div key={course.courseId} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-slate-900 mb-5">{course.courseName}</h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">Total Students</div>
-                  <div className="text-2xl font-bold text-[#1d6d58]">{course.totalStudents}</div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-6">
+                <div className="rounded-2xl bg-slate-50 p-4">
+                  <p className="text-xs text-slate-500 mb-1">Total Students</p>
+                  <p className="text-2xl font-bold text-slate-900">{course.totalStudents}</p>
                 </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">Avg Grade</div>
-                  <div className="text-2xl font-bold text-blue-600">{course.averageGrade}%</div>
+                <div className="rounded-2xl bg-blue-50 p-4">
+                  <p className="text-xs text-blue-600 mb-1">Avg Grade</p>
+                  <p className="text-2xl font-bold text-blue-700">{course.averageGrade}%</p>
                 </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">Submission Rate</div>
-                  <div className="text-2xl font-bold text-green-600">{course.submitRate}%</div>
+                <div className="rounded-2xl bg-emerald-50 p-4">
+                  <p className="text-xs text-emerald-600 mb-1">Submission Rate</p>
+                  <p className="text-2xl font-bold text-emerald-700">{course.submitRate}%</p>
                 </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">Attendance Rate</div>
-                  <div className="text-2xl font-bold text-purple-600">{course.attendanceRate}%</div>
+                <div className="rounded-2xl bg-purple-50 p-4">
+                  <p className="text-xs text-purple-600 mb-1">Attendance Rate</p>
+                  <p className="text-2xl font-bold text-purple-700">{course.attendanceRate}%</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <div className="text-sm font-semibold text-gray-700 mb-2">Submission Rate</div>
-                  <div className="bg-gray-200 rounded-xl h-2 overflow-hidden">
-                    <div className="bg-green-500 h-full" style={{ width: `${course.submitRate}%` }} />
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-medium text-slate-700">Submission Rate</p>
+                    <p className="text-sm font-semibold text-emerald-700">{course.submitRate}%</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${course.submitRate}%` }} />
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-gray-700 mb-2">Attendance Rate</div>
-                  <div className="bg-gray-200 rounded-xl h-2 overflow-hidden">
-                    <div className="bg-blue-500 h-full" style={{ width: `${course.attendanceRate}%` }} />
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-medium text-slate-700">Attendance Rate</p>
+                    <p className="text-sm font-semibold text-blue-700">{course.attendanceRate}%</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${course.attendanceRate}%` }} />
                   </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
