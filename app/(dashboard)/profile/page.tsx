@@ -106,6 +106,10 @@ export default function ProfilePage() {
         <h2 className="text-lg font-semibold text-slate-900 mb-4">Account Info</h2>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
+            <span className="text-slate-500">Name</span>
+            <span className="font-medium text-slate-800">{profile.name}</span>
+          </div>
+          <div className="flex justify-between">
             <span className="text-slate-500">Email</span>
             <span className="font-medium text-slate-800">{profile.email}</span>
           </div>
@@ -121,35 +125,40 @@ export default function ProfilePage() {
               {new Date(profile.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </span>
           </div>
+          {profile.role !== "ADMIN" && (
+            <p className="text-xs text-slate-400 pt-1">Contact an admin to update your name.</p>
+          )}
         </div>
       </div>
 
-      {/* Update Name */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
-        <form onSubmit={handleNameSave} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700">Full Name</label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
-            />
-          </div>
-          {nameMsg && (
-            <p className={`text-sm ${nameMsg.type === "success" ? "text-emerald-600" : "text-red-600"}`}>{nameMsg.text}</p>
-          )}
-          <button
-            type="submit"
-            disabled={savingName}
-            className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
-          >
-            {savingName ? "Saving…" : "Save Name"}
-          </button>
-        </form>
-      </div>
+      {/* Update Name — admin only */}
+      {profile.role === "ADMIN" && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
+          <form onSubmit={handleNameSave} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Full Name</label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              />
+            </div>
+            {nameMsg && (
+              <p className={`text-sm ${nameMsg.type === "success" ? "text-emerald-600" : "text-red-600"}`}>{nameMsg.text}</p>
+            )}
+            <button
+              type="submit"
+              disabled={savingName}
+              className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+            >
+              {savingName ? "Saving…" : "Save Name"}
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Change Password */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">

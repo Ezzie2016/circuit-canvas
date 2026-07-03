@@ -46,6 +46,9 @@ export async function PATCH(request: Request) {
     const updateData: { name?: string; password?: string } = {};
 
     if (body.name && body.name.trim()) {
+      if (decoded.role !== "ADMIN") {
+        return NextResponse.json({ error: "Only admins can update names" }, { status: 403 });
+      }
       updateData.name = body.name.trim();
     }
 
