@@ -33,7 +33,7 @@ export async function GET() {
         take: 10,
         include: {
           student: { select: { name: true } },
-          assignment: { select: { title: true } },
+          assignment: { select: { title: true, totalMarks: true } },
         },
       }),
     ]);
@@ -72,7 +72,7 @@ export async function GET() {
         description: `${submission.student.name} ${
           submission.status === "REVIEWED" ? "submitted" : "submitted"
         } assignment "${submission.assignment.title}"${
-          submission.grade ? ` with grade ${submission.grade}` : ""
+          submission.earnedMarks != null ? ` (${submission.earnedMarks}/${submission.assignment.totalMarks})` : ""
         }`,
         user: submission.student.name,
         timestamp: submission.createdAt.toISOString(),

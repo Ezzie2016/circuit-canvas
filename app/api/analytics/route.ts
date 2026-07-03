@@ -48,14 +48,16 @@ export async function GET(request: Request) {
       const courseStats = courses.map((course) => {
         const totalStudents = course.enrollments.length;
         const assignmentCount = course.assignments.length;
-        const courseSubmissions = course.assignments.flatMap((assignment) => assignment.submissions);
+        const courseSubmissions = course.assignments.flatMap((assignment) =>
+          assignment.submissions.map((s) => ({ ...s, totalMarks: assignment.totalMarks }))
+        );
         const gradedValues = courseSubmissions
-          .filter((submission) => submission.grade)
-          .map((submission) => Number(String(submission.grade).replace("%", "")))
-          .filter((value) => !Number.isNaN(value));
+          .filter((s) => s.status === "REVIEWED" && s.earnedMarks != null && s.totalMarks > 0)
+          .map((s) => (s.earnedMarks! / s.totalMarks) * 100)
+          .filter((v) => !Number.isNaN(v));
 
         const averageGrade = gradedValues.length > 0
-          ? Math.round(gradedValues.reduce((sum, grade) => sum + grade, 0) / gradedValues.length)
+          ? Math.round(gradedValues.reduce((sum, v) => sum + v, 0) / gradedValues.length)
           : 0;
 
         const submittedCount = courseSubmissions.filter((s) => s.status === "SUBMITTED" || s.status === "REVIEWED").length;
@@ -170,14 +172,16 @@ export async function GET(request: Request) {
       const courseStats = courses.map((course) => {
         const totalStudents = course.enrollments.length;
         const assignmentCount = course.assignments.length;
-        const courseSubmissions = course.assignments.flatMap((assignment) => assignment.submissions);
+        const courseSubmissions = course.assignments.flatMap((assignment) =>
+          assignment.submissions.map((s) => ({ ...s, totalMarks: assignment.totalMarks }))
+        );
         const gradedValues = courseSubmissions
-          .filter((submission) => submission.grade)
-          .map((submission) => Number(String(submission.grade).replace("%", "")))
-          .filter((value) => !Number.isNaN(value));
+          .filter((s) => s.status === "REVIEWED" && s.earnedMarks != null && s.totalMarks > 0)
+          .map((s) => (s.earnedMarks! / s.totalMarks) * 100)
+          .filter((v) => !Number.isNaN(v));
 
         const averageGrade = gradedValues.length > 0
-          ? Math.round(gradedValues.reduce((sum, grade) => sum + grade, 0) / gradedValues.length)
+          ? Math.round(gradedValues.reduce((sum, v) => sum + v, 0) / gradedValues.length)
           : 0;
 
         const submittedCount = courseSubmissions.filter((s) => s.status === "SUBMITTED" || s.status === "REVIEWED").length;
