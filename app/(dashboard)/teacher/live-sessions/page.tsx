@@ -142,13 +142,13 @@ export default function TeacherLiveSessionsPage() {
 
       {/* Info Box */}
       <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
-        <h3 className="font-semibold text-blue-900">How it works</h3>
+        <h3 className="font-semibold text-blue-900">How attendance works</h3>
         <ul className="mt-3 space-y-2 text-sm text-blue-800">
+          <li>• <strong>Check-in Code:</strong> Generate a code during class — students enter it in the app to be marked Present instantly</li>
+          <li>• <strong>Verbal:</strong> Say the code on the Google Meet/Zoom call, type it in the chat, or share your screen</li>
+          <li>• <strong>15-minute window:</strong> Each code is valid for 15 minutes — regenerate if needed</li>
           <li>• <strong>Join as Host:</strong> Use the host link to join the meeting as owner/moderator</li>
-          <li>• <strong>Link Expiry:</strong> Student join links are automatically disabled once the session end time passes</li>
-          <li>• <strong>Manage Attendance:</strong> Click &quot;Manage Attendance&quot; to review and override student records</li>
-          <li>• <strong>Auto-enforcement:</strong> Students must attend 60+ minutes to be auto-marked present</li>
-          <li>• <strong>Override:</strong> You can manually approve attendance with notes (e.g. &quot;late arrival approved&quot;)</li>
+          <li>• <strong>Override:</strong> You can manually approve attendance from the Manage Attendance panel</li>
         </ul>
       </div>
     </div>
@@ -165,6 +165,67 @@ function SessionCard({
   const expired = state === "expired";
   const active = state === "active";
   const hostUrl = session.hostLink || session.link;
+
+  // Check-in code state (active sessions only)
+  const [codeInfo, setCodeInfo] = useState<{ code: string; expiresAt: string } | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [codeLoading, setCodeLoading] = useState(false);
+
+  // Load existing code on mount for active sessions
+  useEffect(() => {
+    if (!active) return;
+    fetch(`/api/live-sessions/${session.id}/checkin-code`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.code) {
+          setCodeInfo(data);
+          const left = Math.max(
+            0,
+            Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000)
+          );
+          setSecondsLeft(left);
+        }
+      })
+      .catch(() => null);
+  }, [session.id, active]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!codeInfo) return;
+    const interval = setInterval(() => {
+      const left = Math.max(
+        0,
+        Math.floor((new Date(codeInfo.expiresAt).getTime() - Date.now()) / 1000)
+      );
+      setSecondsLeft(left);
+      if (left === 0) setCodeInfo(null);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [codeInfo]);
+
+  const handleGenerateCode = async () => {
+    setCodeLoading(true);
+    try {
+      const res = await fetch(`/api/live-sessions/${session.id}/checkin-code`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCodeInfo(data);
+        setSecondsLeft(15 * 60);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setCodeLoading(false);
+    }
+  };
+
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div
@@ -249,6 +310,57 @@ function SessionCard({
           )}
         </div>
       </div>
+
+      {/* Check-in Code Panel — active sessions only */}
+      {active && (
+        <div className="mt-5 border-t border-emerald-200 pt-5">
+          {codeInfo ? (
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-700 mb-1">
+                  Check-in Code
+                </p>
+                <p className="font-mono text-4xl font-bold tracking-[0.25em] text-slate-900">
+                  {codeInfo.code}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Expires in{" "}
+                  <span
+                    className={`font-semibold ${
+                      secondsLeft < 60 ? "text-red-600" : "text-emerald-700"
+                    }`}
+                  >
+                    {formatCountdown(secondsLeft)}
+                  </span>
+                </p>
+              </div>
+              <button
+                onClick={handleGenerateCode}
+                disabled={codeLoading}
+                className="rounded-xl border-2 border-emerald-600 px-5 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 transition"
+              >
+                {codeLoading ? "Generating..." : "New Code"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-700">Check-in Code</p>
+                <p className="text-sm text-slate-500">
+                  Generate a 6-character code — students enter it during class to be marked Present.
+                </p>
+              </div>
+              <button
+                onClick={handleGenerateCode}
+                disabled={codeLoading}
+                className="rounded-xl bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition shrink-0"
+              >
+                {codeLoading ? "Generating..." : "Generate Code"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

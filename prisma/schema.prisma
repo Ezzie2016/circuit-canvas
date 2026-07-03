@@ -88,16 +88,18 @@ model Submission {
 }
 
 model LiveSession {
-  id                String             @id @default(cuid())
-  title             String
-  startsAt          DateTime
-  link              String
-  createdAt         DateTime           @default(now())
-  courseId          String
-  endsAt            DateTime?
-  hostLink          String?
-  attendanceRecords AttendanceRecord[]
-  course            Course             @relation(fields: [courseId], references: [id])
+  id                   String             @id @default(cuid())
+  title                String
+  startsAt             DateTime
+  link                 String
+  createdAt            DateTime           @default(now())
+  courseId             String
+  endsAt               DateTime?
+  hostLink             String?
+  checkInCode          String?
+  checkInCodeExpiresAt DateTime?
+  attendanceRecords    AttendanceRecord[]
+  course               Course             @relation(fields: [courseId], references: [id])
 }
 
 model CourseResource {

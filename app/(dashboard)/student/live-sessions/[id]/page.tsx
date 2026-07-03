@@ -13,7 +13,7 @@ type SessionDetail = {
   course: { id: string; title: string };
 };
 
-type AttendanceState = "not-joined" | "joined" | "left-present" | "left-absent";
+type TimerState = "not-joined" | "joined" | "left-present" | "left-absent";
 
 export default function StudentLiveSessionPage() {
   const params = useParams();
@@ -21,14 +21,21 @@ export default function StudentLiveSessionPage() {
 
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState<AttendanceState>("not-joined");
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  // Check-in code state
+  const [codeInput, setCodeInput] = useState("");
+  const [codeSubmitting, setCodeSubmitting] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [checkedIn, setCheckedIn] = useState(false);
+
+  // Timer-based state (kept as fallback)
+  const [timerState, setTimerState] = useState<TimerState>("not-joined");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [joinedAt, setJoinedAt] = useState<Date | null>(null);
   const [finalDurationMinutes, setFinalDurationMinutes] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
-  const [sessionExpired, setSessionExpired] = useState(false);
+  const [timerSubmitting, setTimerSubmitting] = useState(false);
 
-  // Load session details + restore attendance state
   useEffect(() => {
     async function init() {
       try {
@@ -40,17 +47,14 @@ export default function StudentLiveSessionPage() {
         const sessionData = await sessionRes.json();
         setSession(sessionData);
 
-        // Check if session has expired
         if (sessionData.endsAt && new Date(sessionData.endsAt) < new Date()) {
           setSessionExpired(true);
         }
 
-        // Restore attendance state if student already joined
         if (trackingRes.ok) {
           const tracking = await trackingRes.json();
           if (tracking.status === "joined") {
-            setStatus("joined");
-            // Restore elapsed time from server-side attendedAt
+            setTimerState("joined");
             if (tracking.record?.attendedAt) {
               const joinTime = new Date(tracking.record.attendedAt);
               setJoinedAt(joinTime);
@@ -58,11 +62,18 @@ export default function StudentLiveSessionPage() {
               setElapsedSeconds(Math.max(0, elapsed));
             }
           } else if (tracking.status === "left-present") {
-            setStatus("left-present");
+            setTimerState("left-present");
             setFinalDurationMinutes(tracking.record?.durationMinutes || 0);
           } else if (tracking.status === "left-absent") {
-            setStatus("left-absent");
+            setTimerState("left-absent");
             setFinalDurationMinutes(tracking.record?.durationMinutes || 0);
+          }
+          // If the attendance record is already PRESENT (via code), reflect that
+          if (
+            tracking.status === "left-present" ||
+            (tracking.record?.status === "PRESENT" && tracking.record?.notes?.includes("check-in code"))
+          ) {
+            setCheckedIn(true);
           }
         }
       } catch (error) {
@@ -74,9 +85,9 @@ export default function StudentLiveSessionPage() {
     init();
   }, [sessionId]);
 
-  // Timer: count up from joinedAt
+  // Timer: count up
   useEffect(() => {
-    if (status !== "joined") return;
+    if (timerState !== "joined") return;
     const interval = setInterval(() => {
       if (joinedAt) {
         const elapsed = Math.floor((Date.now() - joinedAt.getTime()) / 1000);
@@ -84,56 +95,75 @@ export default function StudentLiveSessionPage() {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [status, joinedAt]);
+  }, [timerState, joinedAt]);
+
+  const handleCodeCheckin = async () => {
+    if (!codeInput.trim()) return;
+    setCodeSubmitting(true);
+    setCodeError("");
+    try {
+      const res = await fetch(`/api/live-sessions/${sessionId}/checkin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: codeInput.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCheckedIn(true);
+      } else {
+        setCodeError(data.error || "Check-in failed. Please try again.");
+      }
+    } catch {
+      setCodeError("Network error. Please try again.");
+    } finally {
+      setCodeSubmitting(false);
+    }
+  };
 
   const handleJoin = async () => {
-    setSubmitting(true);
+    setTimerSubmitting(true);
     try {
       const response = await fetch(`/api/live-sessions/${sessionId}/attendance-tracking`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "join" }),
       });
-
       if (response.ok) {
         const now = new Date();
         setJoinedAt(now);
         setElapsedSeconds(0);
-        setStatus("joined");
+        setTimerState("joined");
       } else {
         const err = await response.json();
         alert(err.error || "Failed to join session");
       }
-    } catch (error) {
-      console.error("Failed to join:", error);
+    } catch {
       alert("Error joining session");
     } finally {
-      setSubmitting(false);
+      setTimerSubmitting(false);
     }
   };
 
   const handleLeave = async () => {
-    setSubmitting(true);
+    setTimerSubmitting(true);
     try {
       const response = await fetch(`/api/live-sessions/${sessionId}/attendance-tracking`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "leave" }),
       });
-
       if (response.ok) {
         const data = await response.json();
         setFinalDurationMinutes(data.durationMinutes);
-        setStatus(data.status === "PRESENT" ? "left-present" : "left-absent");
+        setTimerState(data.status === "PRESENT" ? "left-present" : "left-absent");
       } else {
         const err = await response.json();
         alert(err.error || "Failed to leave session");
       }
-    } catch (error) {
-      console.error("Failed to leave:", error);
+    } catch {
       alert("Error leaving session");
     } finally {
-      setSubmitting(false);
+      setTimerSubmitting(false);
     }
   };
 
@@ -149,6 +179,8 @@ export default function StudentLiveSessionPage() {
   if (loading) return <div className="p-6 text-center text-slate-600">Loading session...</div>;
   if (!session) return <div className="p-6 text-center text-red-600">Session not found</div>;
 
+  const sessionActive = !sessionExpired;
+
   return (
     <div className="space-y-6">
       <div>
@@ -158,7 +190,7 @@ export default function StudentLiveSessionPage() {
 
       {/* Session Info */}
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           <div>
             <p className="text-sm text-slate-500">Scheduled Time</p>
             <p className="mt-2 text-lg font-medium text-slate-900">
@@ -176,131 +208,162 @@ export default function StudentLiveSessionPage() {
             <div>
               <p className="text-sm text-slate-500">Session Ends</p>
               <p className="mt-2 text-lg font-medium text-slate-900">
-                {new Date(session.endsAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                {new Date(session.endsAt).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           )}
-          <div>
-            <p className="text-sm text-slate-500">Minimum Attendance Required</p>
-            <p className="mt-2 text-lg font-medium text-slate-900">60 minutes</p>
-          </div>
         </div>
       </div>
 
-      {/* Expired */}
-      {sessionExpired && status === "not-joined" && (
+      {/* Session Ended */}
+      {sessionExpired && !checkedIn && timerState === "not-joined" && (
         <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
           <h2 className="text-lg font-semibold text-red-900">Session Has Ended</h2>
           <p className="mt-2 text-sm text-red-800">
-            This live session has ended. You can no longer join or record attendance.
-            Contact your teacher if you believe this is an error.
+            This live session has ended. Contact your teacher if you need your attendance adjusted.
           </p>
         </div>
       )}
 
-      {/* Join */}
-      {status === "not-joined" && !sessionExpired && (
-        <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
-          <h2 className="text-lg font-semibold text-blue-900">Ready to join?</h2>
-          <p className="mt-2 text-sm text-blue-800">
-            Click &quot;Join + Track Attendance&quot; to start the attendance timer. You must stay for at
-            least 60 minutes to be marked present.
+      {/* Check-in Code — primary attendance method */}
+      {!checkedIn && sessionActive && timerState !== "left-present" && (
+        <div className="rounded-3xl border border-[#1d6d58] bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Enter Check-in Code</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Your teacher will share a 6-character code during the class. Enter it here to be marked
+            Present immediately.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
+            <input
+              type="text"
+              value={codeInput}
+              onChange={(e) => {
+                setCodeInput(e.target.value.toUpperCase().slice(0, 6));
+                setCodeError("");
+              }}
+              onKeyDown={(e) => e.key === "Enter" && handleCodeCheckin()}
+              placeholder="e.g. XK7P2Q"
+              maxLength={6}
+              className="w-48 rounded-xl border border-slate-300 px-4 py-3 text-center font-mono text-xl font-bold uppercase tracking-widest text-slate-900 placeholder:text-slate-300 focus:border-[#1d6d58] focus:outline-none"
+            />
             <button
-              onClick={handleJoin}
-              disabled={submitting}
-              className="rounded-xl bg-[#1d6d58] px-8 py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              onClick={handleCodeCheckin}
+              disabled={codeSubmitting || codeInput.length < 6}
+              className="rounded-xl bg-[#1d6d58] px-6 py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50 transition"
             >
-              {submitting ? "Joining..." : "Join + Track Attendance"}
+              {codeSubmitting ? "Checking in..." : "Submit Code"}
             </button>
-            <a
-              href={session.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-blue-600 px-8 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              Open Video Link
-            </a>
           </div>
+          {codeError && (
+            <p className="mt-3 text-sm font-medium text-red-600">{codeError}</p>
+          )}
         </div>
       )}
 
-      {/* Timer */}
-      {status === "joined" && (
-        <div className="rounded-3xl border border-green-200 bg-green-50 p-6">
-          <h2 className="text-lg font-semibold text-green-900">Currently in Session</h2>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-green-800 mb-2">Time Elapsed</p>
-            <p className="text-5xl font-bold text-green-600 font-mono">{formatTime(elapsedSeconds)}</p>
-            <p className="mt-4 text-sm text-green-800">
-              {durationMinutes < MINIMUM_MINUTES
-                ? `${MINIMUM_MINUTES - durationMinutes} minute${MINIMUM_MINUTES - durationMinutes === 1 ? "" : "s"} remaining to meet attendance requirement`
-                : "✓ You've met the 60-minute requirement! You can leave anytime."}
-            </p>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3 justify-center">
-            <a
-              href={session.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              Re-open Video Link
-            </a>
-            <button
-              onClick={handleLeave}
-              disabled={submitting}
-              className="rounded-xl bg-red-600 px-8 py-3 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
-            >
-              {submitting ? "Recording..." : "Leave & Record Attendance"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Present */}
-      {status === "left-present" && (
-        <div className="rounded-3xl border border-green-200 bg-green-50 p-6">
+      {/* Checked in via code */}
+      {checkedIn && (
+        <div className="rounded-3xl border border-emerald-300 bg-emerald-50 p-6">
           <div className="text-center">
             <p className="text-5xl">✓</p>
-            <h2 className="mt-2 text-2xl font-bold text-green-600">Attendance Recorded — PRESENT</h2>
-            <p className="mt-3 text-sm text-green-800">
-              You attended for <strong>{finalDurationMinutes} minutes</strong> and met the 60-minute requirement.
-              Your teacher can see this in their attendance panel.
+            <h2 className="mt-2 text-2xl font-bold text-emerald-700">
+              Attendance Recorded — PRESENT
+            </h2>
+            <p className="mt-3 text-sm text-emerald-800">
+              You&apos;ve been marked Present for this session via check-in code. Your teacher can
+              see this in the attendance panel.
             </p>
           </div>
         </div>
       )}
 
-      {/* Absent */}
-      {status === "left-absent" && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
-          <div className="text-center">
-            <p className="text-5xl">✗</p>
-            <h2 className="mt-2 text-2xl font-bold text-red-600">Attendance Recorded — ABSENT</h2>
-            <p className="mt-3 text-sm text-red-800">
-              You attended for only <strong>{finalDurationMinutes} minutes</strong>. You needed at least{" "}
-              <strong>60 minutes</strong> to be marked present.
-            </p>
-            <p className="mt-4 text-xs text-red-700">
-              Contact your teacher if you have a valid excuse — they can manually override your attendance.
-            </p>
-          </div>
+      {/* Video link */}
+      {sessionActive && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-900 mb-3">Join the Video Call</h2>
+          <a
+            href={session.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition"
+          >
+            Open Video Link
+          </a>
         </div>
       )}
 
-      {/* Info */}
-      <div className="rounded-3xl border border-yellow-200 bg-yellow-50 p-6">
-        <h3 className="font-semibold text-yellow-900">Important Notes</h3>
-        <ul className="mt-3 space-y-2 text-sm text-yellow-800">
-          <li>• Minimum attendance: <strong>60 minutes</strong></li>
-          <li>• Leaving early will mark you <strong>ABSENT</strong></li>
-          <li>• Your teacher can manually override your attendance status with notes</li>
-          <li>• Attendance is recorded in real time — your teacher can see it immediately</li>
-          {session.endsAt && <li>• This session&apos;s join link expires at <strong>{new Date(session.endsAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}</strong></li>}
-        </ul>
-      </div>
+      {/* Timer — fallback attendance method */}
+      {sessionActive && !checkedIn && (
+        <details className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <summary className="cursor-pointer select-none px-6 py-4 text-sm font-semibold text-slate-600 hover:text-slate-900">
+            Alternative: Track attendance by time (60-minute timer)
+          </summary>
+          <div className="px-6 pb-6">
+            {timerState === "not-joined" && (
+              <div className="pt-2">
+                <p className="text-sm text-slate-500 mb-4">
+                  If your teacher didn&apos;t share a code, you can use the timer instead. You must stay for at least 60 minutes to be marked Present.
+                </p>
+                <button
+                  onClick={handleJoin}
+                  disabled={timerSubmitting}
+                  className="rounded-xl bg-slate-700 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                >
+                  {timerSubmitting ? "Starting..." : "Start Timer"}
+                </button>
+              </div>
+            )}
+
+            {timerState === "joined" && (
+              <div className="pt-2 text-center">
+                <p className="text-sm text-slate-500 mb-2">Time Elapsed</p>
+                <p className="text-5xl font-bold text-slate-800 font-mono">{formatTime(elapsedSeconds)}</p>
+                <p className="mt-4 text-sm text-slate-500">
+                  {durationMinutes < MINIMUM_MINUTES
+                    ? `${MINIMUM_MINUTES - durationMinutes} minute${MINIMUM_MINUTES - durationMinutes === 1 ? "" : "s"} remaining`
+                    : "✓ You&apos;ve met the 60-minute requirement!"}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                  <a
+                    href={session.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+                  >
+                    Re-open Video Link
+                  </a>
+                  <button
+                    onClick={handleLeave}
+                    disabled={timerSubmitting}
+                    className="rounded-xl bg-red-600 px-6 py-3 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {timerSubmitting ? "Recording..." : "Leave & Record"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {timerState === "left-present" && (
+              <div className="pt-2 text-center">
+                <p className="text-5xl">✓</p>
+                <h3 className="mt-2 text-xl font-bold text-emerald-600">Present — {finalDurationMinutes} minutes</h3>
+              </div>
+            )}
+
+            {timerState === "left-absent" && (
+              <div className="pt-2 text-center">
+                <p className="text-5xl">✗</p>
+                <h3 className="mt-2 text-xl font-bold text-red-600">Absent — only {finalDurationMinutes} minutes</h3>
+                <p className="mt-2 text-sm text-red-700">
+                  Contact your teacher to manually override if you have a valid excuse.
+                </p>
+              </div>
+            )}
+          </div>
+        </details>
+      )}
     </div>
   );
 }
