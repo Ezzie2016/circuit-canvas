@@ -33,6 +33,7 @@ interface Assignment {
 
 interface Submission {
   id: string;
+  assignmentId: string;
   studentName: string;
   assignmentTitle: string;
   courseName: string;
@@ -200,7 +201,7 @@ export default function TeacherDashboard() {
                         <p className="font-semibold text-sm">{submission.studentName}</p>
                         <p className="text-xs text-gray-500">{submission.assignmentTitle}</p>
                       </div>
-                      <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Grade</span>
+                      <Link href={`/teacher/assignments/${submission.assignmentId}`} className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded hover:bg-orange-200">Grade</Link>
                     </li>
                   ))
               ) : (
@@ -236,9 +237,9 @@ export default function TeacherDashboard() {
                         <td className="px-4 py-3">{sub.courseName}</td>
                         <td className="px-4 py-3">{new Date(sub.createdAt).toLocaleDateString()}</td>
                         <td className="px-4 py-3">
-                          <button className="bg-[#1d6d58] text-white px-3 py-1 rounded text-xs hover:bg-[#124e40]">
+                          <Link href={`/teacher/assignments/${sub.assignmentId}`} className="bg-[#1d6d58] text-white px-3 py-1 rounded text-xs hover:bg-[#124e40]">
                             Grade
-                          </button>
+                          </Link>
                         </td>
                       </tr>
                     ))}
