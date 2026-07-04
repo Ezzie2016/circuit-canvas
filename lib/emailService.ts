@@ -1,21 +1,31 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error("RESEND_API_KEY is not set");
-  return new Resend(apiKey);
+function getTransporter() {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASSWORD;
+
+  if (!user || !pass) {
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 }
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-
 async function sendMail(to: string, subject: string, html: string) {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn(`[Email skipped — RESEND_API_KEY not set] To: ${to} | Subject: ${subject}`);
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn(`[Email skipped — EMAIL_USER/EMAIL_PASSWORD not set] To: ${to}`);
     return;
   }
-  const resend = getResend();
-  const { error } = await resend.emails.send({ from: FROM, to, subject, html });
-  if (error) throw new Error(`Email send failed: ${error.message}`);
+  await transporter.sendMail({
+    from: `"Circuit Campus" <${process.env.EMAIL_USER}>`,
+    to,
+    subject,
+    html,
+  });
 }
 
 export async function sendRegistrationEmail(
@@ -40,9 +50,7 @@ export async function sendRegistrationEmail(
           Sign In
         </a>
       </p>
-      <p style="color:#666;font-size:12px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px">
-        © Circuit Campus. All rights reserved.
-      </p>
+      <p style="color:#666;font-size:12px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px">© Circuit Campus. All rights reserved.</p>
     </div>`,
   ).catch((e) => console.error("sendRegistrationEmail failed:", e));
 }
@@ -60,7 +68,7 @@ export async function sendPasswordResetEmail(
         <h1 style="margin:0;font-size:24px">Password Reset</h1>
       </div>
       <p>Hi <strong>${name}</strong>,</p>
-      <p>Click the button below to reset your password. This link expires in <strong>1 hour</strong>.</p>
+      <p>Click below to reset your password. This link expires in <strong>1 hour</strong>.</p>
       <p style="margin:28px 0">
         <a href="${resetUrl}" style="display:inline-block;background:#1d6d58;color:white;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold">
           Reset My Password
@@ -84,7 +92,6 @@ export async function sendTeacherInviteEmail(
     `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#f9f9f9;padding:32px;border-radius:12px">
       <div style="background:#1d6d58;color:white;padding:24px;border-radius:8px;margin-bottom:24px">
         <h1 style="margin:0;font-size:24px">Teacher Invitation</h1>
-        <p style="margin:8px 0 0;opacity:.9">Circuit Campus</p>
       </div>
       <p>Hi <strong>${name}</strong>,</p>
       <p>You have been invited to join Circuit Campus as a teacher. Click below to set your password and activate your account.</p>
@@ -97,7 +104,7 @@ export async function sendTeacherInviteEmail(
       <p style="color:#e53e3e;font-size:13px">⚠️ This link expires in <strong>24 hours</strong>.</p>
       <p style="color:#666;font-size:12px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px">© Circuit Campus. All rights reserved.</p>
     </div>`,
-  );
+  ).catch((e) => console.error("sendTeacherInviteEmail failed:", e));
 }
 
 export async function sendStudentInviteEmail(
@@ -124,7 +131,7 @@ export async function sendStudentInviteEmail(
       <p style="color:#e53e3e;font-size:13px">⚠️ This link expires in <strong>24 hours</strong>.</p>
       <p style="color:#666;font-size:12px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px">© Circuit Campus. All rights reserved.</p>
     </div>`,
-  );
+  ).catch((e) => console.error("sendStudentInviteEmail failed:", e));
 }
 
 export async function sendGradeNotificationEmail(
