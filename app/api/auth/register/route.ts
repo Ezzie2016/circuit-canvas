@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registerUser } from "@/lib/auth";
 import { sendRegistrationEmail } from "@/lib/emailService";
+import { getRegistrationOpen } from "@/lib/registration";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +11,11 @@ export async function POST(request: NextRequest) {
     // Only students can register publicly.
     if (role !== "STUDENT") {
       return NextResponse.json({ error: "Only student registration is allowed" }, { status: 403 });
+    }
+
+    const isOpen = await getRegistrationOpen();
+    if (!isOpen) {
+      return NextResponse.json({ error: "Registration is currently closed. Contact your administrator." }, { status: 403 });
     }
 
     if (!email || !password || !name || !role) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -13,6 +13,14 @@ export default function RegisterPage() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/registration")
+      .then((r) => r.json())
+      .then((d) => setRegistrationOpen(d.open ?? true))
+      .catch(() => setRegistrationOpen(true));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,83 +135,90 @@ export default function RegisterPage() {
               <p className="text-sm text-slate-400">Already have an account? Sign in to continue.</p>
             </div>
 
-            {error && (
-              <div className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
-                {error}
+            {registrationOpen === false ? (
+              <div className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-6 text-center">
+                <p className="text-sm font-semibold text-orange-800">Registration is currently closed</p>
+                <p className="mt-1 text-sm text-orange-700">Student sign-ups are not being accepted at this time. Contact your administrator for access.</p>
               </div>
+            ) : (
+              <>
+                {error && (
+                  <div className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                  <div>
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
+                      Full Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Taylor Brooks"
+                      required
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+                      Email address
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="user@campus.edu"
+                      required
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••"
+                      required
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-slate-700">
+                      Confirm Password
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••"
+                      required
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full rounded-xl bg-[#1d6d58] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {loading ? "Creating account..." : "Create account"}
+                  </button>
+                </form>
+              </>
             )}
-
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Taylor Brooks"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="user@campus.edu"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-slate-700">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••"
-                  required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                />
-              </div>
-
-
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-[#1d6d58] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? "Creating account..." : "Create account"}
-              </button>
-            </form>
 
             <p className="mt-6 text-center text-sm text-slate-500">
               Already have an account? <Link href="/login" className="font-semibold text-[#1d6d58] hover:underline">Sign in here</Link>
