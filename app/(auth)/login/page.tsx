@@ -69,11 +69,8 @@ export default function LoginPage() {
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.3fr_0.95fr]">
         <aside className="relative flex items-center justify-center bg-[#1d6d58] px-6 py-12 lg:px-16">
           <div className="max-w-xl space-y-10">
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 px-5 py-4 shadow-sm">
+            <div className="flex items-center rounded-2xl border border-white/10 bg-white/10 px-5 py-4 shadow-sm">
               <span className="text-lg font-semibold text-emerald-100">Circuit Campus</span>
-              <span className="rounded-xl border border-emerald-200/30 bg-emerald-200/10 px-3 py-1 text-xs uppercase tracking-[0.35em] text-emerald-200">
-                Live portal demo
-              </span>
             </div>
 
             <div className="space-y-5">

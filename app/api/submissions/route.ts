@@ -36,7 +36,7 @@ export async function GET(request: Request) {
       submissions = await prisma.submission.findMany({
         where: {
           assignment: {
-            courseId: assignmentId ? undefined : undefined,
+            ...(assignmentId ? { id: assignmentId } : {}),
             course: { teacherId: decoded.id },
           },
         },
