@@ -341,6 +341,30 @@ export async function PATCH(request: Request) {
     });
 
 
+    // In-app notification for the student
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const _sub = submission as any;
+      const _title: string = _sub.assignment?.title || "an assignment";
+      const _marks = submission.earnedMarks != null && _sub.assignment?.totalMarks != null
+        ? ` — ${submission.earnedMarks}/${_sub.assignment.totalMarks}`
+        : "";
+      await createNotification(
+        "Assignment graded",
+        `Your submission for "${_title}" has been graded${_marks}.`,
+        "STUDENT",
+        submission.studentId,
+      );
+      // Notify admin too
+      await createNotification(
+        "Assignment graded",
+        `${_sub.student?.name || "A student"} was graded on "${_title}"${_marks}.`,
+        "ADMIN",
+      );
+    } catch (e) {
+      console.error("Failed to create grade notification", e);
+    }
+
     // Email the student their grade (non-blocking)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sub = submission as any;

@@ -57,6 +57,13 @@ interface LiveSession {
   link: string;
 }
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  createdAt: string;
+}
+
 export default function TeacherDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -66,6 +73,7 @@ export default function TeacherDashboard() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     async function loadSession() {
@@ -103,6 +111,11 @@ export default function TeacherDashboard() {
       setSubmissions(Array.isArray(submissionsData) ? submissionsData : []);
       setLiveSessions(Array.isArray(liveData) ? liveData : []);
       setAnalytics(analyticsData?.totalCourses !== undefined ? analyticsData : null);
+
+      const notifRes = await fetch(`/api/notifications?role=TEACHER&userId=${data.user.id}`);
+      const notifData = await notifRes.json();
+      setNotifications(Array.isArray(notifData) ? notifData.slice(0, 8) : []);
+
       setLoading(false);
     }
 
@@ -269,6 +282,27 @@ export default function TeacherDashboard() {
               </button>
             </Link>
           </div>
+        </div>
+
+        {/* Notifications */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
+          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Notifications</h2>
+          {notifications.length > 0 ? (
+            <ul className="space-y-3">
+              {notifications.map((n) => (
+                <li key={n.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
+                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-orange-400" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{n.title}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{n.message}</p>
+                    <p className="text-xs text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600">No notifications yet.</p>
+          )}
         </div>
 
         {/* Upcoming Live Sessions */}

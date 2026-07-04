@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { registerUser } from "@/lib/auth";
+import { registerUser, createNotification } from "@/lib/auth";
 import { sendRegistrationEmail } from "@/lib/emailService";
 import { getRegistrationOpen } from "@/lib/registration";
 
@@ -34,6 +34,13 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await registerUser(email, password, name, role);
+
+    // Notify admin of new registration (non-blocking)
+    void createNotification(
+      "New student registered",
+      `${name} (${email}) just created a student account.`,
+      "ADMIN",
+    ).catch(() => {});
 
     // Send registration email without blocking the response
     void sendRegistrationEmail(email, name, role).catch((emailError) => {

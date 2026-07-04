@@ -59,7 +59,12 @@ export async function GET() {
       course: a.course.title,
       courseId: a.course.id,
       dueDate: a.dueDate.toISOString().split("T")[0],
-      status: a.submissions && a.submissions.length > 0 ? "Submitted" : "Pending",
+      status: (() => {
+        if (!a.submissions || a.submissions.length === 0) return "Pending";
+        const sub = a.submissions[0];
+        if (sub.status === "REVIEWED") return "Graded";
+        return "Submitted";
+      })(),
       instructions: a.instructions,
       totalMarks: a.totalMarks,
       type: a.type,

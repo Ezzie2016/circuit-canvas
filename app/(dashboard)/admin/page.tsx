@@ -36,6 +36,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [notifications, setNotifications] = useState<{id:string;title:string;message:string;createdAt:string}[]>([]);
   const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
   const [toggling, setToggling] = useState(false);
 
@@ -66,10 +67,15 @@ export default function AdminDashboard() {
       const activityData = await activityRes.json();
       const regData = await regRes.json();
 
-      setUsers(usersData);
+      setUsers(Array.isArray(usersData) ? usersData : []);
       setAnalytics(analyticsData);
-      setActivities(activityData);
+      setActivities(Array.isArray(activityData) ? activityData : []);
       setRegistrationOpen(regData.open ?? true);
+
+      const notifRes = await fetch("/api/notifications?role=ADMIN");
+      const notifData = await notifRes.json();
+      setNotifications(Array.isArray(notifData) ? notifData.slice(0, 10) : []);
+
       setLoading(false);
     }
 
@@ -232,6 +238,27 @@ export default function AdminDashboard() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Notifications */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
+          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Notifications</h2>
+          {notifications.length > 0 ? (
+            <ul className="space-y-3">
+              {notifications.map((n) => (
+                <li key={n.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
+                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-purple-500" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{n.title}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{n.message}</p>
+                    <p className="text-xs text-slate-400 mt-1">{new Date(n.createdAt).toLocaleString()}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600">No notifications yet.</p>
+          )}
         </div>
 
         {/* Recent Activity */}

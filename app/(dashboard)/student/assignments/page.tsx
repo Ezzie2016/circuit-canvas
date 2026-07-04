@@ -107,12 +107,13 @@ export default function StudentAssignmentsPage() {
 
 
   const overdueAssignments = assignments.filter(
-    (a) => a.status !== "Submitted" && new Date(a.dueDate) < new Date()
+    (a) => a.status === "Pending" && new Date(a.dueDate) < new Date()
   );
   const upcomingAssignments = assignments.filter(
-    (a) => a.status !== "Submitted" && new Date(a.dueDate) >= new Date()
+    (a) => a.status === "Pending" && new Date(a.dueDate) >= new Date()
   );
   const submittedAssignments = assignments.filter((a) => a.status === "Submitted");
+  const gradedAssignments = assignments.filter((a) => a.status === "Graded");
 
   if (loading) {
     return (
@@ -204,6 +205,20 @@ export default function StudentAssignmentsPage() {
               </div>
             </section>
           )}
+
+          {/* Graded */}
+          {gradedAssignments.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-blue-600">
+                Graded ({gradedAssignments.length})
+              </h2>
+              <div className="space-y-3">
+                {gradedAssignments.map((assignment) => (
+                  <AssignmentCard key={assignment.id} assignment={assignment} variant="graded" />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>
@@ -215,18 +230,20 @@ function AssignmentCard({
   variant,
 }: {
   assignment: Assignment;
-  variant: "overdue" | "pending" | "submitted";
+  variant: "overdue" | "pending" | "submitted" | "graded";
 }) {
   const badgeStyles = {
     overdue: "bg-red-100 text-red-700",
     pending: "bg-orange-100 text-orange-700",
     submitted: "bg-emerald-100 text-emerald-700",
+    graded: "bg-blue-100 text-blue-700",
   };
 
   const badgeLabel = {
     overdue: "Overdue",
     pending: "Pending",
     submitted: "Submitted",
+    graded: "Graded",
   };
 
   const daysUntilDue = Math.ceil(
