@@ -6,7 +6,7 @@ function getResend() {
   return new Resend(apiKey);
 }
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "Circuit Campus <noreply@circuitcampus.com>";
+const FROM = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
 async function sendMail(to: string, subject: string, html: string) {
   if (!process.env.RESEND_API_KEY) {
