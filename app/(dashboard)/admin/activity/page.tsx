@@ -56,15 +56,15 @@ export default function RecentActivityPage() {
     }
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <Link href="/admin" className="text-[#1d6d58] hover:underline mb-4 inline-block">
+    <div className="space-y-6">
+      <Link href="/admin" className="text-[#1d6d58] hover:underline inline-block text-sm">
         ← Back to Dashboard
       </Link>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-[#1d6d58] mb-8">Recent System Activity</h1>
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">Recent System Activity</h1>
 
         <div className="space-y-4">
           {activities.length === 0 ? (
@@ -95,3 +95,4 @@ export default function RecentActivityPage() {
     </div>
   );
 }
+

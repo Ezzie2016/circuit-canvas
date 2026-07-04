@@ -143,7 +143,7 @@ export default function AdminAnalyticsPage() {
               {selectedTeacher && (
                 <>
                   <h2 className="text-lg font-semibold text-slate-900">{selectedTeacher.name} — Overview</h2>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[
                       { label: "Courses", value: teacherAnalytics?.totalCourses },
                       { label: "Total Students", value: teacherAnalytics?.totalStudents },
@@ -220,7 +220,7 @@ export default function AdminAnalyticsPage() {
               {selectedStudent && (
                 <>
                   <h2 className="text-lg font-semibold text-slate-900">{selectedStudent.name} — Overview</h2>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[
                       { label: "Enrolled Courses", value: studentAnalytics?.enrolledCourses },
                       { label: "Assignments Submitted", value: studentAnalytics?.submittedCount },

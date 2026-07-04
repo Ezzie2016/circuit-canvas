@@ -207,7 +207,7 @@ export default function AttendanceManagementPage() {
       )}
 
       {/* Summary */}
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm text-slate-500">Total Students</p>
           <p className="mt-2 text-3xl font-bold text-slate-900">{sessionData.attendanceList.length}</p>

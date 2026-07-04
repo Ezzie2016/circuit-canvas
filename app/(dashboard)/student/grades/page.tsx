@@ -161,14 +161,14 @@ export default function StudentGradesPage() {
                     if (!cat) return null;
 
                     return (
-                      <div key={type} className="flex items-center gap-4">
-                        <div className="w-36 shrink-0">
+                      <div key={type} className="flex flex-wrap items-center gap-2 sm:gap-4">
+                        <div className="w-28 sm:w-36 shrink-0">
                           <p className={`text-sm font-semibold ${meta.color}`}>{meta.label}</p>
                           <p className="text-xs text-slate-400">out of {cat.max}</p>
                         </div>
 
                         {/* Progress bar */}
-                        <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="flex-1 min-w-[80px] h-2 rounded-full bg-slate-100 overflow-hidden">
                           {cat.score != null && (
                             <div
                               className="h-full rounded-full bg-[#1d6d58]"
@@ -177,7 +177,7 @@ export default function StudentGradesPage() {
                           )}
                         </div>
 
-                        <div className="w-28 text-right shrink-0">
+                        <div className="w-20 sm:w-28 text-right shrink-0">
                           {cat.score != null ? (
                             <span className="text-sm font-bold text-slate-800">
                               {cat.score}/{cat.max}
@@ -190,7 +190,7 @@ export default function StudentGradesPage() {
                         </div>
 
                         {cat.total > 0 && (
-                          <div className="w-24 text-right text-xs text-slate-400 shrink-0">
+                          <div className="w-20 sm:w-24 text-right text-xs text-slate-400 shrink-0">
                             {cat.graded}/{cat.total} graded
                             {cat.pending > 0 && (
                               <span className="text-amber-500"> · {cat.pending} pending</span>

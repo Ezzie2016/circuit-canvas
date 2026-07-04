@@ -73,7 +73,7 @@ export default function AdminReportsPage() {
       {/* ── School Overview ── */}
       <section>
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">School Overview</h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {[
             { label: "Total Users",       value: reports?.school.totalUsers },
             { label: "Active Users",      value: reports?.school.activeUsers },
@@ -93,7 +93,7 @@ export default function AdminReportsPage() {
       {/* ── Academic Performance ── */}
       <section>
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">Academic Performance</h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Total Assignments</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{val(reports?.academic.totalAssignments)}</p>
@@ -133,7 +133,7 @@ export default function AdminReportsPage() {
       {/* ── Month-on-Month ── */}
       <section>
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">This Month vs Last Month</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Enrollments */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-2">
