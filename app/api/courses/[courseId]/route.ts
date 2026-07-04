@@ -41,6 +41,7 @@ export async function GET(
     return NextResponse.json({
       id: course.id,
       title: course.title,
+      code: course.code ?? null,
       description: course.description,
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
@@ -173,6 +174,7 @@ export async function PATCH(
     const updateData: Record<string, unknown> = {};
 
     if (typeof body.title === "string") updateData.title = body.title;
+    if (typeof body.code === "string") updateData.code = body.code.trim().toUpperCase() || null;
     if (typeof body.description === "string") updateData.description = body.description;
     if (typeof body.meetingLink === "string") updateData.meetingLink = body.meetingLink;
     if (typeof body.thumbnail === "string") updateData.thumbnail = body.thumbnail;
@@ -196,6 +198,7 @@ export async function PATCH(
     return NextResponse.json({
       id: updated.id,
       title: updated.title,
+      code: updated.code ?? null,
       description: updated.description,
       instructor: updated.teacher.name,
       instructorEmail: updated.teacher.email,

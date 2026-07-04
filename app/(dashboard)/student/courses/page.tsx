@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 type Course = {
   id: string;
   title: string;
+  code?: string | null;
   instructor: string;
   students: number;
   status: string;
@@ -80,6 +81,9 @@ export default function StudentCoursesPage() {
               <div key={course.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
                   <div>
+                    {course.code && (
+                      <span className="inline-block mb-1 rounded-lg bg-[#e6f2ee] px-2 py-0.5 text-xs font-semibold text-[#1d6d58]">{course.code}</span>
+                    )}
                     <h2 className="text-xl font-semibold text-slate-900">{course.title}</h2>
                     <p className="mt-2 text-sm text-slate-600">Instructor: {course.instructor}</p>
                   </div>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 type Course = {
   id: string;
   title: string;
+  code?: string | null;
   instructor: string;
   students: number;
   status: string;
@@ -38,6 +39,9 @@ export default function TeacherCoursesPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {courses.map((course) => (
           <div key={course.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            {course.code && (
+              <span className="inline-block mb-2 rounded-lg bg-[#e6f2ee] px-2 py-0.5 text-xs font-semibold text-[#1d6d58]">{course.code}</span>
+            )}
             <h2 className="text-xl font-semibold text-slate-900">{course.title}</h2>
             <p className="mt-2 text-sm text-slate-600">{course.instructor}</p>
             <p className="mt-3 text-sm text-slate-500">{course.students} learners</p>

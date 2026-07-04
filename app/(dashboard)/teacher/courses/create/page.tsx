@@ -8,6 +8,7 @@ export default function TeacherCourseCreatePage() {
   const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
   const [instructor, setInstructor] = useState("");
   const [title, setTitle] = useState("");
+  const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [thumbnail, setThumbnail] = useState("");
@@ -42,7 +43,7 @@ export default function TeacherCourseCreatePage() {
     const response = await fetch("/api/courses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description, meetingLink, thumbnail }),
+      body: JSON.stringify({ title, code, description, meetingLink, thumbnail }),
     });
     const data = await response.json();
     setSubmitting(false);
@@ -72,6 +73,18 @@ export default function TeacherCourseCreatePage() {
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Course code
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="e.g. ENG101"
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            />
+          </label>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Instructor
             <input

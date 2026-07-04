@@ -48,6 +48,7 @@ export async function GET() {
     const formattedCourses = courses.map((course) => ({
       id: course.id,
       title: course.title,
+      code: course.code ?? null,
       description: course.description,
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
     const course = await prisma.course.create({
       data: {
         title: body.title || "New Course",
+        code: body.code ? String(body.code).trim().toUpperCase() : undefined,
         description: body.description || "",
         meetingLink: body.meetingLink,
         thumbnail: body.thumbnail,
@@ -111,6 +113,7 @@ export async function POST(request: Request) {
       {
         id: course.id,
         title: course.title,
+        code: course.code ?? null,
         description: course.description,
         instructor: course.teacher.name,
         teacherId: course.teacherId,

@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 type Course = {
   id: string;
   title: string;
+  code?: string | null;
   description?: string;
   instructor: string;
   students: number;
@@ -19,6 +20,7 @@ export default function TeacherCourseEditPage() {
   const courseId = params.courseId as string;
   const [course, setCourse] = useState<Course | null>(null);
   const [title, setTitle] = useState("");
+  const [code, setCode] = useState("");
   const [description, setDescription] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [thumbnail, setThumbnail] = useState("");
@@ -40,6 +42,7 @@ export default function TeacherCourseEditPage() {
       const found: Course = await response.json();
       setCourse(found);
       setTitle(found.title);
+      setCode(found.code ?? "");
       setDescription(found.description ?? "");
       setMeetingLink(found.meetingLink ?? "");
       setThumbnail(found.thumbnail ?? "");
@@ -75,6 +78,7 @@ export default function TeacherCourseEditPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title,
+        code,
         description,
         meetingLink,
         thumbnail,
@@ -89,6 +93,7 @@ export default function TeacherCourseEditPage() {
     const updated: Course = await response.json();
     setCourse(updated);
     setTitle(updated.title);
+    setCode(updated.code ?? "");
     setDescription(updated.description ?? "");
     setMeetingLink(updated.meetingLink ?? "");
     setThumbnail(updated.thumbnail ?? "");
@@ -112,6 +117,18 @@ export default function TeacherCourseEditPage() {
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Course code
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="e.g. ENG101"
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            />
+          </label>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Instructor
             <input

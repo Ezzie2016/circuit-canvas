@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 type Course = {
   id: string;
   title: string;
+  code?: string | null;
   description?: string;
   instructor: string;
   students: number;
@@ -70,6 +71,9 @@ export default function TeacherCourseDetailPage() {
         </div>
       )}
       <div>
+        {course.code && (
+          <span className="inline-block mb-2 rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#1d6d58]">{course.code}</span>
+        )}
         <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>
