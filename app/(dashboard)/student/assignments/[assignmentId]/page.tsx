@@ -14,8 +14,7 @@ type Assignment = {
 
 export default function StudentAssignmentDetailPage() {
   const params = useParams();
-  const rawAssignmentId = params.assignmentId;
-  const assignmentIdNum = Number(rawAssignmentId);
+  const assignmentId = String(params.assignmentId ?? "");
   const [assignment, setAssignment] = useState<Assignment | null>(null);
 
 
@@ -28,9 +27,7 @@ export default function StudentAssignmentDetailPage() {
         const response = await fetch(`/api/assignments`);
 
         const data: Assignment[] = await response.json();
-
-        // assignment ids are numbers in the DB, but the route param is a string.
-        setAssignment(data.find((item) => String(item.id) === String(assignmentIdNum)) ?? null);
+        setAssignment(data.find((item) => String(item.id) === assignmentId) ?? null);
 
 
       } catch {
@@ -41,7 +38,7 @@ export default function StudentAssignmentDetailPage() {
     }
 
     loadAssignment();
-  }, [assignmentIdNum]);
+  }, [assignmentId]);
 
   if (isLoading) {
     return (
@@ -66,7 +63,7 @@ export default function StudentAssignmentDetailPage() {
         </div>
 
         <StudentSubmissionWidget
-          assignmentId={String(assignmentIdNum)}
+          assignmentId={assignmentId}
           currentStatus={"PENDING"}
 
 
