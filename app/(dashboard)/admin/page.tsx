@@ -72,7 +72,10 @@ export default function AdminDashboard() {
 
       setUsers(Array.isArray(usersData) ? usersData : []);
       setAnalytics(analyticsData);
-      setActivities(Array.isArray(activityData) ? activityData : []);
+      const sortedActivities = Array.isArray(activityData)
+        ? [...activityData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        : [];
+      setActivities(sortedActivities);
       setRegistrationOpen(regData.open ?? true);
 
       const notifRes = await fetch("/api/notifications?role=ADMIN");
@@ -349,7 +352,10 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Recent System Activity</h2>
           {activities.length > 0 ? (
             <div className="space-y-3">
-              {activities.slice(0, 5).map((activity) => (
+              {[...activities]
+                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                .slice(0, 5)
+                .map((activity) => (
                 <div key={activity.id} className="flex items-start gap-4 p-3 bg-gray-50 rounded">
                   <div
                     className={`px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
