@@ -6,7 +6,7 @@ import { getRegistrationOpen } from "@/lib/registration";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name, role } = body;
+    const { email, password, name, role, matricNumber } = body;
 
     // Only students can register publicly.
     if (role !== "STUDENT") {
@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!email || !password || !name || !role) {
-
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await registerUser(email, password, name, role);
+    const user = await registerUser(email, password, name, role, matricNumber || undefined);
 
     // Notify admin of new registration (non-blocking)
     void createNotification(

@@ -201,13 +201,10 @@ export default function DashboardLayout({
           </div>
 
           <div className="rounded-3xl bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-700">Portal highlights</p>
-            <ul className="mt-3 space-y-2 text-sm text-slate-600">
-              <li>• Session-based auth with secure cookies</li>
-              <li>• Role-aware navigation</li>
-              <li>• Course, assignment, and live schedule views</li>
-              <li>• Notifications and attendance tracking</li>
-            </ul>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Circuit Campus</p>
+            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+              Nigerian secondary school LMS — JSS1 to SS3.
+            </p>
           </div>
         </aside>
 

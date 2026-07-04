@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loginUser, JWT_SECRET } from "@/lib/auth";
-import { sendLoginNotificationEmail } from "@/lib/emailService";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -39,11 +38,6 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-
-    // Send login notification email without blocking the response
-    void sendLoginNotificationEmail(email, user.name).catch((emailError) => {
-      console.error("Email sending failed:", emailError);
     });
 
     return NextResponse.json(

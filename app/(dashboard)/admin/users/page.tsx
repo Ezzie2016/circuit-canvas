@@ -8,6 +8,7 @@ type User = {
   email: string;
   role: string;
   status: string;
+  matricNumber?: string | null;
 };
 
 const ROLE_ORDER = ["ADMIN", "TEACHER", "STUDENT"] as const;
@@ -94,6 +95,7 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
                   <tr>
                     <th className="px-6 py-3">Name</th>
                     <th className="px-6 py-3">Email</th>
+                    {role === "STUDENT" && <th className="px-6 py-3">Matric No.</th>}
                     <th className="px-6 py-3">Status</th>
                   </tr>
                 </thead>
@@ -102,6 +104,11 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
                     <tr key={user.id} className="hover:bg-slate-50">
                       <td className="px-6 py-3.5 font-medium">{user.name}</td>
                       <td className="px-6 py-3.5 text-slate-500">{user.email}</td>
+                      {role === "STUDENT" && (
+                        <td className="px-6 py-3.5 text-slate-500 font-mono text-xs">
+                          {user.matricNumber ?? <span className="text-slate-300">—</span>}
+                        </td>
+                      )}
                       <td className="px-6 py-3.5">
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[user.status] ?? "bg-slate-100 text-slate-600"}`}>
                           {user.status}
@@ -183,6 +190,14 @@ export default function AdminUsersPage() {
   const [inviteResult, setInviteResult] = useState<{ url: string; email: string } | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
+  const [showStudentForm, setShowStudentForm] = useState(false);
+  const [studentName, setStudentName] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
+  const [studentMatric, setStudentMatric] = useState("");
+  const [addingStudent, setAddingStudent] = useState(false);
+  const [studentResult, setStudentResult] = useState<{ url: string; email: string } | null>(null);
+  const [studentError, setStudentError] = useState<string | null>(null);
+
   useEffect(() => {
     async function loadUsers() {
       try {
@@ -227,19 +242,52 @@ export default function AdminUsersPage() {
     return acc;
   }, { ADMIN: [], TEACHER: [], STUDENT: [] });
 
+  async function handleAddStudent(e: React.FormEvent) {
+    e.preventDefault();
+    setAddingStudent(true);
+    setStudentError(null);
+    setStudentResult(null);
+    try {
+      const res = await fetch("/api/admin/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: studentName, email: studentEmail, matricNumber: studentMatric || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to register student");
+      setStudentResult({ url: data.inviteUrl, email: data.email });
+      setStudentName(""); setStudentEmail(""); setStudentMatric("");
+      const usersRes = await fetch("/api/users");
+      const usersData = await usersRes.json();
+      setUsers(Array.isArray(usersData) ? usersData : []);
+    } catch (err: unknown) {
+      setStudentError(err instanceof Error ? err.message : "Failed to register student");
+    } finally {
+      setAddingStudent(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold text-slate-900">Manage Users</h1>
-          <p className="mt-1 text-slate-600">View all platform users and invite teachers.</p>
+          <p className="mt-1 text-slate-600">View all users, invite teachers, and register students.</p>
         </div>
-        <button
-          onClick={() => { setShowInviteForm(!showInviteForm); setInviteResult(null); setInviteError(null); }}
-          className="rounded-xl bg-[#1d6d58] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40]"
-        >
-          {showInviteForm ? "Cancel" : "+ Invite Teacher"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setShowStudentForm(!showStudentForm); setShowInviteForm(false); setStudentResult(null); setStudentError(null); }}
+            className="rounded-xl border border-[#1d6d58] px-4 py-2.5 text-sm font-semibold text-[#1d6d58] hover:bg-emerald-50"
+          >
+            {showStudentForm ? "Cancel" : "+ Register Student"}
+          </button>
+          <button
+            onClick={() => { setShowInviteForm(!showInviteForm); setShowStudentForm(false); setInviteResult(null); setInviteError(null); }}
+            className="rounded-xl bg-[#1d6d58] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40]"
+          >
+            {showInviteForm ? "Cancel" : "+ Invite Teacher"}
+          </button>
+        </div>
       </div>
 
       {/* Invite Form */}
@@ -296,6 +344,83 @@ export default function AdminUsersPage() {
                 />
                 <button
                   onClick={() => navigator.clipboard.writeText(inviteResult.url)}
+                  className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700"
+                >
+                  Copy
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-emerald-600">This link expires in 24 hours.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Register Student Form */}
+      {showStudentForm && (
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900">Register a Student</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            An invite link will be generated. Share it with the student so they can set their password.
+          </p>
+          <form onSubmit={handleAddStudent} className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Full Name</label>
+              <input
+                type="text"
+                required
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="e.g. Amina Yusuf"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Email Address</label>
+              <input
+                type="email"
+                required
+                value={studentEmail}
+                onChange={(e) => setStudentEmail(e.target.value)}
+                placeholder="student@example.com"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                Matric Number <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={studentMatric}
+                onChange={(e) => setStudentMatric(e.target.value)}
+                placeholder="e.g. JSS1/2024/001"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              />
+            </div>
+            {studentError && <p className="sm:col-span-2 text-sm text-red-600">{studentError}</p>}
+            <div className="sm:col-span-2">
+              <button
+                type="submit"
+                disabled={addingStudent}
+                className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              >
+                {addingStudent ? "Registering…" : "Generate Invite Link"}
+              </button>
+            </div>
+          </form>
+
+          {studentResult && (
+            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-sm font-semibold text-emerald-800">Student registered: {studentResult.email}</p>
+              <p className="mt-1 text-sm text-emerald-700">Share this link so they can set their password:</p>
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  readOnly
+                  value={studentResult.url}
+                  className="flex-1 rounded-xl border border-emerald-300 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none"
+                />
+                <button
+                  onClick={() => navigator.clipboard.writeText(studentResult.url)}
                   className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700"
                 >
                   Copy

@@ -52,6 +52,7 @@ export async function registerUser(
   password: string,
   name: string,
   role: "STUDENT" | "TEACHER" | "ADMIN",
+  matricNumber?: string,
 ): Promise<User> {
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -68,6 +69,7 @@ export async function registerUser(
         name,
         role,
         status: "ACTIVE",
+        ...(matricNumber ? { matricNumber } : {}),
       },
     });
 
@@ -108,13 +110,13 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export type SafeUser = Pick<User, "id" | "name" | "email" | "role" | "status">;
+export type SafeUser = Pick<User, "id" | "name" | "email" | "role" | "status" | "matricNumber">;
 
 export async function getUsers(role?: UserRole): Promise<SafeUser[]> {
   return prisma.user.findMany({
     where: role ? { role } : undefined,
     orderBy: { createdAt: "asc" },
-    select: { id: true, name: true, email: true, role: true, status: true },
+    select: { id: true, name: true, email: true, role: true, status: true, matricNumber: true },
   });
 }
 
