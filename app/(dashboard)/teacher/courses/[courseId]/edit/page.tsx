@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+const CLASS_LEVELS = ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"];
+
+type Department = { id: string; name: string };
+
 type Course = {
   id: string;
   title: string;
   code?: string | null;
+  classLevel?: string | null;
+  departmentId?: string | null;
+  departmentName?: string | null;
   description?: string;
   instructor: string;
   students: number;
@@ -19,8 +26,11 @@ export default function TeacherCourseEditPage() {
   const params = useParams();
   const courseId = params.courseId as string;
   const [course, setCourse] = useState<Course | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
+  const [classLevel, setClassLevel] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
   const [description, setDescription] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [thumbnail, setThumbnail] = useState("");
@@ -31,18 +41,26 @@ export default function TeacherCourseEditPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function loadCourse() {
+    async function loadData() {
       setLoading(true);
-      const response = await fetch(`/api/courses/${courseId}`);
-      if (!response.ok) {
+      const [courseRes, deptRes] = await Promise.all([
+        fetch(`/api/courses/${courseId}`),
+        fetch("/api/departments"),
+      ]);
+      const deptJson = await deptRes.json();
+      setDepartments(Array.isArray(deptJson) ? deptJson : []);
+
+      if (!courseRes.ok) {
         setCourse(null);
         setLoading(false);
         return;
       }
-      const found: Course = await response.json();
+      const found: Course = await courseRes.json();
       setCourse(found);
       setTitle(found.title);
       setCode(found.code ?? "");
+      setClassLevel(found.classLevel ?? "");
+      setDepartmentId(found.departmentId ?? "");
       setDescription(found.description ?? "");
       setMeetingLink(found.meetingLink ?? "");
       setThumbnail(found.thumbnail ?? "");
@@ -50,7 +68,7 @@ export default function TeacherCourseEditPage() {
       setLoading(false);
     }
     if (courseId) {
-      loadCourse();
+      loadData();
     }
   }, [courseId]);
 
@@ -79,6 +97,8 @@ export default function TeacherCourseEditPage() {
       body: JSON.stringify({
         title,
         code,
+        classLevel: classLevel || null,
+        departmentId: departmentId || null,
         description,
         meetingLink,
         thumbnail,
@@ -94,6 +114,8 @@ export default function TeacherCourseEditPage() {
     setCourse(updated);
     setTitle(updated.title);
     setCode(updated.code ?? "");
+    setClassLevel(updated.classLevel ?? "");
+    setDepartmentId(updated.departmentId ?? "");
     setDescription(updated.description ?? "");
     setMeetingLink(updated.meetingLink ?? "");
     setThumbnail(updated.thumbnail ?? "");
@@ -108,6 +130,7 @@ export default function TeacherCourseEditPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        {/* Row 1: Title + Code */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Course title
@@ -122,12 +145,50 @@ export default function TeacherCourseEditPage() {
             <input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="e.g. ENG101"
+              placeholder="e.g. MAT101"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
         </div>
 
+        {/* Row 2: Class + Department */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <label className="space-y-2 text-sm text-slate-700">
+            Class
+            <select
+              value={classLevel}
+              onChange={(e) => setClassLevel(e.target.value)}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            >
+              <option value="">— Select class —</option>
+              <optgroup label="Junior Secondary">
+                {CLASS_LEVELS.filter((l) => l.startsWith("JSS")).map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Senior Secondary">
+                {CLASS_LEVELS.filter((l) => l.startsWith("SS")).map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </optgroup>
+            </select>
+          </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Department / Arm
+            <select
+              value={departmentId}
+              onChange={(e) => setDepartmentId(e.target.value)}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            >
+              <option value="">— Select department —</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {/* Row 3: Instructor (read-only) */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Instructor

@@ -7,6 +7,8 @@ type Course = {
   id: string;
   title: string;
   code?: string | null;
+  classLevel?: string | null;
+  departmentName?: string | null;
   description?: string;
   instructor: string;
   students: number;
@@ -71,9 +73,17 @@ export default function TeacherCourseDetailPage() {
         </div>
       )}
       <div>
-        {course.code && (
-          <span className="inline-block mb-2 rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#1d6d58]">{course.code}</span>
-        )}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {course.classLevel && (
+            <span className="rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#1d6d58]">{course.classLevel}</span>
+          )}
+          {course.departmentName && (
+            <span className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">{course.departmentName}</span>
+          )}
+          {course.code && (
+            <span className="rounded-lg bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">{course.code}</span>
+          )}
+        </div>
         <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>

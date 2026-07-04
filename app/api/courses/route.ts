@@ -3,6 +3,14 @@ import { prisma } from "@/lib/auth";
 import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { getRegistrationOpen } from "@/lib/registration";
+import { ClassLevel } from "@prisma/client";
+
+const CLASS_LEVELS = ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"];
+
+function validClassLevel(v: unknown): ClassLevel | undefined {
+  if (typeof v === "string" && CLASS_LEVELS.includes(v)) return v as ClassLevel;
+  return undefined;
+}
 
 export async function GET() {
   try {
@@ -26,6 +34,7 @@ export async function GET() {
           enrollments: { include: { student: { select: { id: true, name: true, email: true } } } },
           assignments: true,
           teacher: { select: { id: true, name: true, email: true } },
+          department: { select: { id: true, name: true } },
         },
       });
     } else if (decoded.role === "STUDENT") {
@@ -34,6 +43,7 @@ export async function GET() {
           enrollments: { include: { student: { select: { id: true, name: true, email: true } } } },
           teacher: { select: { id: true, name: true, email: true } },
           assignments: true,
+          department: { select: { id: true, name: true } },
         },
       });
     } else {
@@ -41,6 +51,7 @@ export async function GET() {
         include: {
           enrollments: true,
           teacher: { select: { id: true, name: true, email: true } },
+          department: { select: { id: true, name: true } },
         },
       });
     }
@@ -49,6 +60,9 @@ export async function GET() {
       id: course.id,
       title: course.title,
       code: course.code ?? null,
+      classLevel: course.classLevel ?? null,
+      departmentId: course.departmentId ?? null,
+      departmentName: course.department?.name ?? null,
       description: course.description,
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
@@ -88,7 +102,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Only teachers can create courses" }, { status: 403 });
     }
 
-    // prevent creating new courses if registration globally closed
     const registrationOpen = await getRegistrationOpen();
     if (!registrationOpen) {
       return NextResponse.json({ error: "Course registration is currently closed" }, { status: 403 });
@@ -102,10 +115,13 @@ export async function POST(request: Request) {
         description: body.description || "",
         meetingLink: body.meetingLink,
         thumbnail: body.thumbnail,
+        classLevel: validClassLevel(body.classLevel),
+        departmentId: body.departmentId || undefined,
         teacherId: decoded.id,
       },
       include: {
         teacher: { select: { id: true, name: true, email: true } },
+        department: { select: { id: true, name: true } },
       },
     });
 
@@ -114,6 +130,9 @@ export async function POST(request: Request) {
         id: course.id,
         title: course.title,
         code: course.code ?? null,
+        classLevel: course.classLevel ?? null,
+        departmentId: course.departmentId ?? null,
+        departmentName: course.department?.name ?? null,
         description: course.description,
         instructor: course.teacher.name,
         teacherId: course.teacherId,
@@ -127,4 +146,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create course" }, { status: 500 });
   }
 }
-

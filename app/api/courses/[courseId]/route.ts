@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma, verifyJwt, createNotification } from "@/lib/auth";
 import { getRegistrationOpen } from "@/lib/registration";
+import { ClassLevel } from "@prisma/client";
+
+const CLASS_LEVELS = ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"];
+function validClassLevel(v: unknown): ClassLevel | undefined {
+  if (typeof v === "string" && CLASS_LEVELS.includes(v)) return v as ClassLevel;
+  return undefined;
+}
 
 export async function GET(
   request: Request,
@@ -25,6 +32,7 @@ export async function GET(
       include: {
         teacher: { select: { id: true, name: true, email: true } },
         enrollments: { include: { student: { select: { id: true } } } },
+        department: { select: { id: true, name: true } },
       },
     });
 
@@ -42,6 +50,9 @@ export async function GET(
       id: course.id,
       title: course.title,
       code: course.code ?? null,
+      classLevel: course.classLevel ?? null,
+      departmentId: course.departmentId ?? null,
+      departmentName: course.department?.name ?? null,
       description: course.description,
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
@@ -178,6 +189,8 @@ export async function PATCH(
     if (typeof body.description === "string") updateData.description = body.description;
     if (typeof body.meetingLink === "string") updateData.meetingLink = body.meetingLink;
     if (typeof body.thumbnail === "string") updateData.thumbnail = body.thumbnail;
+    if ("classLevel" in body) updateData.classLevel = validClassLevel(body.classLevel) ?? null;
+    if ("departmentId" in body) updateData.departmentId = body.departmentId || null;
     if (decoded.role === "ADMIN" && typeof body.teacherId === "string") {
       updateData.teacherId = body.teacherId;
     }
@@ -192,6 +205,7 @@ export async function PATCH(
       include: {
         teacher: { select: { id: true, name: true, email: true } },
         enrollments: { include: { student: { select: { id: true } } } },
+        department: { select: { id: true, name: true } },
       },
     });
 
@@ -199,6 +213,9 @@ export async function PATCH(
       id: updated.id,
       title: updated.title,
       code: updated.code ?? null,
+      classLevel: updated.classLevel ?? null,
+      departmentId: updated.departmentId ?? null,
+      departmentName: updated.department?.name ?? null,
       description: updated.description,
       instructor: updated.teacher.name,
       instructorEmail: updated.teacher.email,

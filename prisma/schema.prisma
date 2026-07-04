@@ -25,6 +25,13 @@ model User {
   submissions           Submission[]
 }
 
+model Department {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  courses   Course[]
+}
+
 model Course {
   id           String             @id @default(cuid())
   title        String
@@ -32,12 +39,15 @@ model Course {
   description  String
   meetingLink  String?
   thumbnail    String?
+  classLevel   ClassLevel?
+  departmentId String?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   teacherId    String
   assignments  Assignment[]
   attendance   AttendanceRecord[]
   teacher      User               @relation("TeacherCourses", fields: [teacherId], references: [id])
+  department   Department?        @relation(fields: [departmentId], references: [id])
   messages     CourseMessage[]
   resources    CourseResource[]
   enrollments  Enrollment[]
@@ -200,6 +210,15 @@ enum AssignmentType {
   QUIZ
   MID_SEMESTER
   EXAM
+}
+
+enum ClassLevel {
+  JSS1
+  JSS2
+  JSS3
+  SS1
+  SS2
+  SS3
 }
 
 model Setting {

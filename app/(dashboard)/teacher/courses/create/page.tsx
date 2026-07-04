@@ -3,12 +3,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const CLASS_LEVELS = ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"];
+
+type Department = { id: string; name: string };
+
 export default function TeacherCourseCreatePage() {
   const router = useRouter();
   const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
   const [instructor, setInstructor] = useState("");
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
+  const [classLevel, setClassLevel] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
   const [description, setDescription] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [thumbnail, setThumbnail] = useState("");
@@ -18,14 +25,17 @@ export default function TeacherCourseCreatePage() {
   useEffect(() => {
     (async () => {
       try {
-        const [regRes, sessionRes] = await Promise.all([
+        const [regRes, sessionRes, deptRes] = await Promise.all([
           fetch("/api/admin/registration"),
           fetch("/api/auth/session"),
+          fetch("/api/departments"),
         ]);
         const regJson = await regRes.json();
         const sessionJson = await sessionRes.json();
+        const deptJson = await deptRes.json();
         setRegistrationOpen(regJson.open ?? true);
         setInstructor(sessionJson.user?.name || "");
+        setDepartments(Array.isArray(deptJson) ? deptJson : []);
       } catch {
         setRegistrationOpen(true);
       }
@@ -43,7 +53,15 @@ export default function TeacherCourseCreatePage() {
     const response = await fetch("/api/courses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, code, description, meetingLink, thumbnail }),
+      body: JSON.stringify({
+        title,
+        code,
+        classLevel: classLevel || undefined,
+        departmentId: departmentId || undefined,
+        description,
+        meetingLink,
+        thumbnail,
+      }),
     });
     const data = await response.json();
     setSubmitting(false);
@@ -62,6 +80,7 @@ export default function TeacherCourseCreatePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        {/* Row 1: Title + Code */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Course title
@@ -69,7 +88,7 @@ export default function TeacherCourseCreatePage() {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Introduction to English Language"
+              placeholder="e.g. Introduction to Mathematics"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
@@ -78,12 +97,50 @@ export default function TeacherCourseCreatePage() {
             <input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="e.g. ENG101"
+              placeholder="e.g. MAT101"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
         </div>
 
+        {/* Row 2: Class + Department */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <label className="space-y-2 text-sm text-slate-700">
+            Class
+            <select
+              value={classLevel}
+              onChange={(e) => setClassLevel(e.target.value)}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            >
+              <option value="">— Select class —</option>
+              <optgroup label="Junior Secondary">
+                {CLASS_LEVELS.filter((l) => l.startsWith("JSS")).map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Senior Secondary">
+                {CLASS_LEVELS.filter((l) => l.startsWith("SS")).map((l) => (
+                  <option key={l} value={l}>{l}</option>
+                ))}
+              </optgroup>
+            </select>
+          </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Department / Arm
+            <select
+              value={departmentId}
+              onChange={(e) => setDepartmentId(e.target.value)}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            >
+              <option value="">— Select department —</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {/* Row 3: Instructor (read-only) */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Instructor

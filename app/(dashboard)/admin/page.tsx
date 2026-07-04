@@ -39,6 +39,9 @@ export default function AdminDashboard() {
   const [notifications, setNotifications] = useState<{id:string;title:string;message:string;createdAt:string}[]>([]);
   const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
   const [toggling, setToggling] = useState(false);
+  const [departments, setDepartments] = useState<{id:string;name:string}[]>([]);
+  const [newDeptName, setNewDeptName] = useState("");
+  const [deptMsg, setDeptMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadSession() {
@@ -75,6 +78,10 @@ export default function AdminDashboard() {
       const notifRes = await fetch("/api/notifications?role=ADMIN");
       const notifData = await notifRes.json();
       setNotifications(Array.isArray(notifData) ? notifData.slice(0, 10) : []);
+
+      const deptRes = await fetch("/api/departments");
+      const deptData = await deptRes.json();
+      setDepartments(Array.isArray(deptData) ? deptData : []);
 
       setLoading(false);
     }
@@ -238,6 +245,82 @@ export default function AdminDashboard() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Departments */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
+          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Departments / Arms</h2>
+          <p className="text-sm text-slate-500 mb-4">Manage the arms available for grouping courses (e.g. Science, Arts, Commercial, General).</p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {departments.map((d) => (
+              <div key={d.id} className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700">
+                {d.name}
+                <button
+                  onClick={async () => {
+                    if (!window.confirm(`Delete "${d.name}"? Courses in this department will become unassigned.`)) return;
+                    const res = await fetch(`/api/departments/${d.id}`, { method: "DELETE" });
+                    if (res.ok) {
+                      setDepartments((prev) => prev.filter((x) => x.id !== d.id));
+                    }
+                  }}
+                  className="ml-1 text-slate-400 hover:text-red-600 font-bold leading-none"
+                  title={`Remove ${d.name}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {departments.length === 0 && <p className="text-sm text-slate-400">No departments yet.</p>}
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={newDeptName}
+              onChange={(e) => setNewDeptName(e.target.value)}
+              placeholder="New department name"
+              className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm"
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (!newDeptName.trim()) return;
+                  const res = await fetch("/api/departments", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: newDeptName.trim() }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) {
+                    setDepartments((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+                    setNewDeptName("");
+                    setDeptMsg(null);
+                  } else {
+                    setDeptMsg(data.error || "Failed to add department");
+                  }
+                }
+              }}
+            />
+            <button
+              onClick={async () => {
+                if (!newDeptName.trim()) return;
+                const res = await fetch("/api/departments", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name: newDeptName.trim() }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  setDepartments((prev) => [...prev, data].sort((a, b) => a.name.localeCompare(b.name)));
+                  setNewDeptName("");
+                  setDeptMsg(null);
+                } else {
+                  setDeptMsg(data.error || "Failed to add department");
+                }
+              }}
+              className="rounded-xl bg-[#1d6d58] px-4 py-2 text-sm font-semibold text-white hover:bg-[#124e40]"
+            >
+              Add
+            </button>
+          </div>
+          {deptMsg && <p className="mt-2 text-sm text-red-600">{deptMsg}</p>}
         </div>
 
         {/* Notifications */}
