@@ -148,7 +148,7 @@ export default function AdminAnalyticsPage() {
                       { label: "Courses", value: teacherAnalytics?.totalCourses },
                       { label: "Total Students", value: teacherAnalytics?.totalStudents },
                       { label: "Avg Completion", value: teacherAnalytics?.averageCompletion, suffix: "%" },
-                      { label: "Pending Assignments", value: teacherAnalytics?.pendingAssignments },
+                      { label: "Awaiting Grading", value: teacherAnalytics?.submittedCount },
                       { label: "Total Assignments", value: teacherAnalytics?.totalAssignments },
                       { label: "Submissions Graded", value: teacherAnalytics?.reviewedCount },
                     ].map((card) => (
