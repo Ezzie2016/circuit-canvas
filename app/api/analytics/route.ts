@@ -17,11 +17,85 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // Check if admin is requesting teacher-specific analytics
     const url = new URL(request.url);
     const teacherId = url.searchParams.get("teacherId");
+    const studentId = url.searchParams.get("studentId");
 
-    if (decoded.role === "ADMIN" && teacherId) {
+    if (decoded.role === "ADMIN" && studentId) {
+      // Admin viewing specific student's analytics
+      const [enrollments, submissions, attendanceRecords] = await Promise.all([
+        prisma.enrollment.findMany({
+          where: { studentId },
+          include: {
+            course: {
+              include: {
+                teacher: { select: { name: true } },
+                assignments: {
+                  include: { submissions: { where: { studentId } } },
+                },
+                attendance: { where: { studentId } },
+              },
+            },
+          },
+        }),
+        prisma.submission.findMany({
+          where: { studentId },
+          include: { assignment: { select: { totalMarks: true, title: true, dueDate: true } } },
+        }),
+        prisma.attendanceRecord.findMany({ where: { studentId } }),
+      ]);
+
+      const totalAssignments = enrollments.reduce(
+        (sum, e) => sum + e.course.assignments.length, 0
+      );
+      const submittedCount = submissions.length;
+      const gradedSubs = submissions.filter(
+        (s) => s.status === "REVIEWED" && s.earnedMarks != null && s.assignment.totalMarks > 0
+      );
+      const avgGrade = gradedSubs.length > 0
+        ? Math.round(gradedSubs.reduce((sum, s) => sum + (s.earnedMarks! / s.assignment.totalMarks) * 100, 0) / gradedSubs.length)
+        : 0;
+      const presentCount = attendanceRecords.filter((r) => r.status === "PRESENT").length;
+      const attendanceRate = attendanceRecords.length > 0
+        ? Math.round((presentCount / attendanceRecords.length) * 100)
+        : 0;
+
+      const courseStats = enrollments.map((e) => {
+        const course = e.course;
+        const courseSubs = submissions.filter((s) =>
+          course.assignments.some((a) => a.id === s.assignmentId)
+        );
+        const courseGraded = courseSubs.filter(
+          (s) => s.status === "REVIEWED" && s.earnedMarks != null && s.assignment.totalMarks > 0
+        );
+        const courseGrade = courseGraded.length > 0
+          ? Math.round(courseGraded.reduce((sum, s) => sum + (s.earnedMarks! / s.assignment.totalMarks) * 100, 0) / courseGraded.length)
+          : null;
+        const courseAttendance = course.attendance;
+        const courseAttRate = courseAttendance.length > 0
+          ? Math.round((courseAttendance.filter((a) => a.status === "PRESENT").length / courseAttendance.length) * 100)
+          : 0;
+        return {
+          courseId: course.id,
+          courseName: course.title,
+          teacherName: course.teacher.name,
+          totalAssignments: course.assignments.length,
+          submitted: courseSubs.length,
+          avgGrade: courseGrade,
+          attendanceRate: courseAttRate,
+        };
+      });
+
+      return NextResponse.json({
+        enrolledCourses: enrollments.length,
+        totalAssignments,
+        submittedCount,
+        pendingAssignments: totalAssignments - submittedCount,
+        avgGrade,
+        attendanceRate,
+        courseStats,
+      });
+    } else if (decoded.role === "ADMIN" && teacherId) {
       // Admin viewing specific teacher's analytics
       const courses = await prisma.course.findMany({
         where: { teacherId },
