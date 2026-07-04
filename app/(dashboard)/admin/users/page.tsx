@@ -10,11 +10,23 @@ type User = {
   status: string;
 };
 
+const ROLE_ORDER = ["ADMIN", "TEACHER", "STUDENT"] as const;
+
+const ROLE_META: Record<string, { label: string; dot: string; badge: string }> = {
+  ADMIN:   { label: "Admins",   dot: "bg-purple-500", badge: "bg-purple-100 text-purple-700" },
+  TEACHER: { label: "Teachers", dot: "bg-blue-500",   badge: "bg-blue-100 text-blue-700" },
+  STUDENT: { label: "Students", dot: "bg-green-500",  badge: "bg-green-100 text-green-700" },
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  ACTIVE:   "bg-emerald-100 text-emerald-700",
+  INACTIVE: "bg-amber-100 text-amber-700",
+};
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
-  // Invite form state
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [inviteName, setInviteName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
@@ -51,7 +63,6 @@ export default function AdminUsersPage() {
       setInviteResult({ url: data.inviteUrl, email: data.email });
       setInviteName("");
       setInviteEmail("");
-      // Reload users list
       const usersRes = await fetch("/api/users");
       const usersData = await usersRes.json();
       setUsers(Array.isArray(usersData) ? usersData : []);
@@ -62,16 +73,10 @@ export default function AdminUsersPage() {
     }
   }
 
-  const roleColors: Record<string, string> = {
-    ADMIN: "bg-purple-100 text-purple-700",
-    TEACHER: "bg-blue-100 text-blue-700",
-    STUDENT: "bg-green-100 text-green-700",
-  };
-
-  const statusColors: Record<string, string> = {
-    ACTIVE: "bg-emerald-100 text-emerald-700",
-    INACTIVE: "bg-amber-100 text-amber-700",
-  };
+  const grouped = ROLE_ORDER.reduce<Record<string, User[]>>((acc, role) => {
+    acc[role] = users.filter((u) => u.role === role);
+    return acc;
+  }, {} as Record<string, User[]>);
 
   return (
     <div className="space-y-6">
@@ -132,15 +137,10 @@ export default function AdminUsersPage() {
             </div>
           </form>
 
-          {/* Invite Result */}
           {inviteResult && (
             <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-sm font-semibold text-emerald-800">
-                Invite created for {inviteResult.email}
-              </p>
-              <p className="mt-1 text-sm text-emerald-700">
-                Share this link with the teacher to let them set their password:
-              </p>
+              <p className="text-sm font-semibold text-emerald-800">Invite created for {inviteResult.email}</p>
+              <p className="mt-1 text-sm text-emerald-700">Share this link with the teacher to let them set their password:</p>
               <div className="mt-2 flex items-center gap-2">
                 <input
                   readOnly
@@ -160,49 +160,60 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* Users Table */}
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50 text-left text-sm text-slate-500">
-            <tr>
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4">Role</th>
-              <th className="px-6 py-4">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 bg-white text-sm text-slate-700">
-            {loadingUsers ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-slate-400">Loading users…</td>
-              </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-slate-400">No users found.</td>
-              </tr>
-            ) : (
-              users.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-medium">{user.name}</td>
-                  <td className="px-6 py-4 text-slate-500">{user.email}</td>
-                  <td className="px-6 py-4">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${roleColors[user.role] ?? "bg-slate-100 text-slate-600"}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusColors[user.status] ?? "bg-slate-100 text-slate-600"}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Users grouped by role */}
+      {loadingUsers ? (
+        <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-400 shadow-sm">
+          Loading users…
         </div>
-      </div>
+      ) : (
+        <div className="space-y-8">
+          {ROLE_ORDER.map((role) => {
+            const meta = ROLE_META[role];
+            const group = grouped[role] ?? [];
+            return (
+              <section key={role}>
+                {/* Section header */}
+                <div className="mb-3 flex items-center gap-3">
+                  <span className={`h-2.5 w-2.5 rounded-full ${meta.dot}`} />
+                  <h2 className="text-base font-semibold text-slate-700">{meta.label}</h2>
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                    {group.length}
+                  </span>
+                </div>
+
+                {group.length === 0 ? (
+                  <p className="pl-5 text-sm text-slate-400">No {meta.label.toLowerCase()} yet.</p>
+                ) : (
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <table className="min-w-full divide-y divide-slate-100 text-sm">
+                      <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        <tr>
+                          <th className="px-6 py-3">Name</th>
+                          <th className="px-6 py-3">Email</th>
+                          <th className="px-6 py-3">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                        {group.map((user) => (
+                          <tr key={user.id} className="hover:bg-slate-50">
+                            <td className="px-6 py-3.5 font-medium">{user.name}</td>
+                            <td className="px-6 py-3.5 text-slate-500">{user.email}</td>
+                            <td className="px-6 py-3.5">
+                              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_COLORS[user.status] ?? "bg-slate-100 text-slate-600"}`}>
+                                {user.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
