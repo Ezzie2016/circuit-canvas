@@ -19,6 +19,7 @@ const navLinks: Record<string, { href: string; label: string }[]> = {
     { href: "/student/grades", label: "Grades" },
     { href: "/student/attendance-history", label: "Attendance" },
     { href: "/student/progress", label: "Progress" },
+    { href: "/student/messages", label: "Messages" },
     { href: "/profile", label: "My Profile" },
   ],
   TEACHER: [
@@ -28,6 +29,7 @@ const navLinks: Record<string, { href: string; label: string }[]> = {
     { href: "/teacher/live", label: "Live Classes" },
     { href: "/teacher/attendance", label: "Attendance" },
     { href: "/teacher/students", label: "Students" },
+    { href: "/teacher/messages", label: "Messages" },
     { href: "/profile", label: "My Profile" },
   ],
   ADMIN: [

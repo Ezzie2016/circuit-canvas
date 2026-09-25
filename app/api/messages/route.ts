@@ -66,11 +66,37 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const text = typeof body.text === "string" ? body.text.trim() : "";
+    const courseId = typeof body.courseId === "string" ? body.courseId : "";
+
+    if (!text || !courseId) {
+      return NextResponse.json({ error: "Missing courseId or text" }, { status: 400 });
+    }
+
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: {
+        teacherId: true,
+        enrollments: { where: { studentId: decoded.id }, select: { id: true } },
+      },
+    });
+
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    const isTeacherOfCourse = decoded.role === "TEACHER" && course.teacherId === decoded.id;
+    const isEnrolledStudent = decoded.role === "STUDENT" && course.enrollments.length > 0;
+
+    if (!isTeacherOfCourse && !isEnrolledStudent) {
+      return NextResponse.json({ error: "You do not have access to this course" }, { status: 403 });
+    }
+
     const message = await prisma.courseMessage.create({
       data: {
-        body: body.text || "",
+        body: text,
         senderId: decoded.id,
-        courseId: body.courseId,
+        courseId,
       },
       include: {
         sender: { select: { id: true, name: true, email: true } },
@@ -82,6 +108,8 @@ export async function POST(request: Request) {
       {
         id: message.id,
         sender: message.sender.name,
+        senderEmail: message.sender.email,
+        courseId: message.course.id,
         courseName: message.course.title,
         text: message.body,
         timestamp: message.createdAt.toISOString(),
