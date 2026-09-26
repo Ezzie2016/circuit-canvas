@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type Assignment = {
   id: string | number;
@@ -128,54 +129,40 @@ function StudentSubmissionWidget({ assignmentId, currentStatus }: { assignmentId
   const [feedback, setFeedback] = useState<string | null>(null);
 
 
-  async function getSessionUserId() {
-    const res = await fetch("/api/auth/session");
-    const data = await res.json();
-    return data.user?.id;
-  }
+  // GET /api/submissions only returns the logged-in student's own
+  // submissions, so no separate session lookup is needed.
+  const loadSubmission = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/submissions?assignmentId=${assignmentId}`);
+      const data = (await res.json()) as LocalSubmission[] | null;
+      const mySubmission = Array.isArray(data) ? data[0] : undefined;
+      if (!mySubmission) return;
+
+      setStatus(String(mySubmission.status ?? ""));
+      setGrade(mySubmission.grade ?? null);
+      setFeedback(mySubmission.feedback ?? null);
+
+      setEarnedMarks(typeof mySubmission.earnedMarks === "number" ? mySubmission.earnedMarks : null);
+      setTotalMarks(typeof mySubmission.totalMarks === "number" ? mySubmission.totalMarks : null);
+
+      setMessage(
+        mySubmission.grade ? `Graded: ${mySubmission.grade}` : "Submitted, awaiting grading"
+      );
+
+      setExistingFileUrl(mySubmission.fileUrl || null);
+      setExistingFileName(mySubmission.fileName || null);
+    } catch {
+      // ignore load errors; submission form should still work
+    }
+  }, [assignmentId]);
 
   useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | null = null;
-    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadSubmission();
+  }, [loadSubmission]);
 
-    async function load() {
-      try {
-        const userId = await getSessionUserId();
-        const res = await fetch(`/api/submissions?assignmentId=${assignmentId}`);
-        const data = (await res.json()) as LocalSubmission[] | null;
-        const mySubmission = (data || []).find((s) => s.studentId === userId) as LocalSubmission | undefined;
-
-        if (!mySubmission || cancelled) return;
-
-        setStatus(String(mySubmission.status ?? ""));
-        setGrade(mySubmission.grade ?? null);
-        setFeedback(mySubmission.feedback ?? null);
-
-        setEarnedMarks(typeof mySubmission.earnedMarks === "number" ? mySubmission.earnedMarks : null);
-        setTotalMarks(typeof mySubmission.totalMarks === "number" ? mySubmission.totalMarks : null);
-
-        setMessage(
-          mySubmission.grade ? `Graded: ${mySubmission.grade}` : "Submitted, awaiting grading"
-        );
-
-        setExistingFileUrl(mySubmission.fileUrl || null);
-        setExistingFileName(mySubmission.fileName || null);
-      } catch {
-        // ignore load errors; submission form should still work
-      }
-    }
-
-    // initial load
-    load();
-
-    // real-time-ish refresh: poll every 3s
-    intervalId = setInterval(load, 3000);
-
-    return () => {
-      cancelled = true;
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [assignmentId]);
+  // Pick up grading without a reload; paused while the tab is hidden.
+  useVisiblePolling(loadSubmission, 15_000);
 
 
   async function handleSubmit(e: React.FormEvent) {

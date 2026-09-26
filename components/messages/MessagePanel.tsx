@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type Message = {
   id: string;
@@ -71,10 +72,7 @@ export default function MessagePanel({ role }: { role: "STUDENT" | "TEACHER" }) 
     init();
   }, [role, loadMessages]);
 
-  useEffect(() => {
-    const interval = setInterval(loadMessages, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadMessages]);
+  useVisiblePolling(loadMessages, POLL_INTERVAL_MS);
 
   async function handleSend(text: string) {
     if (!selectedCourseId) return;

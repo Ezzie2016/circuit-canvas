@@ -1,10 +1,14 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { verifyJwt, getNotifications } from "@/lib/auth";
+import { verifyJwt, getNotifications, getLatestNotificationId } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+const POLL_MS = 5000;
+// Comment line keeps proxies/load balancers from closing an idle connection.
+const HEARTBEAT_EVERY_N_POLLS = 3;
+
+export async function GET(request: Request) {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
 
@@ -25,59 +29,70 @@ export async function GET() {
         : "STUDENT";
 
   const userId = String(decoded.id);
+  const encoder = new TextEncoder();
+
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let closed = false;
+
+  const stop = () => {
+    closed = true;
+    if (timer) clearTimeout(timer);
+    timer = null;
+  };
 
   const stream = new ReadableStream({
     async start(controller) {
-      const encoder = new TextEncoder();
-
-      const push = (eventName: string, data: unknown) => {
+      const write = (chunk: string) => {
+        if (closed) return;
         try {
-          controller.enqueue(
-            encoder.encode(
-              `event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`
-            )
-          );
+          controller.enqueue(encoder.encode(chunk));
         } catch {
-          // Ignore enqueue errors after client disconnects.
+          // Controller already closed (client went away).
+          stop();
         }
       };
+      const push = (eventName: string, data: unknown) =>
+        write(`event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`);
 
       let lastSentId: string | null = null;
 
       try {
         const initial = await getNotifications(role, userId);
-        if (Array.isArray(initial) && initial.length > 0) {
-          lastSentId = String(initial[0].id);
-        }
-        push("notification", { type: "init", notifications: initial || [] });
+        lastSentId = initial[0]?.id ?? null;
+        push("notification", { type: "init", notifications: initial });
       } catch {
         push("notification", { type: "init", notifications: [] });
       }
 
-      const POLL_MS = 3000;
-      const interval = setInterval(async () => {
+      let polls = 0;
+      // Chained setTimeout (not setInterval) so slow queries never overlap.
+      const poll = async () => {
+        if (closed) return;
         try {
-          const current = await getNotifications(role, userId);
-          if (!Array.isArray(current) || current.length === 0) return;
-
-          const newest = current[0];
-          if (!newest) return;
-
-          const newestId = String(newest.id);
-          if (lastSentId !== newestId) {
-            lastSentId = newestId;
+          // Cheap check: one indexed row, id only. Only fetch the full list
+          // when something actually changed.
+          const newestId = await getLatestNotificationId(role, userId);
+          if (newestId && newestId !== lastSentId) {
+            const current = await getNotifications(role, userId);
+            lastSentId = current[0]?.id ?? newestId;
             push("notification", { type: "delta", notifications: current });
+          } else if (++polls % HEARTBEAT_EVERY_N_POLLS === 0) {
+            write(": ping\n\n");
           }
         } catch {
-          // ignore
+          // Transient DB error — try again next tick.
         }
-      }, POLL_MS);
-
-      // Best-effort cleanup
-      // @ts-expect-error -- ReadableStreamDefaultController has no onclose in TS lib
-      controller.onclose = () => clearInterval(interval);
+        if (!closed) timer = setTimeout(poll, POLL_MS);
+      };
+      timer = setTimeout(poll, POLL_MS);
+    },
+    cancel() {
+      stop();
     },
   });
+
+  // Client disconnects abort the request signal; stop polling immediately.
+  request.signal.addEventListener("abort", stop, { once: true });
 
   return new NextResponse(stream, {
     headers: {
@@ -87,4 +102,3 @@ export async function GET() {
     },
   });
 }
-

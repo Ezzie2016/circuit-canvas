@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type AttendanceRecord = {
   studentId: string;
@@ -78,10 +79,7 @@ export default function AttendanceManagementPage() {
   }, [loadAttendance]);
 
   // Real-time polling: reload every 15 seconds to catch students joining/leaving
-  useEffect(() => {
-    const interval = setInterval(loadAttendance, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadAttendance]);
+  useVisiblePolling(loadAttendance, POLL_INTERVAL_MS);
 
   const handleEditClick = (record: AttendanceRecord) => {
     setEditingStudent(record.studentId);

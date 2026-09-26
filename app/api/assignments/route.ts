@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma, verifyJwt, createNotification } from "@/lib/auth";
+import { prisma, verifyJwt, createNotification, createNotificationsForRecipients } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 export async function GET() {
@@ -16,62 +16,48 @@ export async function GET() {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    let assignments;
-    if (decoded.role === "STUDENT") {
-      assignments = await prisma.assignment.findMany({
-        where: {
-          course: {
-            enrollments: {
-              some: { studentId: decoded.id },
-            },
-          },
-        },
-        include: {
-          course: true,
-          submissions: {
-            where: { studentId: decoded.id },
-          },
-        },
-      });
-    } else if (decoded.role === "TEACHER") {
-      assignments = await prisma.assignment.findMany({
-        where: {
-          course: { teacherId: decoded.id },
-        },
-        include: {
-          course: true,
-          submissions: true,
-        },
-      });
-    } else {
-      assignments = await prisma.assignment.findMany({
-        include: {
-          course: true,
-          submissions: true,
-        },
-      });
-    }
+    const isStudent = decoded.role === "STUDENT";
+    const where = isStudent
+      ? { course: { enrollments: { some: { studentId: decoded.id } } } }
+      : decoded.role === "TEACHER"
+        ? { course: { teacherId: decoded.id } }
+        : undefined;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formatted = assignments.map((a: any) => ({
-      id: a.id,
-      title: a.title,
-      course: a.course.title,
-      courseId: a.course.id,
-      dueDate: a.dueDate.toISOString().split("T")[0],
-      status: (() => {
-        if (!a.submissions || a.submissions.length === 0) return "Pending";
-        const sub = a.submissions[0];
-        if (sub.status === "REVIEWED") return "Graded";
-        return "Submitted";
-      })(),
-      instructions: a.instructions,
-      totalMarks: a.totalMarks,
-      type: a.type,
-      submissionCount: a.submissions?.length || 0,
-    }));
+    // Students need their own submission's status; staff only need a count.
+    // Never pull every submission (with response text) just to count it.
+    const assignments = await prisma.assignment.findMany({
+      where,
+      include: {
+        course: { select: { id: true, title: true } },
+        submissions: isStudent
+          ? { where: { studentId: decoded.id }, select: { status: true } }
+          : false,
+        _count: isStudent ? false : { select: { submissions: true } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
 
-
+    const formatted = assignments.map((a) => {
+      // Students: status of their own submission. Staff: whether the
+      // assignment has any submissions (the teacher list shows "Has
+      // submissions" for "Submitted").
+      const own = a.submissions?.[0];
+      const status = isStudent
+        ? !own ? "Pending" : own.status === "REVIEWED" ? "Graded" : "Submitted"
+        : a._count.submissions > 0 ? "Submitted" : "Pending";
+      return {
+        id: a.id,
+        title: a.title,
+        course: a.course.title,
+        courseId: a.course.id,
+        dueDate: a.dueDate.toISOString().split("T")[0],
+        status,
+        instructions: a.instructions,
+        totalMarks: a.totalMarks,
+        type: a.type,
+        submissionCount: isStudent ? (a.submissions?.length ?? 0) : a._count.submissions,
+      };
+    });
 
     return NextResponse.json(formatted);
   } catch (error) {
@@ -97,11 +83,15 @@ export async function POST(request: Request) {
     const body = await request.json();
     const course = await prisma.course.findUnique({
       where: { id: body.courseId },
-      include: { enrollments: true },
+      select: { teacherId: true, enrollments: { select: { studentId: true } } },
     });
 
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    if (course.teacherId !== decoded.id) {
+      return NextResponse.json({ error: "You can only post assignments to your own courses" }, { status: 403 });
     }
 
     const validTypes = ["ASSIGNMENT", "QUIZ", "MID_SEMESTER", "EXAM"];
@@ -117,7 +107,7 @@ export async function POST(request: Request) {
         courseId: body.courseId,
       },
       include: {
-        course: true,
+        course: { select: { id: true, title: true } },
       },
     });
 
@@ -126,10 +116,12 @@ export async function POST(request: Request) {
     const message = `New assignment posted for ${assignment.course.title}: ${assignment.title} is due ${dueDateText}.`;
 
     if (course.enrollments.length > 0) {
-      await Promise.all(
-        course.enrollments.map((enrollment) =>
-          createNotification("New assignment posted", message, "STUDENT", enrollment.studentId)
-        )
+      // One INSERT for the whole class instead of one round-trip per student.
+      await createNotificationsForRecipients(
+        "New assignment posted",
+        message,
+        "STUDENT",
+        course.enrollments.map((enrollment) => enrollment.studentId),
       );
     } else {
       await createNotification("New assignment posted", message, "STUDENT");
@@ -142,8 +134,7 @@ export async function POST(request: Request) {
         course: assignment.course.title,
         courseId: assignment.course.id,
         dueDate: dueDateText,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        totalMarks: (assignment as any).totalMarks,
+        totalMarks: assignment.totalMarks,
         status: "Pending",
       },
       { status: 201 }

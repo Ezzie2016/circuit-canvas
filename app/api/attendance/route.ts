@@ -24,24 +24,24 @@ export async function GET(request: Request) {
       records = await prisma.attendanceRecord.findMany({
         where: { studentId: decoded.id, ...(courseId ? { courseId } : {}) },
         include: {
-          student: true,
-          course: true,
+          student: { select: { id: true, name: true } },
+          course: { select: { title: true } },
         },
       });
     } else if (decoded.role === "TEACHER") {
       records = await prisma.attendanceRecord.findMany({
         where: { course: { teacherId: decoded.id }, ...(courseId ? { courseId } : {}) },
         include: {
-          student: true,
-          course: true,
+          student: { select: { id: true, name: true } },
+          course: { select: { title: true } },
         },
       });
     } else {
       records = await prisma.attendanceRecord.findMany({
         where: courseId ? { courseId } : {},
         include: {
-          student: true,
-          course: true,
+          student: { select: { id: true, name: true } },
+          course: { select: { title: true } },
         },
       });
     }

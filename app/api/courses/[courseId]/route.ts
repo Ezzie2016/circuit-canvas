@@ -31,8 +31,9 @@ export async function GET(
       where: { id: params.courseId },
       include: {
         teacher: { select: { id: true, name: true, email: true } },
-        enrollments: { include: { student: { select: { id: true } } } },
+        enrollments: { where: { studentId: decoded.id }, select: { id: true } },
         department: { select: { id: true, name: true } },
+        _count: { select: { enrollments: true } },
       },
     });
 
@@ -44,7 +45,7 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const enrolled = course.enrollments.some((enrollment) => enrollment.student.id === decoded.id);
+    const enrolled = course.enrollments.length > 0;
 
     return NextResponse.json({
       id: course.id,
@@ -57,7 +58,7 @@ export async function GET(
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
       teacherId: course.teacherId,
-      students: course.enrollments.length,
+      students: course._count.enrollments,
       enrolled,
       status: "Open",
       meetingLink: course.meetingLink,
@@ -95,14 +96,17 @@ export async function POST(
 
     const course = await prisma.course.findUnique({
       where: { id: params.courseId },
-      include: { teacher: true, enrollments: true },
+      include: {
+        teacher: { select: { name: true } },
+        enrollments: { where: { studentId: decoded.id }, select: { id: true } },
+        _count: { select: { enrollments: true } },
+      },
     });
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
 
-    const alreadyEnrolled = course.enrollments.some((enrollment) => enrollment.studentId === decoded.id);
-    if (alreadyEnrolled) {
+    if (course.enrollments.length > 0) {
       return NextResponse.json({ error: "Already enrolled" }, { status: 200 });
     }
 
@@ -118,7 +122,7 @@ export async function POST(
       title: course.title,
       instructor: course.teacher.name,
       teacherId: course.teacherId,
-      students: course.enrollments.length + 1,
+      students: course._count.enrollments + 1,
       enrolled: true,
       status: "Open",
     };
@@ -172,7 +176,10 @@ export async function PATCH(
       return NextResponse.json({ error: "Only authorized teachers or admins can edit courses" }, { status: 403 });
     }
 
-    const course = await prisma.course.findUnique({ where: { id: params.courseId } });
+    const course = await prisma.course.findUnique({
+      where: { id: params.courseId },
+      select: { teacherId: true },
+    });
     if (!course) {
       return NextResponse.json({ error: "Course not found" }, { status: 404 });
     }
@@ -204,8 +211,8 @@ export async function PATCH(
       data: updateData,
       include: {
         teacher: { select: { id: true, name: true, email: true } },
-        enrollments: { include: { student: { select: { id: true } } } },
         department: { select: { id: true, name: true } },
+        _count: { select: { enrollments: true } },
       },
     });
 
@@ -220,7 +227,7 @@ export async function PATCH(
       instructor: updated.teacher.name,
       instructorEmail: updated.teacher.email,
       teacherId: updated.teacherId,
-      students: updated.enrollments.length,
+      students: updated._count.enrollments,
       status: "Open",
       meetingLink: updated.meetingLink,
       thumbnail: updated.thumbnail,
@@ -251,9 +258,7 @@ export async function DELETE(
 
     const course = await prisma.course.findUnique({
       where: { id: params.courseId },
-      include: {
-        teacher: true,
-      },
+      select: { teacherId: true },
     });
 
     if (!course) {
@@ -264,20 +269,18 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const assignments = await prisma.assignment.findMany({ where: { courseId: params.courseId }, select: { id: true } });
-    const assignmentIds = assignments.map((assignment) => assignment.id);
-
-    if (assignmentIds.length > 0) {
-      await prisma.submission.deleteMany({ where: { assignmentId: { in: assignmentIds } } });
-      await prisma.assignment.deleteMany({ where: { id: { in: assignmentIds } } });
-    }
-
-    await prisma.liveSession.deleteMany({ where: { courseId: params.courseId } });
-    await prisma.courseResource.deleteMany({ where: { courseId: params.courseId } });
-    await prisma.courseMessage.deleteMany({ where: { courseId: params.courseId } });
-    await prisma.attendanceRecord.deleteMany({ where: { courseId: params.courseId } });
-    await prisma.enrollment.deleteMany({ where: { courseId: params.courseId } });
-    await prisma.course.delete({ where: { id: params.courseId } });
+    // One atomic transaction: either the whole course goes or nothing does.
+    const courseId = params.courseId;
+    await prisma.$transaction([
+      prisma.submission.deleteMany({ where: { assignment: { courseId } } }),
+      prisma.assignment.deleteMany({ where: { courseId } }),
+      prisma.attendanceRecord.deleteMany({ where: { courseId } }),
+      prisma.liveSession.deleteMany({ where: { courseId } }),
+      prisma.courseResource.deleteMany({ where: { courseId } }),
+      prisma.courseMessage.deleteMany({ where: { courseId } }),
+      prisma.enrollment.deleteMany({ where: { courseId } }),
+      prisma.course.delete({ where: { id: courseId } }),
+    ]);
 
     return NextResponse.json({ message: "Course deleted successfully" }, { status: 200 });
   } catch (error) {

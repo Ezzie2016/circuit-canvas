@@ -3,6 +3,102 @@ import { prisma } from "@/lib/auth";
 import { verifyJwt } from "@/lib/auth";
 import { cookies } from "next/headers";
 
+const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : 0);
+
+async function teacherAnalytics(teacherId: string) {
+  const now = new Date();
+  const [courses, attendanceGroups, upcomingSessions] = await Promise.all([
+    prisma.course.findMany({
+      where: { teacherId },
+      select: {
+        id: true,
+        title: true,
+        _count: { select: { enrollments: true } },
+        assignments: {
+          select: {
+            dueDate: true,
+            totalMarks: true,
+            submissions: { select: { status: true, earnedMarks: true } },
+          },
+        },
+      },
+    }),
+    prisma.attendanceRecord.groupBy({
+      by: ["courseId", "status"],
+      where: { course: { teacherId } },
+      _count: { _all: true },
+    }),
+    prisma.liveSession.count({
+      where: { course: { teacherId }, startsAt: { gt: now } },
+    }),
+  ]);
+
+  const attendanceByCourse = new Map<string, { total: number; present: number }>();
+  for (const g of attendanceGroups) {
+    const entry = attendanceByCourse.get(g.courseId) ?? { total: 0, present: 0 };
+    entry.total += g._count._all;
+    if (g.status === "PRESENT") entry.present += g._count._all;
+    attendanceByCourse.set(g.courseId, entry);
+  }
+
+  let totalStudents = 0;
+  let totalAssignments = 0;
+  let pendingAssignments = 0;
+  let submittedCount = 0;
+  let reviewedCount = 0;
+
+  const courseStats = courses.map((course) => {
+    const courseStudents = course._count.enrollments;
+    const assignmentCount = course.assignments.length;
+    totalStudents += courseStudents;
+    totalAssignments += assignmentCount;
+
+    let courseSubmissionCount = 0;
+    let gradeSum = 0;
+    let gradeCount = 0;
+    for (const assignment of course.assignments) {
+      if (assignment.dueDate > now) pendingAssignments++;
+      for (const s of assignment.submissions) {
+        courseSubmissionCount++;
+        if (s.status === "SUBMITTED") submittedCount++;
+        if (s.status === "REVIEWED") {
+          reviewedCount++;
+          if (s.earnedMarks != null && assignment.totalMarks > 0) {
+            gradeSum += (s.earnedMarks / assignment.totalMarks) * 100;
+            gradeCount++;
+          }
+        }
+      }
+    }
+
+    const attendance = attendanceByCourse.get(course.id) ?? { total: 0, present: 0 };
+
+    return {
+      courseId: course.id,
+      courseName: course.title,
+      totalStudents: courseStudents,
+      averageGrade: gradeCount > 0 ? Math.round(gradeSum / gradeCount) : 0,
+      submitRate:
+        courseStudents > 0 && assignmentCount > 0
+          ? Math.round((courseSubmissionCount / (courseStudents * assignmentCount)) * 100)
+          : 0,
+      attendanceRate: percent(attendance.present, attendance.total),
+    };
+  });
+
+  return {
+    totalCourses: courses.length,
+    totalStudents,
+    pendingAssignments,
+    totalAssignments,
+    submittedCount,
+    reviewedCount,
+    averageCompletion: percent(reviewedCount, totalAssignments),
+    upcomingSessions,
+    courseStats,
+  };
+}
+
 export async function GET(request: Request) {
   try {
     const cookieStore = await cookies();
@@ -26,23 +122,28 @@ export async function GET(request: Request) {
       const [enrollments, submissions, attendanceRecords] = await Promise.all([
         prisma.enrollment.findMany({
           where: { studentId },
-          include: {
+          select: {
             course: {
-              include: {
+              select: {
+                id: true,
+                title: true,
                 teacher: { select: { name: true } },
-                assignments: {
-                  include: { submissions: { where: { studentId } } },
-                },
-                attendance: { where: { studentId } },
+                assignments: { select: { id: true } },
+                attendance: { where: { studentId }, select: { status: true } },
               },
             },
           },
         }),
         prisma.submission.findMany({
           where: { studentId },
-          include: { assignment: { select: { totalMarks: true, title: true, dueDate: true } } },
+          select: {
+            assignmentId: true,
+            status: true,
+            earnedMarks: true,
+            assignment: { select: { totalMarks: true } },
+          },
         }),
-        prisma.attendanceRecord.findMany({ where: { studentId } }),
+        prisma.attendanceRecord.findMany({ where: { studentId }, select: { status: true } }),
       ]);
 
       const totalAssignments = enrollments.reduce(
@@ -62,9 +163,8 @@ export async function GET(request: Request) {
 
       const courseStats = enrollments.map((e) => {
         const course = e.course;
-        const courseSubs = submissions.filter((s) =>
-          course.assignments.some((a) => a.id === s.assignmentId)
-        );
+        const assignmentIds = new Set(course.assignments.map((a) => a.id));
+        const courseSubs = submissions.filter((s) => assignmentIds.has(s.assignmentId));
         const courseGraded = courseSubs.filter(
           (s) => s.status === "REVIEWED" && s.earnedMarks != null && s.assignment.totalMarks > 0
         );
@@ -97,241 +197,67 @@ export async function GET(request: Request) {
       });
     } else if (decoded.role === "ADMIN" && teacherId) {
       // Admin viewing specific teacher's analytics
-      const courses = await prisma.course.findMany({
-        where: { teacherId },
-        include: {
-          enrollments: true,
-          assignments: {
-            include: {
-              submissions: true,
-            },
-          },
-          attendance: true,
-        },
-      });
-
-      const totalCourses = courses.length;
-      const totalStudents = courses.reduce((sum, course) => sum + course.enrollments.length, 0);
-      const assignments = courses.flatMap((course) => course.assignments);
-      const submissions = assignments.flatMap((assignment) => assignment.submissions);
-      const completedSubmissions = submissions.filter((s) => s.status === "REVIEWED").length;
-      const averageCompletion = assignments.length > 0
-        ? Math.round((completedSubmissions / assignments.length) * 100)
-        : 0;
-
-      const courseStats = courses.map((course) => {
-        const totalStudents = course.enrollments.length;
-        const assignmentCount = course.assignments.length;
-        const courseSubmissions = course.assignments.flatMap((assignment) =>
-          assignment.submissions.map((s) => ({ ...s, totalMarks: assignment.totalMarks }))
-        );
-        const gradedValues = courseSubmissions
-          .filter((s) => s.status === "REVIEWED" && s.earnedMarks != null && s.totalMarks > 0)
-          .map((s) => (s.earnedMarks! / s.totalMarks) * 100)
-          .filter((v) => !Number.isNaN(v));
-
-        const averageGrade = gradedValues.length > 0
-          ? Math.round(gradedValues.reduce((sum, v) => sum + v, 0) / gradedValues.length)
-          : 0;
-
-        const submittedCount = courseSubmissions.filter((s) => s.status === "SUBMITTED" || s.status === "REVIEWED").length;
-        const submitRate = totalStudents > 0 && assignmentCount > 0
-          ? Math.round((submittedCount / (totalStudents * assignmentCount)) * 100)
-          : 0;
-
-        const attendanceTotal = course.attendance.length;
-        const attendancePresent = course.attendance.filter((record) => record.status === "PRESENT").length;
-        const attendanceRate = attendanceTotal > 0
-          ? Math.round((attendancePresent / attendanceTotal) * 100)
-          : 0;
-
-        return {
-          courseId: course.id,
-          courseName: course.title,
-          totalStudents,
-          averageGrade,
-          submitRate,
-          attendanceRate,
-        };
-      });
-
-      return NextResponse.json({
-        totalCourses,
-        totalStudents,
-        pendingAssignments: assignments.filter((a) => new Date(a.dueDate) > new Date()).length,
-        totalAssignments: assignments.length,
-        submittedCount: submissions.filter((s) => s.status === "SUBMITTED").length,
-        reviewedCount: completedSubmissions,
-        averageCompletion,
-        upcomingSessions: await prisma.liveSession.count({
-          where: {
-            course: { teacherId },
-            startsAt: { gt: new Date() },
-          },
-        }),
-        courseStats,
-      });
+      return NextResponse.json(await teacherAnalytics(teacherId));
     } else if (decoded.role === "ADMIN") {
-      // Admin analytics
-      const [totalUsers, activeUsers, totalCourses, totalSubmissions, todayUsers, allAssignments, allSubmissions, allAttendance] = await Promise.all([
+      // Admin analytics — counts only; never load whole tables into memory.
+      const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
+      const tomorrowStart = new Date(new Date().setHours(24, 0, 0, 0));
+      const [
+        totalUsers,
+        activeUsers,
+        totalCourses,
+        totalSubmissions,
+        todayUsers,
+        totalAssignments,
+        totalAttendance,
+        presentAttendance,
+        liveSessionsToday,
+      ] = await Promise.all([
         prisma.user.count(),
         prisma.user.count({ where: { status: "ACTIVE" } }),
         prisma.course.count(),
         prisma.submission.count(),
-        prisma.user.count({
-          where: {
-            createdAt: {
-              gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            },
-          },
-        }),
-        prisma.assignment.findMany(),
-        prisma.submission.findMany(),
-        prisma.attendanceRecord.findMany(),
+        prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
+        prisma.assignment.count(),
+        prisma.attendanceRecord.count(),
+        prisma.attendanceRecord.count({ where: { status: "PRESENT" } }),
+        prisma.liveSession.count({ where: { startsAt: { gte: todayStart, lt: tomorrowStart } } }),
       ]);
-
-      // Calculate real average completion: submitted/reviewed submissions vs total assignments
-      const completedCount = allSubmissions.filter((s) => s.status === "SUBMITTED" || s.status === "REVIEWED").length;
-      const averageCompletion = allAssignments.length > 0
-        ? Math.round((completedCount / allAssignments.length) * 100)
-        : 0;
-
-      // Calculate real average attendance
-      const attendancePresent = allAttendance.filter((record) => record.status === "PRESENT").length;
-      const averageAttendance = allAttendance.length > 0
-        ? Math.round((attendancePresent / allAttendance.length) * 100)
-        : 0;
 
       return NextResponse.json({
         activeUsers,
         totalUsers,
         coursesPublished: totalCourses,
-        averageCompletion,
-        liveSessionsToday: await prisma.liveSession.count({
-          where: {
-            startsAt: {
-              gte: new Date(new Date().setHours(0, 0, 0, 0)),
-              lt: new Date(new Date().setHours(24, 0, 0, 0)),
-            },
-          },
-        }),
+        // Every submission is SUBMITTED or REVIEWED, so completed == all submissions.
+        averageCompletion: percent(totalSubmissions, totalAssignments),
+        liveSessionsToday,
         newRegistrations: todayUsers,
-        averageAttendance,
+        averageAttendance: percent(presentAttendance, totalAttendance),
         totalSubmissions,
       });
     } else if (decoded.role === "TEACHER") {
       // Teacher analytics
-      const courses = await prisma.course.findMany({
-        where: { teacherId: decoded.id },
-        include: {
-          enrollments: true,
-          assignments: {
-            include: {
-              submissions: true,
-            },
-          },
-          attendance: true,
-        },
-      });
-
-      const totalCourses = courses.length;
-      const totalStudentsCount = courses.reduce((sum, course) => sum + course.enrollments.length, 0);
-      const assignments = courses.flatMap((course) => course.assignments);
-      const submissions = assignments.flatMap((assignment) => assignment.submissions);
-      const completedSubmissions = submissions.filter((s) => s.status === "REVIEWED").length;
-      const averageCompletion = assignments.length > 0
-        ? Math.round((completedSubmissions / assignments.length) * 100)
-        : 0;
-
-      const courseStats = courses.map((course) => {
-        const totalStudents = course.enrollments.length;
-        const assignmentCount = course.assignments.length;
-        const courseSubmissions = course.assignments.flatMap((assignment) =>
-          assignment.submissions.map((s) => ({ ...s, totalMarks: assignment.totalMarks }))
-        );
-        const gradedValues = courseSubmissions
-          .filter((s) => s.status === "REVIEWED" && s.earnedMarks != null && s.totalMarks > 0)
-          .map((s) => (s.earnedMarks! / s.totalMarks) * 100)
-          .filter((v) => !Number.isNaN(v));
-
-        const averageGrade = gradedValues.length > 0
-          ? Math.round(gradedValues.reduce((sum, v) => sum + v, 0) / gradedValues.length)
-          : 0;
-
-        const submittedCount = courseSubmissions.filter((s) => s.status === "SUBMITTED" || s.status === "REVIEWED").length;
-        const submitRate = totalStudents > 0 && assignmentCount > 0
-          ? Math.round((submittedCount / (totalStudents * assignmentCount)) * 100)
-          : 0;
-
-        const attendanceTotal = course.attendance.length;
-        const attendancePresent = course.attendance.filter((record) => record.status === "PRESENT").length;
-        const attendanceRate = attendanceTotal > 0
-          ? Math.round((attendancePresent / attendanceTotal) * 100)
-          : 0;
-
-        return {
-          courseId: course.id,
-          courseName: course.title,
-          totalStudents,
-          averageGrade,
-          submitRate,
-          attendanceRate,
-        };
-      });
-
-      return NextResponse.json({
-        totalCourses,
-        totalStudents: totalStudentsCount,
-        pendingAssignments: assignments.filter((a) => new Date(a.dueDate) > new Date()).length,
-        totalAssignments: assignments.length,
-        submittedCount: submissions.filter((s) => s.status === "SUBMITTED").length,
-        reviewedCount: completedSubmissions,
-        averageCompletion,
-        upcomingSessions: await prisma.liveSession.count({
-          where: {
-            course: { teacherId: decoded.id },
-            startsAt: { gt: new Date() },
-          },
-        }),
-        courseStats,
-      });
+      return NextResponse.json(await teacherAnalytics(decoded.id));
     } else if (decoded.role === "STUDENT") {
       // Student analytics
-      const [enrolledCourses, assignments, submissions] = await Promise.all([
-        prisma.enrollment.findMany({
-          where: { studentId: decoded.id },
-        }),
-        prisma.assignment.findMany({
-          where: {
-            course: {
-              enrollments: { some: { studentId: decoded.id } },
-            },
-          },
-        }),
-        prisma.submission.findMany({
-          where: { studentId: decoded.id },
-        }),
-      ]);
-
-      const completedSubmissions = submissions.length;
-      const attendanceRecords = await prisma.attendanceRecord.count({
-        where: { studentId: decoded.id },
-      });
-      const presentDays = await prisma.attendanceRecord.count({
-        where: { studentId: decoded.id, status: "PRESENT" },
-      });
+      const studentCourseFilter = { course: { enrollments: { some: { studentId: decoded.id } } } };
+      const [enrolledCourses, totalAssignments, pendingAssignments, submittedAssignments, attendanceRecords, presentDays] =
+        await Promise.all([
+          prisma.enrollment.count({ where: { studentId: decoded.id } }),
+          prisma.assignment.count({ where: studentCourseFilter }),
+          prisma.assignment.count({ where: { ...studentCourseFilter, dueDate: { gt: new Date() } } }),
+          prisma.submission.count({ where: { studentId: decoded.id } }),
+          prisma.attendanceRecord.count({ where: { studentId: decoded.id } }),
+          prisma.attendanceRecord.count({ where: { studentId: decoded.id, status: "PRESENT" } }),
+        ]);
 
       return NextResponse.json({
-        enrolledCourses: enrolledCourses.length,
-        pendingAssignments: assignments.filter((a) => new Date(a.dueDate) > new Date()).length,
-        submittedAssignments: completedSubmissions,
-        totalAssignments: assignments.length,
-        averageCompletion: assignments.length > 0
-          ? Math.round((completedSubmissions / assignments.length) * 100)
-          : 0,
-        attendanceRate: attendanceRecords > 0
-          ? Math.round((presentDays / attendanceRecords) * 100)
-          : 0,
+        enrolledCourses,
+        pendingAssignments,
+        submittedAssignments,
+        totalAssignments,
+        averageCompletion: percent(submittedAssignments, totalAssignments),
+        attendanceRate: percent(presentDays, attendanceRecords),
       });
     }
 

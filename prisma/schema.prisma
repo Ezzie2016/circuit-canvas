@@ -53,6 +53,9 @@ model Course {
   resources    CourseResource[]
   enrollments  Enrollment[]
   liveSessions LiveSession[]
+
+  @@index([teacherId])
+  @@index([departmentId])
 }
 
 model Enrollment {
@@ -64,6 +67,7 @@ model Enrollment {
   student   User     @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, courseId])
+  @@index([courseId])
 }
 
 model Assignment {
@@ -77,6 +81,8 @@ model Assignment {
   type         AssignmentType @default(ASSIGNMENT)
   course       Course         @relation(fields: [courseId], references: [id])
   submissions  Submission[]
+
+  @@index([courseId, dueDate])
 }
 
 model Submission {
@@ -97,6 +103,7 @@ model Submission {
   student      User             @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, assignmentId])
+  @@index([assignmentId])
 }
 
 model LiveSession {
@@ -112,6 +119,9 @@ model LiveSession {
   checkInCodeExpiresAt DateTime?
   attendanceRecords    AttendanceRecord[]
   course               Course             @relation(fields: [courseId], references: [id])
+
+  @@index([courseId, startsAt])
+  @@index([startsAt])
 }
 
 model CourseResource {
@@ -125,6 +135,8 @@ model CourseResource {
   createdAt   DateTime @default(now())
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id])
+
+  @@index([courseId])
 }
 
 model AttendanceRecord {
@@ -144,6 +156,8 @@ model AttendanceRecord {
   student           User             @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, courseId, date])
+  @@index([courseId, status])
+  @@index([liveSessionId])
 }
 
 model Notification {
@@ -155,6 +169,8 @@ model Notification {
   recipientId String?
   recipient   User?                @relation(fields: [recipientId], references: [id])
   readBy      NotificationRead[]
+
+  @@index([recipientId, createdAt])
 }
 
 model NotificationRead {
@@ -166,6 +182,7 @@ model NotificationRead {
   user           User         @relation(fields: [userId], references: [id])
 
   @@unique([userId, notificationId])
+  @@index([notificationId])
 }
 
 model CourseMessage {
@@ -176,6 +193,9 @@ model CourseMessage {
   courseId  String
   course    Course   @relation(fields: [courseId], references: [id])
   sender    User     @relation(fields: [senderId], references: [id])
+
+  @@index([courseId, createdAt])
+  @@index([senderId])
 }
 
 enum Role {

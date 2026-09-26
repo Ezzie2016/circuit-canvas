@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { prisma } from "@/lib/auth";
+import { prisma, getJwtSecret } from "@/lib/auth";
 import { sendPasswordResetEmail } from "@/lib/emailService";
 
 export async function POST(request: Request) {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, type: "PASSWORD_RESET" },
-      process.env.JWT_SECRET || "your-secret-key-change-in-production",
+      getJwtSecret(),
       { expiresIn: "1h" },
     );
 

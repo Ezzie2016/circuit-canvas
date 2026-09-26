@@ -23,40 +23,35 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    let submissions;
-    if (decoded.role === "STUDENT") {
-      submissions = await prisma.submission.findMany({
-        where: { studentId: decoded.id, assignmentId: assignmentId || undefined },
-        include: {
-          student: true,
-          assignment: { include: { course: true } },
-        },
-      });
-    } else if (decoded.role === "TEACHER") {
-      submissions = await prisma.submission.findMany({
-        where: {
-          assignment: {
-            ...(assignmentId ? { id: assignmentId } : {}),
-            course: { teacherId: decoded.id },
+    const where =
+      decoded.role === "STUDENT"
+        ? { studentId: decoded.id, assignmentId: assignmentId || undefined }
+        : decoded.role === "TEACHER"
+          ? {
+              assignment: {
+                ...(assignmentId ? { id: assignmentId } : {}),
+                course: { teacherId: decoded.id },
+              },
+            }
+          : { assignmentId: assignmentId || undefined };
+
+    const submissions = await prisma.submission.findMany({
+      where,
+      include: {
+        student: { select: { name: true } },
+        assignment: {
+          select: {
+            title: true,
+            type: true,
+            dueDate: true,
+            totalMarks: true,
+            course: { select: { title: true } },
           },
         },
-        include: {
-          student: true,
-          assignment: { include: { course: true } },
-        },
-      });
-    } else {
-      submissions = await prisma.submission.findMany({
-        where: { assignmentId: assignmentId || undefined },
-        include: {
-          student: true,
-          assignment: { include: { course: true } },
-        },
-      });
-    }
+      },
+    });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formatted = (submissions as any[]).map((s) => ({
+    const formatted = submissions.map((s) => ({
       id: s.id,
       studentId: s.studentId,
       studentName: s.student?.name || "",
@@ -114,7 +109,7 @@ export async function POST(request: Request) {
     // First try direct lookup, then fall back to numeric-like conversions.
     const assignment = await prisma.assignment.findUnique({
       where: { id: assignmentId },
-      include: { course: true },
+      select: { title: true, courseId: true, course: { select: { teacherId: true } } },
     });
 
     if (!assignment) {
@@ -131,12 +126,14 @@ export async function POST(request: Request) {
 
     // Check if student is enrolled in the course
 
-    const enrollment = await prisma.enrollment.findFirst({
-
+    const enrollment = await prisma.enrollment.findUnique({
       where: {
-        studentId: decoded.id,
-        courseId: assignment.courseId,
+        studentId_courseId: {
+          studentId: decoded.id,
+          courseId: assignment.courseId,
+        },
       },
+      select: { id: true },
     });
 
 
@@ -204,10 +201,6 @@ export async function POST(request: Request) {
           fileType: savedFileType || submission.fileType,
           status: "SUBMITTED",
         },
-        include: {
-          student: true,
-          assignment: { include: { course: true } },
-        },
       });
     } else {
       submission = await prisma.submission.create({
@@ -220,10 +213,6 @@ export async function POST(request: Request) {
           fileName: savedFileName,
           fileSize: savedFileSize,
           fileType: savedFileType,
-        },
-        include: {
-          student: true,
-          assignment: { include: { course: true } },
         },
       });
     }
@@ -248,10 +237,8 @@ export async function POST(request: Request) {
 
       {
         id: submission.id,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        studentName: (submission as any).student?.name || "",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        assignmentTitle: (submission as any).assignment?.title || "",
+        studentName: decoded.name || "",
+        assignmentTitle: assignment.title,
         status: submission.status,
         fileUrl: submission.fileUrl,
         fileName: submission.fileName,
@@ -298,19 +285,19 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const assignment = await prisma.assignment
-      .findUnique({
-        where: { id: body.assignmentId || undefined },
-        select: { id: true, totalMarks: true },
-      })
-      .catch(() => null);
-
-    const submissionForCheck = await prisma.submission.findUnique({
+    const existing = await prisma.submission.findUnique({
       where: { id: body.id },
-      select: { assignment: { select: { id: true, totalMarks: true } } },
+      select: { assignment: { select: { totalMarks: true, course: { select: { teacherId: true } } } } },
     });
 
-    const totalMarks = assignment?.totalMarks ?? submissionForCheck?.assignment?.totalMarks ?? null;
+    if (!existing) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+    }
+    if (existing.assignment.course.teacherId !== decoded.id) {
+      return NextResponse.json({ error: "You can only grade submissions for your own courses" }, { status: 403 });
+    }
+
+    const totalMarks: number | null = existing.assignment.totalMarks ?? null;
 
     if (totalMarks !== null) {
       if (earnedMarksNum === null) {
@@ -333,45 +320,39 @@ export async function PATCH(request: Request) {
         feedback,
         status: "REVIEWED",
       },
-
       include: {
-        student: true,
-        assignment: { include: { course: true } },
+        student: { select: { name: true, email: true } },
+        assignment: { select: { title: true, totalMarks: true, course: { select: { title: true } } } },
       },
     });
 
 
-    // In-app notification for the student
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const _sub = submission as any;
-      const _title: string = _sub.assignment?.title || "an assignment";
-      const _marks = submission.earnedMarks != null && _sub.assignment?.totalMarks != null
-        ? ` — ${submission.earnedMarks}/${_sub.assignment.totalMarks}`
-        : "";
-      await createNotification(
+    const studentEmail = submission.student.email;
+    const studentName = submission.student.name || "Student";
+    const assignmentTitle = submission.assignment.title || "";
+    const courseName = submission.assignment.course.title || "";
+    const marks =
+      submission.earnedMarks != null ? ` — ${submission.earnedMarks}/${submission.assignment.totalMarks}` : "";
+
+    // In-app notifications for the student and admins, written in parallel.
+    const notifyResults = await Promise.allSettled([
+      createNotification(
         "Assignment graded",
-        `Your submission for "${_title}" has been graded${_marks}.`,
+        `Your submission for "${assignmentTitle || "an assignment"}" has been graded${marks}.`,
         "STUDENT",
         submission.studentId,
-      );
-      // Notify admin too
-      await createNotification(
+      ),
+      createNotification(
         "Assignment graded",
-        `${_sub.student?.name || "A student"} was graded on "${_title}"${_marks}.`,
+        `${submission.student.name || "A student"} was graded on "${assignmentTitle || "an assignment"}"${marks}.`,
         "ADMIN",
-      );
-    } catch (e) {
-      console.error("Failed to create grade notification", e);
+      ),
+    ]);
+    for (const r of notifyResults) {
+      if (r.status === "rejected") console.error("Failed to create grade notification", r.reason);
     }
 
     // Email the student their grade (non-blocking)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sub = submission as any;
-    const studentEmail: string | undefined = sub.student?.email;
-    const studentName: string = sub.student?.name || "Student";
-    const assignmentTitle: string = sub.assignment?.title || "";
-    const courseName: string = sub.assignment?.course?.title || "";
     if (studentEmail) {
       sendGradeNotificationEmail(
         studentEmail,
@@ -379,7 +360,7 @@ export async function PATCH(request: Request) {
         assignmentTitle,
         courseName,
         submission.earnedMarks ?? null,
-        sub.assignment?.totalMarks ?? null,
+        submission.assignment.totalMarks ?? null,
         submission.feedback ?? null,
       ).catch((e) => console.error("Grade email error:", e));
     }

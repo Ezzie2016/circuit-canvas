@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { prisma, verifyJwt } from "@/lib/auth";
+import { prisma, verifyJwt, getJwtSecret } from "@/lib/auth";
 import { sendStudentInviteEmail } from "@/lib/emailService";
 
 export async function POST(request: Request) {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     const inviteToken = jwt.sign(
       { email, name, role: "STUDENT", type: "STUDENT_INVITE", matricNumber: matricNumber || null },
-      process.env.JWT_SECRET || "your-secret-key-change-in-production",
+      getJwtSecret(),
       { expiresIn: "1d" },
     );
 
