@@ -60,7 +60,7 @@ export default function RecentActivityPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin" className="text-[#1d6d58] hover:underline inline-block text-sm">
+      <Link href="/admin" className="text-[#17233d] hover:underline inline-block text-sm">
         ← Back to Dashboard
       </Link>
       <div>

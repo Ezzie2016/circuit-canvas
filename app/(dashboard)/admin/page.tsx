@@ -137,7 +137,7 @@ export default function AdminDashboard() {
             <h1 className="mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
             <p className="mt-1 text-sm text-slate-600">Monitor users, courses, analytics, and system activity from one place.</p>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="font-semibold">{user.email}</p>
             <p className="mt-1 text-slate-500">Admin account</p>
           </div>
@@ -150,17 +150,17 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Total Users</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.totalUsers || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.totalUsers || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Published Courses</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.coursesPublished || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.coursesPublished || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Total Submissions</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.totalSubmissions || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.totalSubmissions || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
@@ -170,10 +170,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Registration Control */}
-        <div className="mb-12 bg-white rounded-lg shadow-lg p-6 border-l-4 border-[#1d6d58]">
+        <div className="mb-12 bg-white rounded-lg shadow-lg p-6 border-l-4 border-[#17233d]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-[#1d6d58]">Course Registration Status</h2>
+              <h2 className="text-xl font-bold text-[#17233d]">Course Registration Status</h2>
               <p className="mt-1 text-sm text-slate-600">Control whether students can enroll and teachers can create new courses.</p>
               <p className="mt-3 text-sm">
                 {registrationOpen === null ? (
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
         {/* Management Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">User Breakdown</h2>
+            <h2 className="text-xl font-bold text-[#17233d] mb-4">User Breakdown</h2>
             <div className="space-y-3 mb-4">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                 <span className="font-semibold">Students</span>
@@ -224,25 +224,25 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">System Actions</h2>
+            <h2 className="text-xl font-bold text-[#17233d] mb-4">System Actions</h2>
             <div className="space-y-2">
               <Link href="/admin/users">
-                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#1d6d58]">
+                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#17233d]">
                   Manage Users
                 </button>
               </Link>
               <Link href="/admin/activity">
-                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#1d6d58]">
+                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#17233d]">
                   View Activity
                 </button>
               </Link>
               <Link href="/admin/analytics">
-                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#1d6d58]">
+                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#17233d]">
                   System Analytics
                 </button>
               </Link>
               <Link href="/admin/settings">
-                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#1d6d58]">
+                <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#17233d]">
                   Settings
                 </button>
               </Link>
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
 
         {/* Departments */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Departments / Arms</h2>
+          <h2 className="text-xl font-bold text-[#17233d] mb-4">Departments / Arms</h2>
           <p className="text-sm text-slate-500 mb-4">Manage the arms available for grouping courses (e.g. Science, Arts, Commercial, General).</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {departments.map((d) => (
@@ -318,7 +318,7 @@ export default function AdminDashboard() {
                   setDeptMsg(data.error || "Failed to add department");
                 }
               }}
-              className="rounded-xl bg-[#1d6d58] px-4 py-2 text-sm font-semibold text-white hover:bg-[#124e40]"
+              className="rounded-xl bg-[#17233d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f1729]"
             >
               Add
             </button>
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Notifications</h2>
+          <h2 className="text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
           {notifications.length > 0 ? (
             <ul className="space-y-3">
               {notifications.map((n) => (
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
 
         {/* Recent Activity */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Recent System Activity</h2>
+          <h2 className="text-xl font-bold text-[#17233d] mb-4">Recent System Activity</h2>
           {activities.length > 0 ? (
             <div className="space-y-3">
               {[...activities]
@@ -381,7 +381,7 @@ export default function AdminDashboard() {
             <p className="text-gray-600">No recent activity.</p>
           )}
           <Link href="/admin/activity">
-            <button className="w-full mt-4 bg-[#1d6d58] text-white py-2 rounded font-semibold hover:bg-[#124e40]">
+            <button className="w-full mt-4 bg-[#17233d] text-white py-2 rounded font-semibold hover:bg-[#0f1729]">
               View All Activity
             </button>
           </Link>
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
 
         {/* User Distribution */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">User Distribution</h2>
+          <h2 className="text-xl font-bold text-[#17233d] mb-4">User Distribution</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-blue-50 rounded">
               <div className="text-blue-600 font-semibold text-sm mb-2">STUDENTS</div>

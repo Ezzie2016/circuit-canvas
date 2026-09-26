@@ -92,7 +92,7 @@ export default function TeacherAssignmentCreatePage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
 
         {/* Type selector */}
         <div>
@@ -103,14 +103,14 @@ export default function TeacherAssignmentCreatePage() {
                 key={t}
                 type="button"
                 onClick={() => handleTypeChange(t)}
-                className={`rounded-2xl border p-4 text-left transition ${
+                className={`rounded-lg border p-4 text-left transition ${
                   type === t
-                    ? "border-[#1d6d58] bg-emerald-50 ring-1 ring-[#1d6d58]"
+                    ? "border-[#17233d] bg-emerald-50 ring-1 ring-[#17233d]"
                     : "border-slate-200 hover:border-slate-300"
                 }`}
               >
                 <p className="font-semibold text-slate-800 text-sm">{TYPE_CONFIG[t].label}</p>
-                <p className="text-xs text-[#1d6d58] font-bold mt-1">{TYPE_CONFIG[t].max} marks</p>
+                <p className="text-xs text-[#17233d] font-bold mt-1">{TYPE_CONFIG[t].max} marks</p>
               </button>
             ))}
           </div>
@@ -123,7 +123,7 @@ export default function TeacherAssignmentCreatePage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-[#17233d] focus:outline-none"
               placeholder={`e.g. ${config.label} 1`}
             />
           </label>
@@ -133,7 +133,7 @@ export default function TeacherAssignmentCreatePage() {
             <select
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm focus:border-[#17233d] focus:outline-none"
             >
               <option value="">Select a course</option>
               {courses.map((c) => (
@@ -149,7 +149,7 @@ export default function TeacherAssignmentCreatePage() {
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
             rows={4}
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm focus:border-[#1d6d58] focus:outline-none resize-none"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-[#17233d] focus:outline-none resize-none"
             placeholder="What should students do or prepare for this assessment?"
           />
         </label>
@@ -161,7 +161,7 @@ export default function TeacherAssignmentCreatePage() {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-[#17233d] focus:outline-none"
             />
           </label>
 
@@ -173,7 +173,7 @@ export default function TeacherAssignmentCreatePage() {
               step={1}
               value={totalMarks}
               onChange={(e) => setTotalMarks(Number(e.target.value))}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-[#17233d] focus:outline-none"
             />
             <p className="text-xs text-slate-400">
               This is your own grading scale (e.g. out of 100). The system converts it to the {config.max}-mark category weight automatically.
@@ -193,7 +193,7 @@ export default function TeacherAssignmentCreatePage() {
           <button
             type="submit"
             disabled={isSubmitting || courses.length === 0}
-            className="rounded-xl bg-[#1d6d58] px-6 py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50 transition"
+            className="rounded-xl bg-[#17233d] px-6 py-3 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50 transition"
           >
             {isSubmitting ? "Publishing…" : "Publish assessment"}
           </button>

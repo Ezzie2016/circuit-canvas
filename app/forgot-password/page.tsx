@@ -31,9 +31,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1d6d58]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-[#17233d]">
             <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
@@ -43,12 +43,12 @@ export default function ForgotPasswordPage() {
         </div>
 
         {sent ? (
-          <div className="rounded-2xl bg-emerald-50 p-5 text-center">
+          <div className="rounded-lg bg-emerald-50 p-5 text-center">
             <p className="font-semibold text-emerald-800">Check your inbox!</p>
             <p className="mt-1 text-sm text-emerald-600">
               If that email is registered, a reset link has been sent. Check your spam folder too.
             </p>
-            <Link href="/login" className="mt-4 inline-block text-sm font-medium text-[#1d6d58] hover:underline">
+            <Link href="/login" className="mt-4 inline-block text-sm font-medium text-[#17233d] hover:underline">
               Back to Login
             </Link>
           </div>
@@ -62,20 +62,20 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-xl bg-[#1d6d58] py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              className="w-full rounded-xl bg-[#17233d] py-3 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
             >
               {submitting ? "Sending…" : "Send Reset Link"}
             </button>
             <p className="text-center text-sm text-slate-500">
               Remember your password?{" "}
-              <Link href="/login" className="font-medium text-[#1d6d58] hover:underline">
+              <Link href="/login" className="font-medium text-[#17233d] hover:underline">
                 Log in
               </Link>
             </p>

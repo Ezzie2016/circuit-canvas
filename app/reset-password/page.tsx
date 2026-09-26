@@ -40,9 +40,9 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="rounded-2xl bg-red-50 p-5 text-center">
+      <div className="rounded-lg bg-red-50 p-5 text-center">
         <p className="font-semibold text-red-800">Invalid reset link</p>
-        <Link href="/forgot-password" className="mt-3 inline-block text-sm font-medium text-[#1d6d58] hover:underline">
+        <Link href="/forgot-password" className="mt-3 inline-block text-sm font-medium text-[#17233d] hover:underline">
           Request a new one
         </Link>
       </div>
@@ -51,9 +51,9 @@ function ResetPasswordForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1d6d58]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-[#17233d]">
             <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -63,7 +63,7 @@ function ResetPasswordForm() {
         </div>
 
         {done ? (
-          <div className="rounded-2xl bg-emerald-50 p-5 text-center">
+          <div className="rounded-lg bg-emerald-50 p-5 text-center">
             <p className="font-semibold text-emerald-800">Password reset!</p>
             <p className="mt-1 text-sm text-emerald-600">Redirecting you to login…</p>
           </div>
@@ -77,7 +77,7 @@ function ResetPasswordForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             <div>
@@ -88,14 +88,14 @@ function ResetPasswordForm() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Repeat your password"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-xl bg-[#1d6d58] py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              className="w-full rounded-xl bg-[#17233d] py-3 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
             >
               {submitting ? "Resetting…" : "Reset Password"}
             </button>

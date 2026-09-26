@@ -42,6 +42,25 @@ const navLinks: Record<string, { href: string; label: string }[]> = {
   ],
 };
 
+const roleLabel: Record<string, string> = {
+  STUDENT: "Student",
+  TEACHER: "Teacher",
+  ADMIN: "Admin",
+};
+
+function Wordmark() {
+  return (
+    <Link href="/" className="flex items-center gap-2.5">
+      <span className="font-display flex h-8 w-8 items-center justify-center rounded-md border border-[#17233d]/15 bg-[#17233d] text-sm font-semibold text-[#d9b877]">
+        C
+      </span>
+      <span className="font-display hidden text-[15px] font-medium text-[#17233d] sm:block">
+        Circuit Campus
+      </span>
+    </Link>
+  );
+}
+
 function NavList({ links, pathname, onNavigate }: {
   links: { href: string; label: string }[];
   pathname: string;
@@ -56,7 +75,11 @@ function NavList({ links, pathname, onNavigate }: {
             key={link.href}
             href={link.href}
             onClick={onNavigate}
-            className={`block rounded-2xl px-4 py-3 text-sm font-medium transition ${active ? "bg-[#1d6d58] text-white" : "text-slate-700 hover:bg-slate-100"}`}
+            className={`block rounded-md px-4 py-2.5 text-sm font-medium transition ${
+              active
+                ? "bg-[#17233d] text-white"
+                : "text-slate-600 hover:bg-[#17233d]/5 hover:text-[#17233d]"
+            }`}
           >
             {link.label}
           </Link>
@@ -105,8 +128,8 @@ export default function DashboardLayout({
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#faf8f4] px-4">
+        <div className="rounded-md border border-slate-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm text-slate-500">Verifying your session…</p>
         </div>
       </div>
@@ -117,7 +140,7 @@ export default function DashboardLayout({
   const links = navLinks[role] || navLinks.STUDENT;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[#faf8f4] text-slate-900">
       {/* Mobile nav overlay */}
       {mobileNavOpen && (
         <div
@@ -126,13 +149,13 @@ export default function DashboardLayout({
         />
       )}
 
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-[#faf8f4]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {/* Hamburger — mobile only */}
             <button
               onClick={() => setMobileNavOpen((o) => !o)}
-              className="lg:hidden rounded-xl border border-slate-200 p-2.5 text-slate-600 hover:bg-slate-100 transition"
+              className="lg:hidden rounded-md border border-slate-200 p-2.5 text-slate-600 hover:bg-slate-100 transition"
               aria-label="Toggle menu"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -150,22 +173,21 @@ export default function DashboardLayout({
                 )}
               </svg>
             </button>
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500 hidden sm:block">Circuit Campus</p>
-              <h1 className="text-lg sm:text-2xl font-semibold leading-tight">
-                {role === "STUDENT" ? "Student" : role === "TEACHER" ? "Teacher" : "Admin"} Portal
-              </h1>
-            </div>
+            <Wordmark />
+            <span className="hidden h-5 w-px bg-slate-300 sm:block" />
+            <p className="hidden text-sm font-medium text-slate-500 sm:block">
+              {roleLabel[role] ?? "Student"} Portal
+            </p>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block rounded-2xl bg-slate-100 px-4 py-2.5 text-sm text-slate-700">
+            <div className="hidden sm:block rounded-md bg-white px-4 py-2 text-sm text-slate-700 border border-slate-200">
               <p className="font-semibold leading-tight">{user?.name}</p>
               <p className="text-slate-500 text-xs">{user?.email}</p>
             </div>
             <button
               onClick={handleLogout}
-              className="rounded-2xl bg-[#1d6d58] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#124e40] whitespace-nowrap"
+              className="rounded-md bg-[#17233d] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f1729] whitespace-nowrap"
             >
               Logout
             </button>
@@ -180,10 +202,10 @@ export default function DashboardLayout({
         }`}
       >
         <div className="flex h-16 items-center border-b border-slate-100 px-5">
-          <span className="font-semibold text-slate-800">Circuit Campus</span>
+          <Wordmark />
         </div>
-        <div className="overflow-y-auto p-4 space-y-2">
-          <p className="px-1 text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Navigation</p>
+        <div className="overflow-y-auto p-4 space-y-1">
+          <p className="px-1 mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">Navigation</p>
           <NavList links={links} pathname={pathname} onNavigate={() => setMobileNavOpen(false)} />
         </div>
         <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 p-4">
@@ -192,25 +214,25 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)]">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:block space-y-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm self-start sticky top-24">
-          <div>
-            <p className="text-sm font-semibold text-slate-600">Navigation</p>
-            <div className="mt-4 space-y-2">
+        <aside className="hidden lg:block space-y-6 self-start sticky top-24">
+          <div className="rounded-md border border-slate-200 bg-white p-4">
+            <p className="px-1 mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">Navigation</p>
+            <div className="space-y-1">
               <NavList links={links} pathname={pathname} />
             </div>
           </div>
 
-          <div className="rounded-3xl bg-slate-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Circuit Campus</p>
-            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
-              Nigerian secondary school LMS — JSS1 to SS3.
+          <div className="rounded-md border border-[#17233d]/10 bg-[#17233d]/[0.04] p-4">
+            <p className="font-display text-sm text-[#17233d]">Circuit Campus</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+              A school portal for JSS1 to SS3 — one login for every class.
             </p>
           </div>
         </aside>
 
-        <main className="min-w-0 rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm">{children}</main>
+        <main className="min-w-0 rounded-md border border-slate-200 bg-white p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

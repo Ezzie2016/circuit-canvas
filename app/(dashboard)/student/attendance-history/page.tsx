@@ -63,19 +63,19 @@ export default function StudentAttendanceHistoryPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm text-slate-500">Total Sessions</p>
           <p className="mt-2 text-3xl font-bold text-slate-900">{records.length}</p>
         </div>
-        <div className="rounded-3xl border border-green-200 bg-green-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-green-200 bg-green-50 p-6 shadow-sm">
           <p className="text-sm text-green-700">Present</p>
           <p className="mt-2 text-3xl font-bold text-green-600">{presentCount}</p>
         </div>
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
           <p className="text-sm text-red-700">Absent</p>
           <p className="mt-2 text-3xl font-bold text-red-600">{absentCount}</p>
         </div>
-        <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 shadow-sm">
           <p className="text-sm text-blue-700">Attendance Rate</p>
           <p className="mt-2 text-3xl font-bold text-blue-600">{attendanceRate}%</p>
         </div>
@@ -116,7 +116,7 @@ export default function StudentAttendanceHistoryPage() {
       </div>
 
       {/* Attendance Records Table */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-slate-900 mb-4">
           Session Records
         </h2>
@@ -198,7 +198,7 @@ export default function StudentAttendanceHistoryPage() {
       </div>
 
       {/* Info Box */}
-      <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
         <h3 className="font-semibold text-blue-900">Attendance Information</h3>
         <ul className="mt-3 space-y-2 text-sm text-blue-800">
           <li>

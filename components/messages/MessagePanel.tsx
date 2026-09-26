@@ -101,7 +101,7 @@ export default function MessagePanel({ role }: { role: "STUDENT" | "TEACHER" }) 
 
   if (loading) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm text-slate-500">Loading messages…</p>
       </div>
     );
@@ -109,7 +109,7 @@ export default function MessagePanel({ role }: { role: "STUDENT" | "TEACHER" }) 
 
   if (!courses.length) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm text-slate-500">
           {role === "STUDENT"
             ? "Enroll in a course to start messaging your teacher."
@@ -125,13 +125,13 @@ export default function MessagePanel({ role }: { role: "STUDENT" | "TEACHER" }) 
     .reverse();
 
   return (
-    <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold text-slate-900">Course Messages</h2>
         <label className="block sm:w-64">
           <span className="sr-only">Course</span>
           <select
-            className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-[#1d6d58]/15"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/15"
             onChange={(event) => setSelectedCourseId(event.target.value)}
             value={selectedCourseId}
           >
@@ -144,7 +144,7 @@ export default function MessagePanel({ role }: { role: "STUDENT" | "TEACHER" }) 
         </label>
       </div>
 
-      <div className="max-h-96 space-y-3 overflow-y-auto rounded-2xl bg-slate-50 p-4">
+      <div className="max-h-96 space-y-3 overflow-y-auto rounded-lg bg-slate-50 p-4">
         {courseMessages.length ? (
           courseMessages.map((message) => (
             <MessageBubble

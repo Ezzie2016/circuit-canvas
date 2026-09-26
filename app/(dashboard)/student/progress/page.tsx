@@ -84,44 +84,44 @@ export default function StudentProgressPage() {
       </div>
 
       {loading ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm text-slate-600">Loading progress metrics...</div>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm text-slate-600">Loading progress metrics...</div>
       ) : error ? (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">{error}</div>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">{error}</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-4">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm text-slate-500">Course completion</p>
-            <p className="mt-4 text-4xl font-semibold text-[#1d6d58]">{analytics?.averageCompletion ?? 0}%</p>
+            <p className="mt-4 text-4xl font-semibold text-[#17233d]">{analytics?.averageCompletion ?? 0}%</p>
             <p className="mt-2 text-sm text-slate-500">Based on assignments across your enrolled courses.</p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm text-slate-500">On-time submissions</p>
-            <p className="mt-4 text-4xl font-semibold text-[#1d6d58]">{onTimeRate}%</p>
+            <p className="mt-4 text-4xl font-semibold text-[#17233d]">{onTimeRate}%</p>
             <p className="mt-2 text-sm text-slate-500">Submissions completed by due date.</p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm text-slate-500">Attendance rate</p>
-            <p className="mt-4 text-4xl font-semibold text-[#1d6d58]">{analytics?.attendanceRate ?? 0}%</p>
+            <p className="mt-4 text-4xl font-semibold text-[#17233d]">{analytics?.attendanceRate ?? 0}%</p>
             <p className="mt-2 text-sm text-slate-500">Latest attendance from your enrolled classes.</p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm text-slate-500">Pending assignments</p>
-            <p className="mt-4 text-4xl font-semibold text-[#1d6d58]">{analytics?.pendingAssignments ?? 0}</p>
+            <p className="mt-4 text-4xl font-semibold text-[#17233d]">{analytics?.pendingAssignments ?? 0}</p>
             <p className="mt-2 text-sm text-slate-500">Assignments not yet submitted.</p>
           </div>
         </div>
       )}
 
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">Recent submissions</h2>
             <p className="mt-1 text-sm text-slate-600">Review your latest work and status updates.</p>
           </div>
-          <Link href="/student/assignments" className="text-sm font-semibold text-[#1d6d58] hover:text-[#124e40]">
+          <Link href="/student/assignments" className="text-sm font-semibold text-[#17233d] hover:text-[#0f1729]">
             See assignments
           </Link>
         </div>
@@ -131,7 +131,7 @@ export default function StudentProgressPage() {
         ) : (
           <div className="grid gap-3">
             {submissions.slice(0, 5).map((submission) => (
-              <div key={submission.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div key={submission.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="font-semibold text-slate-900">{submission.assignmentTitle}</p>

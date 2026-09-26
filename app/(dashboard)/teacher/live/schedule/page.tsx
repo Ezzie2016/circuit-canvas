@@ -67,15 +67,15 @@ export default function TeacherLiveSchedulePage() {
         <p className="mt-2 text-slate-600">Create a live session and share the join link with your students.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Session title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Course
-            <select value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+            <select value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm">
               {courses.length > 0 ? (
                 courses.map((course) => (
                   <option key={course.id} value={course.id}>
@@ -92,19 +92,19 @@ export default function TeacherLiveSchedulePage() {
         <div className="grid gap-6 md:grid-cols-3">
           <label className="space-y-2 text-sm text-slate-700">
             Start time
-            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Duration (minutes)
-            <input type="number" min={15} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input type="number" min={15} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Join link
-            <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
         </div>
 
-        <button type="submit" className="rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white hover:bg-[#124e40]">
+        <button type="submit" className="rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]">
           Schedule session
         </button>
 

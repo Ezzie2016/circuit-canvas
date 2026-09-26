@@ -69,7 +69,7 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder={`Search ${meta.label.toLowerCase()}…`}
-              className="rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:border-[#1d6d58] focus:outline-none w-52"
+              className="rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-sm text-slate-700 placeholder-slate-400 focus:border-[#17233d] focus:outline-none w-52"
             />
           </div>
           {query && (
@@ -83,7 +83,7 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
       {users.length === 0 ? (
         <p className="pl-5 text-sm text-slate-400">No {meta.label.toLowerCase()} yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           {filtered.length === 0 ? (
             <div className="px-6 py-8 text-center text-sm text-slate-400">
               No {meta.label.toLowerCase()} match &ldquo;{query}&rdquo;
@@ -147,7 +147,7 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
                           <button
                             key={p}
                             onClick={() => setPage(p as number)}
-                            className={`rounded-lg px-3 py-1.5 font-medium ${safePage === p ? "bg-[#1d6d58] text-white" : "hover:bg-slate-100 text-slate-600"}`}
+                            className={`rounded-lg px-3 py-1.5 font-medium ${safePage === p ? "bg-[#17233d] text-white" : "hover:bg-slate-100 text-slate-600"}`}
                           >
                             {p}
                           </button>
@@ -277,13 +277,13 @@ export default function AdminUsersPage() {
         <div className="flex gap-2">
           <button
             onClick={() => { setShowStudentForm(!showStudentForm); setShowInviteForm(false); setStudentResult(null); setStudentError(null); }}
-            className="rounded-xl border border-[#1d6d58] px-4 py-2.5 text-sm font-semibold text-[#1d6d58] hover:bg-emerald-50"
+            className="rounded-xl border border-[#17233d] px-4 py-2.5 text-sm font-semibold text-[#17233d] hover:bg-emerald-50"
           >
             {showStudentForm ? "Cancel" : "+ Register Student"}
           </button>
           <button
             onClick={() => { setShowInviteForm(!showInviteForm); setShowStudentForm(false); setInviteResult(null); setInviteError(null); }}
-            className="rounded-xl bg-[#1d6d58] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40]"
+            className="rounded-xl bg-[#17233d] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729]"
           >
             {showInviteForm ? "Cancel" : "+ Invite Teacher"}
           </button>
@@ -292,7 +292,7 @@ export default function AdminUsersPage() {
 
       {/* Invite Form */}
       {showInviteForm && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">Invite a Teacher</h2>
           <p className="mt-1 text-sm text-slate-500">
             An invite link will be generated. Share it with the teacher so they can set their password and activate their account.
@@ -306,7 +306,7 @@ export default function AdminUsersPage() {
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 placeholder="e.g. Jane Smith"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             <div>
@@ -317,7 +317,7 @@ export default function AdminUsersPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="teacher@example.com"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             {inviteError && <p className="sm:col-span-2 text-sm text-red-600">{inviteError}</p>}
@@ -325,7 +325,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={inviting}
-                className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+                className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
               >
                 {inviting ? "Sending…" : "Generate Invite Link"}
               </button>
@@ -333,7 +333,7 @@ export default function AdminUsersPage() {
           </form>
 
           {inviteResult && (
-            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-800">Invite created for {inviteResult.email}</p>
               <p className="mt-1 text-sm text-emerald-700">Share this link with the teacher to let them set their password:</p>
               <div className="mt-2 flex items-center gap-2">
@@ -357,7 +357,7 @@ export default function AdminUsersPage() {
 
       {/* Register Student Form */}
       {showStudentForm && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">Register a Student</h2>
           <p className="mt-1 text-sm text-slate-500">
             An invite link will be generated. Share it with the student so they can set their password.
@@ -371,7 +371,7 @@ export default function AdminUsersPage() {
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder="e.g. Amina Yusuf"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             <div>
@@ -382,7 +382,7 @@ export default function AdminUsersPage() {
                 value={studentEmail}
                 onChange={(e) => setStudentEmail(e.target.value)}
                 placeholder="student@example.com"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             <div>
@@ -394,7 +394,7 @@ export default function AdminUsersPage() {
                 value={studentMatric}
                 onChange={(e) => setStudentMatric(e.target.value)}
                 placeholder="e.g. JSS1/2024/001"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             {studentError && <p className="sm:col-span-2 text-sm text-red-600">{studentError}</p>}
@@ -402,7 +402,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={addingStudent}
-                className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+                className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
               >
                 {addingStudent ? "Registering…" : "Generate Invite Link"}
               </button>
@@ -410,7 +410,7 @@ export default function AdminUsersPage() {
           </form>
 
           {studentResult && (
-            <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-sm font-semibold text-emerald-800">Student registered: {studentResult.email}</p>
               <p className="mt-1 text-sm text-emerald-700">Share this link so they can set their password:</p>
               <div className="mt-2 flex items-center gap-2">
@@ -434,7 +434,7 @@ export default function AdminUsersPage() {
 
       {/* User sections */}
       {loadingUsers ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center text-slate-400 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-400 shadow-sm">
           Loading users…
         </div>
       ) : (

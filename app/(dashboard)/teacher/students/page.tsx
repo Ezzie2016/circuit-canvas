@@ -34,7 +34,7 @@ export default function TeacherStudentsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {students.map((student) => (
-          <div key={student.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div key={student.id} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-900">{student.name}</h2>
             <p className="mt-2 text-sm text-slate-600">{student.email}</p>
             <p className="mt-4 rounded-xl bg-slate-100 px-3 py-1 text-sm text-slate-700">Student</p>

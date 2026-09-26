@@ -119,7 +119,7 @@ export default function StudentAssignmentsPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#1d6d58] border-t-transparent"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#17233d] border-t-transparent"></div>
           <p className="mt-4 text-slate-600">Loading assignments...</p>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function StudentAssignmentsPage() {
       </div>
 
       {/* Real-time live indicator (SSE-backed). */}
-      <div className="flex items-center gap-2 rounded-3xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
+      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600">
         <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
         <span>Live notifications enabled</span>
         {notifications.length > 0 && (
@@ -156,7 +156,7 @@ export default function StudentAssignmentsPage() {
 
 
       {assignments.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
           <p className="text-xl font-semibold text-slate-700">No assignments yet</p>
           <p className="mt-2 text-sm text-slate-500">
             Assignments will appear here when your teacher posts them. This page refreshes automatically.
@@ -254,7 +254,7 @@ function AssignmentCard({
   return (
     <Link
       href={`/student/assignments/${assignment.id}`}
-      className="block rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-[#1d6d58] hover:shadow-md"
+      className="block rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-[#17233d] hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">

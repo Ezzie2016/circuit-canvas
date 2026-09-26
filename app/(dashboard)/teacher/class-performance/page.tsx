@@ -44,7 +44,7 @@ export default function ClassPerformancePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/teacher" className="text-sm font-medium text-[#1d6d58] hover:underline">
+        <Link href="/teacher" className="text-sm font-medium text-[#17233d] hover:underline">
           ← Back to Dashboard
         </Link>
       </div>
@@ -55,29 +55,29 @@ export default function ClassPerformancePage() {
       </div>
 
       {courses.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
           <p className="text-slate-500">No course data available yet.</p>
         </div>
       ) : (
         <div className="grid gap-6">
           {courses.map((course) => (
-            <div key={course.courseId} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div key={course.courseId} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-slate-900 mb-5">{course.courseName}</h2>
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-6">
-                <div className="rounded-2xl bg-slate-50 p-4">
+                <div className="rounded-lg bg-slate-50 p-4">
                   <p className="text-xs text-slate-500 mb-1">Total Students</p>
                   <p className="text-2xl font-bold text-slate-900">{course.totalStudents}</p>
                 </div>
-                <div className="rounded-2xl bg-blue-50 p-4">
+                <div className="rounded-lg bg-blue-50 p-4">
                   <p className="text-xs text-blue-600 mb-1">Avg Grade</p>
                   <p className="text-2xl font-bold text-blue-700">{course.averageGrade}%</p>
                 </div>
-                <div className="rounded-2xl bg-emerald-50 p-4">
+                <div className="rounded-lg bg-emerald-50 p-4">
                   <p className="text-xs text-emerald-600 mb-1">Submission Rate</p>
                   <p className="text-2xl font-bold text-emerald-700">{course.submitRate}%</p>
                 </div>
-                <div className="rounded-2xl bg-purple-50 p-4">
+                <div className="rounded-lg bg-purple-50 p-4">
                   <p className="text-xs text-purple-600 mb-1">Attendance Rate</p>
                   <p className="text-2xl font-bold text-purple-700">{course.attendanceRate}%</p>
                 </div>
