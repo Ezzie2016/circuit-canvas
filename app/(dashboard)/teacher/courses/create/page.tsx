@@ -75,7 +75,7 @@ export default function TeacherCourseCreatePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Create Course</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Create Course</h1>
         <p className="mt-2 text-slate-600">Launch a new course and publish it to your students.</p>
       </div>
 

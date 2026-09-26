@@ -50,7 +50,7 @@ export default function ClassPerformancePage() {
       </div>
 
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Class Performance Analytics</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Class Performance Analytics</h1>
         <p className="mt-2 text-slate-600">Submission rates, grades, and attendance across your courses.</p>
       </div>
 
@@ -62,7 +62,7 @@ export default function ClassPerformancePage() {
         <div className="grid gap-6">
           {courses.map((course) => (
             <div key={course.courseId} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-slate-900 mb-5">{course.courseName}</h2>
+              <h2 className="font-display text-xl font-semibold text-slate-900 mb-5">{course.courseName}</h2>
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-6">
                 <div className="rounded-lg bg-slate-50 p-4">

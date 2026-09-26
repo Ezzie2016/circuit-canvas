@@ -62,7 +62,7 @@ export default function TeacherSubmissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Submissions</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Submissions</h1>
         <p className="mt-2 text-slate-600">Monitor assignment submissions and grade the work that needs your attention.</p>
       </div>
 
@@ -80,7 +80,7 @@ export default function TeacherSubmissionsPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-slate-500">{assignment.course}</p>
-                  <h2 className="mt-1 text-lg font-semibold text-slate-900">{assignment.title}</h2>
+                  <h2 className="font-display mt-1 text-lg font-semibold text-slate-900">{assignment.title}</h2>
                   <p className="mt-1 text-sm text-slate-500">Due: {assignment.dueDate}</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -108,7 +108,7 @@ export default function TeacherSubmissionsPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-slate-500">{assignment.course}</p>
-                  <h2 className="mt-1 text-lg font-semibold text-slate-900">{assignment.title}</h2>
+                  <h2 className="font-display mt-1 text-lg font-semibold text-slate-900">{assignment.title}</h2>
                   <p className="mt-1 text-sm text-slate-500">Due: {assignment.dueDate}</p>
                 </div>
                 <Link

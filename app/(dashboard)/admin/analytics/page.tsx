@@ -101,7 +101,7 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Analytics</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Analytics</h1>
         <p className="mt-2 text-slate-600">View performance metrics for individual teachers and students.</p>
       </div>
 
@@ -142,7 +142,7 @@ export default function AdminAnalyticsPage() {
 
               {selectedTeacher && (
                 <>
-                  <h2 className="text-lg font-semibold text-slate-900">{selectedTeacher.name} — Overview</h2>
+                  <h2 className="font-display text-lg font-semibold text-slate-900">{selectedTeacher.name} — Overview</h2>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[
                       { label: "Courses", value: teacherAnalytics?.totalCourses },
@@ -219,7 +219,7 @@ export default function AdminAnalyticsPage() {
 
               {selectedStudent && (
                 <>
-                  <h2 className="text-lg font-semibold text-slate-900">{selectedStudent.name} — Overview</h2>
+                  <h2 className="font-display text-lg font-semibold text-slate-900">{selectedStudent.name} — Overview</h2>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {[
                       { label: "Enrolled Courses", value: studentAnalytics?.enrolledCourses },

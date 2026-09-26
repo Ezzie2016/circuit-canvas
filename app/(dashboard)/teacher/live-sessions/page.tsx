@@ -71,7 +71,7 @@ export default function TeacherLiveSessionsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
           <p className="mt-2 text-slate-600">
             Manage live classes, join meetings as host, and track student attendance.
           </p>

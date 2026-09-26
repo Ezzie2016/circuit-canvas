@@ -106,7 +106,7 @@ export default function StudentCourseDetailPage() {
             <span className="rounded-lg bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">{course.code}</span>
           )}
         </div>
-        <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>
 
@@ -114,7 +114,7 @@ export default function StudentCourseDetailPage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Course details</h2>
+          <h2 className="font-display text-xl font-semibold text-slate-900">Course details</h2>
           <p className="mt-3 text-slate-600">Status: {course.status}</p>
           <p className="mt-2 text-slate-600">Enrolled: {course.students} students</p>
           {course.description ? <p className="mt-4 text-slate-600">{course.description}</p> : null}
@@ -126,7 +126,7 @@ export default function StudentCourseDetailPage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Next steps</h2>
+          <h2 className="font-display text-xl font-semibold text-slate-900">Next steps</h2>
           <p className="mt-3 text-slate-600">Check the course syllabus, upcoming live sessions, and active assignments in this course.</p>
           {!course.enrolled ? (
             <button

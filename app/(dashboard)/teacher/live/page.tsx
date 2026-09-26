@@ -76,7 +76,7 @@ export default function TeacherLivePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
         <p className="mt-2 text-slate-600">Manage upcoming sessions and schedule new live classes for your courses.</p>
       </div>
 
@@ -129,7 +129,7 @@ export default function TeacherLivePage() {
         {sessions.map((session) => (
           <div key={session.id} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm uppercase tracking-[0.18em] text-slate-500">{session.course}</p>
-            <h2 className="mt-2 text-xl font-semibold text-slate-900">{session.title}</h2>
+            <h2 className="font-display mt-2 text-xl font-semibold text-slate-900">{session.title}</h2>
             <p className="mt-3 text-slate-600">Starts: {new Date(session.start).toLocaleString()}</p>
             <p className="mt-1 text-slate-600">Duration: {session.duration} min</p>
             <a href={session.joinUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-xl bg-[#17233d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f1729]">

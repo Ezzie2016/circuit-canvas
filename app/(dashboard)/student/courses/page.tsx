@@ -82,7 +82,7 @@ export default function StudentCoursesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Browse Courses</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Browse Courses</h1>
         <p className="mt-2 text-slate-600">Enroll in published courses and see your active classes once registration is complete.</p>
       </div>
 
@@ -100,7 +100,7 @@ export default function StudentCoursesPage() {
         <>
           {orderedLevels.map((level) => (
             <section key={level}>
-              <h2 className="mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
+              <h2 className="font-display mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
                 <span className="rounded-lg bg-[#17233d] px-3 py-1 text-sm font-bold text-white">{level}</span>
                 <span className="text-slate-400 text-sm font-normal">— {grouped[level].length} course{grouped[level].length !== 1 ? "s" : ""}</span>
               </h2>
@@ -119,7 +119,7 @@ export default function StudentCoursesPage() {
 
           {unassigned.length > 0 && (
             <section>
-              <h2 className="mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
+              <h2 className="font-display mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
                 <span className="rounded-lg bg-slate-400 px-3 py-1 text-sm font-bold text-white">General</span>
                 <span className="text-slate-400 text-sm font-normal">— {unassigned.length} course{unassigned.length !== 1 ? "s" : ""}</span>
               </h2>

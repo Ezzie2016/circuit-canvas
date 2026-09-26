@@ -64,7 +64,7 @@ export default function RecentActivityPage() {
         ← Back to Dashboard
       </Link>
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900">Recent System Activity</h1>
+        <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-900">Recent System Activity</h1>
 
         <div className="space-y-4">
           {activities.length === 0 ? (

@@ -97,13 +97,13 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">My Profile</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">My Profile</h1>
         <p className="mt-1 text-slate-600">Manage your account details and password.</p>
       </div>
 
       {/* Account Info */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Account Info</h2>
+        <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Account Info</h2>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">Name</span>
@@ -134,7 +134,7 @@ export default function ProfilePage() {
       {/* Update Name — admin only */}
       {profile.role === "ADMIN" && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
           <form onSubmit={handleNameSave} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700">Full Name</label>
@@ -162,7 +162,7 @@ export default function ProfilePage() {
 
       {/* Change Password */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Change Password</h2>
+        <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Change Password</h2>
         <form onSubmit={handlePasswordSave} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700">Current Password</label>

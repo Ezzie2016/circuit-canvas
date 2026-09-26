@@ -104,7 +104,7 @@ export default function StudentGradesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Grades</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Grades</h1>
         <p className="mt-1 text-slate-600">Your course grades and assessment breakdown.</p>
       </div>
 
@@ -128,7 +128,7 @@ export default function StudentGradesPage() {
       {/* Per-course grade breakdown */}
       {courseGrades.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-900">Course Grade Summary</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Course Grade Summary</h2>
           {courseGrades.map((cg) => {
             const totalPct = cg.total.max > 0 ? Math.round((cg.total.earned / cg.total.max) * 100) : null;
             const label = totalPct != null ? gradeLabel(totalPct) : null;
@@ -262,7 +262,7 @@ export default function StudentGradesPage() {
       {/* Detailed assignment list */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">Assessment Details</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Assessment Details</h2>
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}

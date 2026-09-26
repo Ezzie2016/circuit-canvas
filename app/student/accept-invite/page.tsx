@@ -56,7 +56,7 @@ function AcceptInviteForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Set Your Password</h1>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Set Your Password</h1>
           <p className="mt-1 text-sm text-slate-500">
             Create a password to activate your student account on Circuit Campus.
           </p>

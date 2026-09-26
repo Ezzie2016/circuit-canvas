@@ -143,7 +143,7 @@ export default function TeacherDashboard() {
         <div className="max-w-7xl mx-auto flex flex-col gap-4 px-4 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Teacher dashboard</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
+            <h1 className="font-display mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
             <p className="mt-1 text-sm text-slate-600">Manage courses, assignments, submissions, and live sessions from one place.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -181,7 +181,7 @@ export default function TeacherDashboard() {
         {/* Courses & Assignments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#17233d] mb-4">My Courses</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">My Courses</h2>
             <ul className="space-y-3">
               {courses.length > 0 ? (
                 courses.map((course) => (
@@ -202,7 +202,7 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#17233d] mb-4">Pending Submissions</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Pending Submissions</h2>
             <ul className="space-y-3">
               {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
                 submissions
@@ -226,7 +226,7 @@ export default function TeacherDashboard() {
 
         {/* Grading Panel */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Recent Submissions to Grade</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Recent Submissions to Grade</h2>
           {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -266,7 +266,7 @@ export default function TeacherDashboard() {
 
         {/* Class Performance */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Class Performance Overview</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Class Performance Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
               <p className="text-gray-600 text-sm">Average Completion</p>
@@ -286,7 +286,7 @@ export default function TeacherDashboard() {
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
           {notifications.length > 0 ? (
             <ul className="space-y-3">
               {notifications.map((n) => (
@@ -309,7 +309,7 @@ export default function TeacherDashboard() {
         {upcomingSessions > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#17233d]">Upcoming Live Sessions</h2>
+              <h2 className="font-display text-xl font-bold text-[#17233d]">Upcoming Live Sessions</h2>
               <Link href="/teacher/live-sessions" className="text-blue-600 hover:text-blue-700 text-sm font-semibold">
                 View All →
               </Link>

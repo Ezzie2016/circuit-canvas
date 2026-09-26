@@ -56,7 +56,7 @@ function AcceptInviteForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0-1.657-1.343-3-3-3S6 9.343 6 11m6 0c0-1.657 1.343-3 3-3s3 1.343 3 3m-6 0v5m0 0H9m3 0h3" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Activate Your Account</h1>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Activate Your Account</h1>
           <p className="mt-1 text-sm text-slate-500">Set a password to complete your teacher account setup.</p>
         </div>
 

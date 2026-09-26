@@ -134,7 +134,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto flex flex-col gap-4 px-4 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Admin dashboard</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
+            <h1 className="font-display mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
             <p className="mt-1 text-sm text-slate-600">Monitor users, courses, analytics, and system activity from one place.</p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
         <div className="mb-12 bg-white rounded-lg shadow-lg p-6 border-l-4 border-[#17233d]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-[#17233d]">Course Registration Status</h2>
+              <h2 className="font-display text-xl font-bold text-[#17233d]">Course Registration Status</h2>
               <p className="mt-1 text-sm text-slate-600">Control whether students can enroll and teachers can create new courses.</p>
               <p className="mt-3 text-sm">
                 {registrationOpen === null ? (
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
         {/* Management Sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#17233d] mb-4">User Breakdown</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">User Breakdown</h2>
             <div className="space-y-3 mb-4">
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
                 <span className="font-semibold">Students</span>
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#17233d] mb-4">System Actions</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">System Actions</h2>
             <div className="space-y-2">
               <Link href="/admin/users">
                 <button className="w-full p-3 text-left bg-gray-50 hover:bg-gray-100 rounded font-semibold text-[#17233d]">
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
 
         {/* Departments */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Departments / Arms</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Departments / Arms</h2>
           <p className="text-sm text-slate-500 mb-4">Manage the arms available for grouping courses (e.g. Science, Arts, Commercial, General).</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {departments.map((d) => (
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
           {notifications.length > 0 ? (
             <ul className="space-y-3">
               {notifications.map((n) => (
@@ -349,7 +349,7 @@ export default function AdminDashboard() {
 
         {/* Recent Activity */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">Recent System Activity</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Recent System Activity</h2>
           {activities.length > 0 ? (
             <div className="space-y-3">
               {[...activities]
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
 
         {/* User Distribution */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#17233d] mb-4">User Distribution</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">User Distribution</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-blue-50 rounded">
               <div className="text-blue-600 font-semibold text-sm mb-2">STUDENTS</div>

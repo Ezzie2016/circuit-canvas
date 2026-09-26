@@ -202,7 +202,7 @@ export default function AssignmentDetailTeacherPage() {
           ← Assignments
         </Link>
         <div className="mt-2 flex items-start gap-3 flex-wrap">
-          <h1 className="text-3xl font-semibold text-slate-900">{data.title}</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">{data.title}</h1>
           <span className={`mt-1.5 rounded-full px-3 py-0.5 text-xs font-bold ${typeInfo.color}`}>
             {typeInfo.label} · {typeInfo.max} marks
           </span>

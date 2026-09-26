@@ -46,7 +46,7 @@ export default function TeacherCoursesPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Manage Courses</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Manage Courses</h1>
           <p className="mt-2 text-slate-600">View and update course offerings for your teaching roster.</p>
         </div>
         <Link href="/teacher/courses/create" className="rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]">
@@ -60,7 +60,7 @@ export default function TeacherCoursesPage() {
 
       {orderedLevels.map((level) => (
         <section key={level}>
-          <h2 className="mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
+          <h2 className="font-display mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
             <span className="rounded-lg bg-[#17233d] px-3 py-1 text-sm font-bold text-white">{level}</span>
             <span className="text-slate-400 text-sm font-normal">— {grouped[level].length} course{grouped[level].length !== 1 ? "s" : ""}</span>
           </h2>
@@ -74,7 +74,7 @@ export default function TeacherCoursesPage() {
 
       {unassigned.length > 0 && (
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
+          <h2 className="font-display mb-4 text-lg font-semibold text-slate-700 flex items-center gap-2">
             <span className="rounded-lg bg-slate-400 px-3 py-1 text-sm font-bold text-white">Unassigned</span>
             <span className="text-slate-400 text-sm font-normal">— {unassigned.length} course{unassigned.length !== 1 ? "s" : ""}</span>
           </h2>

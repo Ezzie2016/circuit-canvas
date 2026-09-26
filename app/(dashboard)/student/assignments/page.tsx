@@ -130,7 +130,7 @@ export default function StudentAssignmentsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Assignments</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Assignments</h1>
           <p className="mt-2 text-slate-600">
             Review upcoming due dates, submission status, and assignment details.
           </p>
@@ -259,7 +259,7 @@ function AssignmentCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <p className="text-sm text-slate-500">{assignment.course}</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-900">{assignment.title}</h2>
+          <h2 className="font-display mt-1 text-xl font-semibold text-slate-900">{assignment.title}</h2>
         </div>
         <span className={`shrink-0 rounded-xl px-3 py-1 text-sm font-semibold ${badgeStyles[variant]}`}>
           {badgeLabel[variant]}

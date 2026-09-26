@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#f6f7f3] p-8 text-center">
-      <h1 className="text-5xl font-semibold text-[#17233d]">Circuit Canvas</h1>
+      <h1 className="font-display text-5xl font-semibold text-[#17233d]">Circuit Canvas</h1>
       <p className="mt-4 max-w-xl text-lg text-[#46534b]">
         A learning portal for students, teachers, and admins.
       </p>

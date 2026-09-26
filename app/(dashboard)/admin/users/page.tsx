@@ -54,7 +54,7 @@ function UserSection({ role, users }: { role: RoleKey; users: User[] }) {
       {/* Section header */}
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <span className={`h-2.5 w-2.5 rounded-full ${meta.dot}`} />
-        <h2 className="text-base font-semibold text-slate-700">{meta.label}</h2>
+        <h2 className="font-display text-base font-semibold text-slate-700">{meta.label}</h2>
         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
           {users.length}
         </span>
@@ -271,7 +271,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Manage Users</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Manage Users</h1>
           <p className="mt-1 text-slate-600">View all users, invite teachers, and register students.</p>
         </div>
         <div className="flex gap-2">
@@ -293,7 +293,7 @@ export default function AdminUsersPage() {
       {/* Invite Form */}
       {showInviteForm && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Invite a Teacher</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Invite a Teacher</h2>
           <p className="mt-1 text-sm text-slate-500">
             An invite link will be generated. Share it with the teacher so they can set their password and activate their account.
           </p>
@@ -358,7 +358,7 @@ export default function AdminUsersPage() {
       {/* Register Student Form */}
       {showStudentForm && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Register a Student</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Register a Student</h2>
           <p className="mt-1 text-sm text-slate-500">
             An invite link will be generated. Share it with the student so they can set their password.
           </p>

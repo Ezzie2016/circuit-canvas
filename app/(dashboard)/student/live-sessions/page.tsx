@@ -72,7 +72,7 @@ export default function StudentLiveSessionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
         <p className="mt-2 text-slate-600">
           Join your course live sessions. You must attend for at least 60 minutes to be marked present.
         </p>

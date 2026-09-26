@@ -84,7 +84,7 @@ export default function TeacherCourseDetailPage() {
             <span className="rounded-lg bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">{course.code}</span>
           )}
         </div>
-        <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>
 

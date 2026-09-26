@@ -53,7 +53,7 @@ export default function StudentAttendanceHistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">
+        <h1 className="font-display text-3xl font-semibold text-slate-900">
           Attendance History
         </h1>
         <p className="mt-2 text-slate-600">
@@ -117,7 +117,7 @@ export default function StudentAttendanceHistoryPage() {
 
       {/* Attendance Records Table */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+        <h2 className="font-display text-xl font-semibold text-slate-900 mb-4">
           Session Records
         </h2>
         {filteredRecords.length > 0 ? (

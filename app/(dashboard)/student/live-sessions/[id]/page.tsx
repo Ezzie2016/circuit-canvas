@@ -184,7 +184,7 @@ export default function StudentLiveSessionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">{session.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{session.title}</h1>
         <p className="mt-2 text-slate-600">{session.course.title}</p>
       </div>
 
@@ -221,7 +221,7 @@ export default function StudentLiveSessionPage() {
       {/* Session Ended */}
       {sessionExpired && !checkedIn && timerState === "not-joined" && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-          <h2 className="text-lg font-semibold text-red-900">Session Has Ended</h2>
+          <h2 className="font-display text-lg font-semibold text-red-900">Session Has Ended</h2>
           <p className="mt-2 text-sm text-red-800">
             This live session has ended. Contact your teacher if you need your attendance adjusted.
           </p>
@@ -231,7 +231,7 @@ export default function StudentLiveSessionPage() {
       {/* Check-in Code — primary attendance method */}
       {!checkedIn && sessionActive && timerState !== "left-present" && (
         <div className="rounded-xl border border-[#17233d] bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Enter Check-in Code</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Enter Check-in Code</h2>
           <p className="mt-1 text-sm text-slate-500">
             Your teacher will share a 6-character code during the class. Enter it here to be marked
             Present immediately.
@@ -268,7 +268,7 @@ export default function StudentLiveSessionPage() {
         <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-6">
           <div className="text-center">
             <p className="text-5xl">✓</p>
-            <h2 className="mt-2 text-2xl font-bold text-emerald-700">
+            <h2 className="font-display mt-2 text-2xl font-bold text-emerald-700">
               Attendance Recorded — PRESENT
             </h2>
             <p className="mt-3 text-sm text-emerald-800">
@@ -282,7 +282,7 @@ export default function StudentLiveSessionPage() {
       {/* Video link */}
       {sessionActive && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900 mb-3">Join the Video Call</h2>
+          <h2 className="font-display text-base font-semibold text-slate-900 mb-3">Join the Video Call</h2>
           <a
             href={session.link}
             target="_blank"

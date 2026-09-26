@@ -58,7 +58,7 @@ export default function StudentAssignmentDetailPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Assignment</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Assignment</h1>
           <p className="mt-2 text-slate-600">Due and title could not be loaded.</p>
         </div>
 
@@ -79,12 +79,12 @@ export default function StudentAssignmentDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">{assignment.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{assignment.title}</h1>
         <p className="mt-2 text-slate-600">{assignment.course} • due {assignment.dueDate}</p>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900">Submission instructions</h2>
+        <h2 className="font-display text-xl font-semibold text-slate-900">Submission instructions</h2>
         <p className="mt-3 text-slate-600">Prepare your answers, attach any supporting files, and upload them before the deadline.</p>
       </div>
 
@@ -210,7 +210,7 @@ function StudentSubmissionWidget({ assignmentId, currentStatus }: { assignmentId
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-xl font-semibold text-slate-900">Your status</h2>
+      <h2 className="font-display text-xl font-semibold text-slate-900">Your status</h2>
       <p className="mt-3 text-slate-700">Current status: <span className="font-semibold">{status}</span></p>
 
       {(earnedMarks !== null || totalMarks !== null || grade) && (

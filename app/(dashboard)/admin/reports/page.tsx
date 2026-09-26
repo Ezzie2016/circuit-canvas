@@ -66,7 +66,7 @@ export default function AdminReportsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Reports</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Reports</h1>
         <p className="mt-2 text-slate-600">School-wide numbers updated in real time.</p>
       </div>
 
