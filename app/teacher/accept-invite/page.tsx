@@ -49,19 +49,19 @@ function AcceptInviteForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1d6d58]">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-[#17233d]">
             <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0-1.657-1.343-3-3-3S6 9.343 6 11m6 0c0-1.657 1.343-3 3-3s3 1.343 3 3m-6 0v5m0 0H9m3 0h3" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Activate Your Account</h1>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Activate Your Account</h1>
           <p className="mt-1 text-sm text-slate-500">Set a password to complete your teacher account setup.</p>
         </div>
 
         {done ? (
-          <div className="rounded-2xl bg-emerald-50 p-5 text-center">
+          <div className="rounded-lg bg-emerald-50 p-5 text-center">
             <p className="font-semibold text-emerald-800">Account activated!</p>
             <p className="mt-1 text-sm text-emerald-600">Redirecting you to login…</p>
           </div>
@@ -75,7 +75,7 @@ function AcceptInviteForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             <div>
@@ -86,7 +86,7 @@ function AcceptInviteForm() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Repeat your password"
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
 
@@ -95,7 +95,7 @@ function AcceptInviteForm() {
             <button
               type="submit"
               disabled={submitting || !token}
-              className="w-full rounded-xl bg-[#1d6d58] py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              className="w-full rounded-xl bg-[#17233d] py-3 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
             >
               {submitting ? "Activating…" : "Activate Account"}
             </button>

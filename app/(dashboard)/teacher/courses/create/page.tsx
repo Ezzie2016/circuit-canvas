@@ -75,11 +75,11 @@ export default function TeacherCourseCreatePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Create Course</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Create Course</h1>
         <p className="mt-2 text-slate-600">Launch a new course and publish it to your students.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         {/* Row 1: Title + Code */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
@@ -89,7 +89,7 @@ export default function TeacherCourseCreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Introduction to Mathematics"
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
@@ -98,7 +98,7 @@ export default function TeacherCourseCreatePage() {
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="e.g. MAT101"
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
         </div>
@@ -110,7 +110,7 @@ export default function TeacherCourseCreatePage() {
             <select
               value={classLevel}
               onChange={(e) => setClassLevel(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             >
               <option value="">— Select class —</option>
               <optgroup label="Junior Secondary">
@@ -130,7 +130,7 @@ export default function TeacherCourseCreatePage() {
             <select
               value={departmentId}
               onChange={(e) => setDepartmentId(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             >
               <option value="">— Select department —</option>
               {departments.map((d) => (
@@ -147,7 +147,7 @@ export default function TeacherCourseCreatePage() {
             <input
               value={instructor}
               disabled
-              className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-500"
+              className="w-full rounded-lg border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-500"
             />
           </label>
         </div>
@@ -157,7 +157,7 @@ export default function TeacherCourseCreatePage() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             rows={4}
           />
         </label>
@@ -168,7 +168,7 @@ export default function TeacherCourseCreatePage() {
             value={meetingLink}
             onChange={(e) => setMeetingLink(e.target.value)}
             placeholder="https://meet.google.com/..."
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
           />
         </label>
 
@@ -178,7 +178,7 @@ export default function TeacherCourseCreatePage() {
             value={thumbnail}
             onChange={(e) => setThumbnail(e.target.value)}
             placeholder="https://..."
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
           />
         </label>
 
@@ -188,7 +188,7 @@ export default function TeacherCourseCreatePage() {
           className={`rounded-xl px-5 py-3 text-sm font-semibold text-white transition ${
             registrationOpen === false
               ? "bg-slate-300 cursor-not-allowed"
-              : "bg-[#1d6d58] hover:bg-[#124e40] disabled:opacity-60"
+              : "bg-[#17233d] hover:bg-[#0f1729] disabled:opacity-60"
           }`}
         >
           {registrationOpen === false ? "Registration closed" : submitting ? "Creating…" : "Publish course"}

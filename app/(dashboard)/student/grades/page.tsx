@@ -96,7 +96,7 @@ export default function StudentGradesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#1d6d58] border-t-transparent" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#17233d] border-t-transparent" />
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function StudentGradesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Grades</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Grades</h1>
         <p className="mt-1 text-slate-600">Your course grades and assessment breakdown.</p>
       </div>
 
@@ -128,14 +128,14 @@ export default function StudentGradesPage() {
       {/* Per-course grade breakdown */}
       {courseGrades.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-900">Course Grade Summary</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Course Grade Summary</h2>
           {courseGrades.map((cg) => {
             const totalPct = cg.total.max > 0 ? Math.round((cg.total.earned / cg.total.max) * 100) : null;
             const label = totalPct != null ? gradeLabel(totalPct) : null;
             const categories = ["ASSIGNMENT", "QUIZ", "MID_SEMESTER", "EXAM"];
 
             return (
-              <div key={cg.courseId} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div key={cg.courseId} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900">{cg.courseName}</h3>
@@ -171,7 +171,7 @@ export default function StudentGradesPage() {
                         <div className="flex-1 min-w-[80px] h-2 rounded-full bg-slate-100 overflow-hidden">
                           {cat.score != null && (
                             <div
-                              className="h-full rounded-full bg-[#1d6d58]"
+                              className="h-full rounded-full bg-[#17233d]"
                               style={{ width: `${(cat.score / cat.max) * 100}%` }}
                             />
                           )}
@@ -260,13 +260,13 @@ export default function StudentGradesPage() {
       )}
 
       {/* Detailed assignment list */}
-      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-900">Assessment Details</h2>
+          <h2 className="font-display text-lg font-semibold text-slate-900">Assessment Details</h2>
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
-            className="rounded-xl border border-slate-200 px-3 py-1.5 text-sm text-slate-700 focus:outline-none focus:border-[#1d6d58]"
+            className="rounded-xl border border-slate-200 px-3 py-1.5 text-sm text-slate-700 focus:outline-none focus:border-[#17233d]"
           >
             <option value="all">All Courses</option>
             {courses.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -360,13 +360,13 @@ export default function StudentGradesPage() {
                       </div>
 
                       {isOpen && (
-                        <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
                           <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2">
                             Your submission
                           </p>
                           {s.fileUrl && (
                             <a href={s.fileUrl} target="_blank" rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-sm font-semibold text-[#1d6d58] hover:underline">
+                              className="inline-flex items-center gap-2 text-sm font-semibold text-[#17233d] hover:underline">
                               📎 {s.fileName || "View file"}
                             </a>
                           )}

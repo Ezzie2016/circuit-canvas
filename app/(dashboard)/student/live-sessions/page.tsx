@@ -72,7 +72,7 @@ export default function StudentLiveSessionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
         <p className="mt-2 text-slate-600">
           Join your course live sessions. You must attend for at least 60 minutes to be marked present.
         </p>
@@ -122,7 +122,7 @@ export default function StudentLiveSessionsPage() {
       )}
 
       {sessions.length === 0 && (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
           <p className="text-slate-600">No live sessions scheduled for your courses.</p>
         </div>
       )}
@@ -142,7 +142,7 @@ function SessionCard({
 
   return (
     <div
-      className={`rounded-3xl border p-6 shadow-sm transition ${
+      className={`rounded-xl border p-6 shadow-sm transition ${
         active
           ? "border-emerald-300 bg-emerald-50"
           : expired
@@ -215,7 +215,7 @@ function SessionCard({
               </a>
               <Link
                 href={`/student/live-sessions/${session.id}`}
-                className="rounded-xl bg-[#1d6d58] px-5 py-2 text-sm font-semibold text-white hover:bg-[#124e40] text-center"
+                className="rounded-xl bg-[#17233d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f1729] text-center"
               >
                 Join + Track
               </Link>

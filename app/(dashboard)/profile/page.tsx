@@ -97,13 +97,13 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">My Profile</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">My Profile</h1>
         <p className="mt-1 text-slate-600">Manage your account details and password.</p>
       </div>
 
       {/* Account Info */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Account Info</h2>
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Account Info</h2>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">Name</span>
@@ -133,8 +133,8 @@ export default function ProfilePage() {
 
       {/* Update Name — admin only */}
       {profile.role === "ADMIN" && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Update Name</h2>
           <form onSubmit={handleNameSave} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700">Full Name</label>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
               />
             </div>
             {nameMsg && (
@@ -152,7 +152,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={savingName}
-              className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+              className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
             >
               {savingName ? "Saving…" : "Save Name"}
             </button>
@@ -161,8 +161,8 @@ export default function ProfilePage() {
       )}
 
       {/* Change Password */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Change Password</h2>
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">Change Password</h2>
         <form onSubmit={handlePasswordSave} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700">Current Password</label>
@@ -171,7 +171,7 @@ export default function ProfilePage() {
               required
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
             />
           </div>
           <div>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="At least 6 characters"
-              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
             />
           </div>
           <div>
@@ -192,7 +192,7 @@ export default function ProfilePage() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#1d6d58] focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#17233d] focus:outline-none"
             />
           </div>
           {passwordMsg && (
@@ -201,7 +201,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={savingPassword}
-            className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50"
+            className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50"
           >
             {savingPassword ? "Saving…" : "Change Password"}
           </button>

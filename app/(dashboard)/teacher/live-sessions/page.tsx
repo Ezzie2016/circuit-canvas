@@ -71,7 +71,7 @@ export default function TeacherLiveSessionsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
           <p className="mt-2 text-slate-600">
             Manage live classes, join meetings as host, and track student attendance.
           </p>
@@ -129,11 +129,11 @@ export default function TeacherLiveSessionsPage() {
       )}
 
       {sessions.length === 0 && (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
           <p className="text-slate-600">No live sessions scheduled yet.</p>
           <Link
             href="/teacher/live/schedule"
-            className="mt-4 inline-flex rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white hover:bg-[#124e40]"
+            className="mt-4 inline-flex rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]"
           >
             Schedule a session
           </Link>
@@ -141,7 +141,7 @@ export default function TeacherLiveSessionsPage() {
       )}
 
       {/* Info Box */}
-      <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6">
         <h3 className="font-semibold text-blue-900">How attendance works</h3>
         <ul className="mt-3 space-y-2 text-sm text-blue-800">
           <li>• <strong>Check-in Code:</strong> Generate a code during class — students enter it in the app to be marked Present instantly</li>
@@ -229,7 +229,7 @@ function SessionCard({
 
   return (
     <div
-      className={`rounded-3xl border p-6 shadow-sm transition ${
+      className={`rounded-xl border p-6 shadow-sm transition ${
         active
           ? "border-emerald-300 bg-emerald-50"
           : expired
@@ -296,7 +296,7 @@ function SessionCard({
                 href={hostUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl bg-[#1d6d58] px-5 py-2 text-sm font-semibold text-white hover:bg-[#124e40] text-center"
+                className="rounded-xl bg-[#17233d] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f1729] text-center"
               >
                 Join as Host
               </a>

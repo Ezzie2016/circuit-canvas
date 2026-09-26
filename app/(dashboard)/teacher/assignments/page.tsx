@@ -51,7 +51,7 @@ export default function TeacherAssignmentsPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#1d6d58] border-t-transparent"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#17233d] border-t-transparent"></div>
           <p className="mt-4 text-slate-600">Loading assignments...</p>
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function TeacherAssignmentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">Assignments</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">Assignments</h1>
           <p className="mt-2 text-slate-600">
             Manage coursework and track student submissions.
           </p>
@@ -78,15 +78,15 @@ export default function TeacherAssignmentsPage() {
 
       {/* Summary */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm text-slate-500">Total</p>
           <p className="mt-1 text-3xl font-bold text-slate-900">{assignments.length}</p>
         </div>
-        <div className="rounded-3xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
+        <div className="rounded-xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
           <p className="text-sm text-orange-700">Pending</p>
           <p className="mt-1 text-3xl font-bold text-orange-600">{pendingAssignments.length}</p>
         </div>
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
           <p className="text-sm text-emerald-700">Submitted</p>
           <p className="mt-1 text-3xl font-bold text-emerald-600">
             {assignments.reduce((sum, a) => sum + (a.submissionCount || 0), 0)}
@@ -95,14 +95,14 @@ export default function TeacherAssignmentsPage() {
       </div>
 
       {assignments.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
           <p className="text-xl font-semibold text-slate-700">No assignments yet</p>
           <p className="mt-2 text-sm text-slate-500">
             Create your first assignment to get started.
           </p>
           <Link
             href="/teacher/assignments/create"
-            className="mt-6 inline-flex items-center rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white hover:bg-[#124e40]"
+            className="mt-6 inline-flex items-center rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]"
           >
             Create assignment
           </Link>
@@ -143,11 +143,11 @@ function TeacherAssignmentCard({ assignment }: { assignment: Assignment }) {
   const isOverdue = new Date(assignment.dueDate) < new Date();
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex-1">
           <p className="text-sm text-slate-500">{assignment.course}</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-900">{assignment.title}</h2>
+          <h2 className="font-display mt-1 text-xl font-semibold text-slate-900">{assignment.title}</h2>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {(assignment.submissionCount || 0) > 0 && (
@@ -174,7 +174,7 @@ function TeacherAssignmentCard({ assignment }: { assignment: Assignment }) {
         </span>
         <Link
           href={`/teacher/assignments/${assignment.id}`}
-          className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#1d6d58] hover:text-[#1d6d58] transition"
+          className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#17233d] hover:text-[#17233d] transition"
         >
           View details →
         </Link>

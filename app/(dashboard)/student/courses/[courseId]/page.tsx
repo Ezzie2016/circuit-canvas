@@ -90,14 +90,14 @@ export default function StudentCourseDetailPage() {
   return (
     <div className="space-y-6">
       {course.thumbnail && (
-        <div className="w-full overflow-hidden rounded-3xl border border-slate-200 shadow-sm" style={{ aspectRatio: "16/5" }}>
+        <div className="w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm" style={{ aspectRatio: "16/5" }}>
           <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
         </div>
       )}
       <div>
         <div className="flex flex-wrap gap-1.5 mb-2">
           {course.classLevel && (
-            <span className="rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#1d6d58]">{course.classLevel}</span>
+            <span className="rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#17233d]">{course.classLevel}</span>
           )}
           {course.departmentName && (
             <span className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">{course.departmentName}</span>
@@ -106,15 +106,15 @@ export default function StudentCourseDetailPage() {
             <span className="rounded-lg bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">{course.code}</span>
           )}
         </div>
-        <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>
 
-      {message ? <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{message}</div> : null}
+      {message ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">{message}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Course details</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="font-display text-xl font-semibold text-slate-900">Course details</h2>
           <p className="mt-3 text-slate-600">Status: {course.status}</p>
           <p className="mt-2 text-slate-600">Enrolled: {course.students} students</p>
           {course.description ? <p className="mt-4 text-slate-600">{course.description}</p> : null}
@@ -125,14 +125,14 @@ export default function StudentCourseDetailPage() {
           ) : null}
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Next steps</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="font-display text-xl font-semibold text-slate-900">Next steps</h2>
           <p className="mt-3 text-slate-600">Check the course syllabus, upcoming live sessions, and active assignments in this course.</p>
           {!course.enrolled ? (
             <button
               onClick={handleEnroll}
               disabled={registrationOpen === false}
-              className={`mt-4 rounded-xl px-5 py-3 text-sm font-semibold text-white ${registrationOpen === false ? "bg-slate-300 cursor-not-allowed" : "bg-[#1d6d58] hover:bg-[#124e40]"}`}
+              className={`mt-4 rounded-xl px-5 py-3 text-sm font-semibold text-white ${registrationOpen === false ? "bg-slate-300 cursor-not-allowed" : "bg-[#17233d] hover:bg-[#0f1729]"}`}
             >
               {registrationOpen === false ? "Registration closed" : "Enroll in course"}
             </button>

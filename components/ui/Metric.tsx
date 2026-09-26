@@ -16,7 +16,7 @@ export function Metric({
       }`}
     >
       <p className="text-sm font-semibold text-[#667068]">{label}</p>
-      <strong className="mt-2 block text-4xl font-semibold text-[#1d6d58]">
+      <strong className="mt-2 block text-4xl font-semibold text-[#17233d]">
         {value}{suffix}
       </strong>
     </div>

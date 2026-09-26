@@ -149,10 +149,10 @@ export default function StudentDashboard() {
         <div className="max-w-7xl mx-auto flex flex-col gap-4 px-4 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Student dashboard</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
+            <h1 className="font-display mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
             <p className="mt-1 text-sm text-slate-600">Your assignments, courses, grades, and live sessions are all here.</p>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="font-semibold">{user.email}</p>
             <p className="mt-1 text-slate-500">Student account</p>
           </div>
@@ -165,29 +165,29 @@ export default function StudentDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Enrolled Courses</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.enrolledCourses || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.enrolledCourses || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Pending Assignments</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.pendingAssignments || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.pendingAssignments || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Average Grade</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{averageGrade || "-"}%</p>
+            <p className="text-3xl font-bold text-[#17233d]">{averageGrade || "-"}%</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Attendance</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.attendanceRate || 0}%</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.attendanceRate || 0}%</p>
           </div>
         </div>
 
         {/* Courses & Assignments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">My Courses</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">My Courses</h2>
             <ul className="space-y-3">
               {courses.length > 0 ? (
                 courses.map((course) => (
@@ -206,7 +206,7 @@ export default function StudentDashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Pending Assignments</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Pending Assignments</h2>
             <ul className="space-y-3">
               {assignments.filter((a) => a.status === "Pending").length > 0 ? (
                 assignments
@@ -230,7 +230,7 @@ export default function StudentDashboard() {
 
         {/* Grades */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Your Grades</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Your Grades</h2>
           {submissions.filter((s) => s.grade).length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -267,20 +267,20 @@ export default function StudentDashboard() {
 
         {/* Attendance */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Attendance</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Attendance</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-gray-600 text-sm">Overall Attendance Rate</p>
-              <p className="text-2xl font-bold text-[#1d6d58]">{analytics?.attendanceRate || 0}%</p>
+              <p className="text-2xl font-bold text-[#17233d]">{analytics?.attendanceRate || 0}%</p>
             </div>
             <div>
               <p className="text-gray-600 text-sm">Upcoming Live Sessions</p>
-              <p className="text-2xl font-bold text-[#1d6d58]">{upcomingSessions}</p>
+              <p className="text-2xl font-bold text-[#17233d]">{upcomingSessions}</p>
             </div>
           </div>
           <div className="mt-4 flex gap-3">
             <Link href="/student/attendance-history">
-              <button className="bg-[#1d6d58] text-white py-2 px-4 rounded font-semibold hover:bg-[#124e40]">
+              <button className="bg-[#17233d] text-white py-2 px-4 rounded font-semibold hover:bg-[#0f1729]">
                 View Attendance History
               </button>
             </Link>
@@ -294,12 +294,12 @@ export default function StudentDashboard() {
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Notifications</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
           {notifications.length > 0 ? (
             <ul className="space-y-3">
               {notifications.map((n) => (
                 <li key={n.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded">
-                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#1d6d58]" />
+                  <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#17233d]" />
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{n.title}</p>
                     <p className="text-xs text-slate-500 mt-0.5">{n.message}</p>
@@ -316,7 +316,7 @@ export default function StudentDashboard() {
         {/* Upcoming Live Sessions */}
         {upcomingSessions > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Upcoming Live Sessions</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Upcoming Live Sessions</h2>
             <ul className="space-y-3">
               {liveSessions
                 .filter((s) => new Date(s.start) > new Date())
@@ -332,7 +332,7 @@ export default function StudentDashboard() {
                       href={session.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#1d6d58] text-white px-4 py-2 rounded text-sm hover:bg-[#124e40]"
+                      className="bg-[#17233d] text-white px-4 py-2 rounded text-sm hover:bg-[#0f1729]"
                     >
                       Join
                     </a>

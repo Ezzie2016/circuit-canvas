@@ -68,14 +68,14 @@ export default function TeacherCourseDetailPage() {
   return (
     <div className="space-y-6">
       {course.thumbnail && (
-        <div className="w-full overflow-hidden rounded-3xl border border-slate-200 shadow-sm" style={{ aspectRatio: "16/5" }}>
+        <div className="w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm" style={{ aspectRatio: "16/5" }}>
           <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
         </div>
       )}
       <div>
         <div className="flex flex-wrap gap-1.5 mb-2">
           {course.classLevel && (
-            <span className="rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#1d6d58]">{course.classLevel}</span>
+            <span className="rounded-lg bg-[#e6f2ee] px-3 py-1 text-sm font-semibold text-[#17233d]">{course.classLevel}</span>
           )}
           {course.departmentName && (
             <span className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">{course.departmentName}</span>
@@ -84,11 +84,11 @@ export default function TeacherCourseDetailPage() {
             <span className="rounded-lg bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">{course.code}</span>
           )}
         </div>
-        <h1 className="text-3xl font-semibold text-slate-900">{course.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{course.title}</h1>
         <p className="mt-2 text-slate-600">Instructor: {course.instructor}</p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-slate-500">Status: {course.status}</p>
         {course.description ? <p className="mt-4 text-slate-600">{course.description}</p> : null}
         {course.meetingLink ? (

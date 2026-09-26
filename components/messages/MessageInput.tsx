@@ -21,14 +21,14 @@ export default function MessageInput({ onSend, disabled }: MessageInputProps) {
   return (
     <form className="flex items-end gap-3" onSubmit={handleSubmit}>
       <textarea
-        className="h-20 flex-1 resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-[#1d6d58]/15"
+        className="h-20 flex-1 resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/15"
         disabled={disabled}
         onChange={(event) => setText(event.target.value)}
         placeholder="Write a message…"
         value={text}
       />
       <button
-        className="h-11 shrink-0 rounded-xl bg-[#1d6d58] px-5 text-sm font-semibold text-white transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
+        className="h-11 shrink-0 rounded-xl bg-[#17233d] px-5 text-sm font-semibold text-white transition hover:bg-[#0f1729] disabled:cursor-not-allowed disabled:opacity-60"
         disabled={disabled || !text.trim()}
         type="submit"
       >

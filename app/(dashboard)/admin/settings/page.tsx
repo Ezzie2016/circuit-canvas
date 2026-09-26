@@ -70,12 +70,12 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Admin Settings</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Admin Settings</h1>
         <p className="mt-2 text-slate-600">Control system-wide settings for course registration.</p>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900">Course Registration</h2>
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-xl font-semibold text-slate-900">Course Registration</h2>
         <p className="mt-2 text-sm text-slate-600">When closed, teachers cannot create courses and students cannot enroll in new courses.</p>
 
         <div className="mt-4 flex items-center gap-4">

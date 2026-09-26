@@ -143,10 +143,10 @@ export default function TeacherDashboard() {
         <div className="max-w-7xl mx-auto flex flex-col gap-4 px-4 py-6 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Teacher dashboard</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
+            <h1 className="font-display mt-2 text-3xl font-semibold text-slate-900">Good day, {user.name}</h1>
             <p className="mt-1 text-sm text-slate-600">Manage courses, assignments, submissions, and live sessions from one place.</p>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="font-semibold">{user.email}</p>
             <p className="mt-1 text-slate-500">Teacher account</p>
           </div>
@@ -159,29 +159,29 @@ export default function TeacherDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Total Courses</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.totalCourses || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.totalCourses || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Total Students</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{analytics?.totalStudents || 0}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{analytics?.totalStudents || 0}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Pending Grades</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{pendingSubmissions}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{pendingSubmissions}</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-600 text-sm">Upcoming Sessions</p>
-            <p className="text-3xl font-bold text-[#1d6d58]">{upcomingSessions}</p>
+            <p className="text-3xl font-bold text-[#17233d]">{upcomingSessions}</p>
           </div>
         </div>
 
         {/* Courses & Assignments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">My Courses</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">My Courses</h2>
             <ul className="space-y-3">
               {courses.length > 0 ? (
                 courses.map((course) => (
@@ -202,7 +202,7 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Pending Submissions</h2>
+            <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Pending Submissions</h2>
             <ul className="space-y-3">
               {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
                 submissions
@@ -226,7 +226,7 @@ export default function TeacherDashboard() {
 
         {/* Grading Panel */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Recent Submissions to Grade</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Recent Submissions to Grade</h2>
           {submissions.filter((s) => s.status !== "REVIEWED").length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -250,7 +250,7 @@ export default function TeacherDashboard() {
                         <td className="px-4 py-3">{sub.courseName}</td>
                         <td className="px-4 py-3">{new Date(sub.createdAt).toLocaleDateString()}</td>
                         <td className="px-4 py-3">
-                          <Link href={`/teacher/assignments/${sub.assignmentId}`} className="bg-[#1d6d58] text-white px-3 py-1 rounded text-xs hover:bg-[#124e40]">
+                          <Link href={`/teacher/assignments/${sub.assignmentId}`} className="bg-[#17233d] text-white px-3 py-1 rounded text-xs hover:bg-[#0f1729]">
                             Grade
                           </Link>
                         </td>
@@ -266,18 +266,18 @@ export default function TeacherDashboard() {
 
         {/* Class Performance */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Class Performance Overview</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Class Performance Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
               <p className="text-gray-600 text-sm">Average Completion</p>
-              <p className="text-2xl font-bold text-[#1d6d58]">{analytics?.averageCompletion || 0}%</p>
+              <p className="text-2xl font-bold text-[#17233d]">{analytics?.averageCompletion || 0}%</p>
             </div>
             <div>
               <p className="text-gray-600 text-sm">Total Assignments</p>
-              <p className="text-2xl font-bold text-[#1d6d58]">{assignments.length}</p>
+              <p className="text-2xl font-bold text-[#17233d]">{assignments.length}</p>
             </div>
             <Link href="/teacher/class-performance">
-              <button className="bg-[#1d6d58] text-white py-2 px-4 rounded font-semibold hover:bg-[#124e40]">
+              <button className="bg-[#17233d] text-white py-2 px-4 rounded font-semibold hover:bg-[#0f1729]">
                 View Detailed Analytics
               </button>
             </Link>
@@ -286,7 +286,7 @@ export default function TeacherDashboard() {
 
         {/* Notifications */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
-          <h2 className="text-xl font-bold text-[#1d6d58] mb-4">Notifications</h2>
+          <h2 className="font-display text-xl font-bold text-[#17233d] mb-4">Notifications</h2>
           {notifications.length > 0 ? (
             <ul className="space-y-3">
               {notifications.map((n) => (
@@ -309,7 +309,7 @@ export default function TeacherDashboard() {
         {upcomingSessions > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-12">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#1d6d58]">Upcoming Live Sessions</h2>
+              <h2 className="font-display text-xl font-bold text-[#17233d]">Upcoming Live Sessions</h2>
               <Link href="/teacher/live-sessions" className="text-blue-600 hover:text-blue-700 text-sm font-semibold">
                 View All →
               </Link>
@@ -331,7 +331,7 @@ export default function TeacherDashboard() {
                         href={session.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-[#1d6d58] text-white px-3 py-1 rounded text-xs hover:bg-[#124e40]"
+                        className="bg-[#17233d] text-white px-3 py-1 rounded text-xs hover:bg-[#0f1729]"
                       >
                         Join
                       </a>

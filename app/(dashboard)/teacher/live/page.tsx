@@ -76,19 +76,19 @@ export default function TeacherLivePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Live Sessions</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Live Sessions</h1>
         <p className="mt-2 text-slate-600">Manage upcoming sessions and schedule new live classes for your courses.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
             Session title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Course
-            <select value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm">
+            <select value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm">
               {courses.length > 0 ? (
                 courses.map((course) => (
                   <option key={course.id} value={course.id}>
@@ -105,19 +105,19 @@ export default function TeacherLivePage() {
         <div className="grid gap-6 md:grid-cols-3">
           <label className="space-y-2 text-sm text-slate-700">
             Start time
-            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input type="datetime-local" value={start} onChange={(e) => setStart(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Duration (minutes)
-            <input type="number" min={15} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input type="number" min={15} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
             Join link
-            <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" />
+            <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" />
           </label>
         </div>
 
-        <button type="submit" className="rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white hover:bg-[#124e40]">
+        <button type="submit" className="rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]">
           Schedule live class
         </button>
 
@@ -127,12 +127,12 @@ export default function TeacherLivePage() {
 
       <div className="grid gap-4 md:grid-cols-2">
         {sessions.map((session) => (
-          <div key={session.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div key={session.id} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm uppercase tracking-[0.18em] text-slate-500">{session.course}</p>
-            <h2 className="mt-2 text-xl font-semibold text-slate-900">{session.title}</h2>
+            <h2 className="font-display mt-2 text-xl font-semibold text-slate-900">{session.title}</h2>
             <p className="mt-3 text-slate-600">Starts: {new Date(session.start).toLocaleString()}</p>
             <p className="mt-1 text-slate-600">Duration: {session.duration} min</p>
-            <a href={session.joinUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-xl bg-[#1d6d58] px-4 py-2 text-sm font-semibold text-white hover:bg-[#124e40]">
+            <a href={session.joinUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-xl bg-[#17233d] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0f1729]">
               Open session
             </a>
           </div>

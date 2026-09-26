@@ -5,6 +5,30 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+function Wordmark({ dark = false }: { dark?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        className={`font-display flex h-10 w-10 items-center justify-center rounded-md border text-lg font-semibold ${
+          dark
+            ? "border-white/20 bg-white/5 text-[#d9b877]"
+            : "border-[#17233d]/15 bg-[#17233d] text-[#d9b877]"
+        }`}
+      >
+        C
+      </span>
+      <div className="leading-tight">
+        <p className={`font-display text-base font-medium ${dark ? "text-white" : "text-[#17233d]"}`}>
+          Circuit Campus
+        </p>
+        <p className={`text-[11px] uppercase tracking-[0.2em] ${dark ? "text-white/50" : "text-slate-400"}`}>
+          JSS1 – SS3
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -65,91 +89,95 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.3fr_0.95fr]">
-        <aside className="relative flex items-center justify-center bg-[#1d6d58] px-6 py-12 lg:px-16">
-          <div className="max-w-xl space-y-10">
-            <div className="flex items-center rounded-2xl border border-white/10 bg-white/10 px-5 py-4 shadow-sm">
-              <span className="text-lg font-semibold text-emerald-100">Circuit Campus</span>
-            </div>
+    <div className="min-h-screen bg-[#faf8f4]">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.15fr_1fr]">
+        <aside className="relative hidden flex-col justify-between overflow-hidden bg-[#17233d] px-12 py-14 text-white lg:flex xl:px-20">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "22px 22px",
+            }}
+          />
 
-            <div className="space-y-5">
-              <p className="inline-flex rounded-xl border border-emerald-200/20 bg-emerald-200/10 px-4 py-1 text-xs uppercase tracking-[0.35em] text-emerald-200">
-                Learning management
-              </p>
-              <h1 className="text-5xl font-semibold leading-tight tracking-tight md:text-6xl">
-                One portal for students, teachers, and admins.
-              </h1>
-              <p className="max-w-xl text-base leading-8 text-emerald-100/85 md:text-lg">
-                Track assignments, live classes, grades, and school performance in one polished classroom experience.
-              </p>
-            </div>
+          <Wordmark dark />
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Role dashboards</p>
-                <p className="mt-3 text-2xl font-semibold text-white">3</p>
+          <div className="relative max-w-lg space-y-7">
+            <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-[#d9b877]">
+              Est. for the term ahead
+            </p>
+            <h1 className="font-display text-4xl leading-[1.15] font-normal xl:text-5xl">
+              A school portal that stays out of the way.
+            </h1>
+            <p className="max-w-md text-[15px] leading-7 text-white/60">
+              Assignments, grades, live lessons, and attendance — one login for
+              every student, teacher, and administrator in the building.
+            </p>
+          </div>
+
+          <div className="relative grid grid-cols-3 gap-px overflow-hidden rounded-md border border-white/10 bg-white/10">
+            {[
+              ["Roles", "3"],
+              ["Class levels", "JSS1–SS3"],
+              ["Sign-ins", "Instant"],
+            ].map(([label, value]) => (
+              <div key={label} className="bg-[#17233d] px-4 py-5">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">{label}</p>
+                <p className="font-display mt-2 text-xl">{value}</p>
               </div>
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Active assignments</p>
-                <p className="mt-3 text-2xl font-semibold text-white">2</p>
-              </div>
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Reviewed grade</p>
-                <p className="mt-3 text-2xl font-semibold text-white">1</p>
-              </div>
-            </div>
+            ))}
           </div>
         </aside>
 
-        <main className="flex items-center justify-center bg-slate-50 px-6 py-12 text-slate-900 lg:px-16">
-          <div className="w-full max-w-md rounded-[1.75rem] bg-white p-10 shadow-[0_40px_80px_rgba(15,23,42,0.12)]">
-            <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-1">
-                <Link
-                  href="/login"
-                  className="flex-1 rounded-xl bg-[#1d6d58] px-4 py-3 text-center text-sm font-semibold text-white"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex-1 rounded-xl px-4 py-3 text-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
-                >
-                  Register
-                </Link>
-              </div>
+        <main className="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
+          <div className="w-full max-w-sm">
+            <div className="mb-10 flex items-center justify-between lg:hidden">
+              <Wordmark />
             </div>
 
-            <div className="space-y-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
-                Welcome back
-              </p>
-              <h2 className="text-4xl font-semibold text-slate-900">Sign in and return to your workspace</h2>
+            <div className="mb-8 flex gap-6 border-b border-slate-200">
+              <Link
+                href="/login"
+                className="border-b-2 border-[#17233d] pb-3 text-sm font-semibold text-[#17233d]"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="pb-3 text-sm font-medium text-slate-400 transition hover:text-slate-600"
+              >
+                Register
+              </Link>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="font-display text-3xl font-normal text-[#17233d]">Welcome back</h2>
               <p className="text-sm text-slate-500">
-                Use your school email and password to access student, teacher, or admin dashboards.
+                Sign in with your school email to reach your dashboard.
               </p>
             </div>
 
             {error && (
-              <div className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+              <div className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              <div className="mb-4">
-                <p className="mb-2 text-sm font-medium text-slate-700">Role</p>
+            <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+                  I am signing in as
+                </p>
                 <div className="grid grid-cols-3 gap-2">
                   {(["Student", "Teacher", "Admin"] as const).map((role) => (
                     <button
                       key={role}
                       type="button"
                       onClick={() => setSelectedRole(role)}
-                      className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                      className={`rounded-md border px-2 py-2.5 text-sm font-medium transition ${
                         selectedRole === role
-                          ? "border-[#1d6d58] bg-emerald-50 text-[#1d6d58]"
-                          : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-white"
+                          ? "border-[#17233d] bg-[#17233d] text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
                       }`}
                     >
                       {role}
@@ -159,7 +187,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+                <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
                   Email address
                 </label>
                 <input
@@ -167,18 +195,18 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="student@campus.edu"
+                  placeholder="you@school.edu.ng"
                   required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
                 />
               </div>
 
               <div>
-                <div className="mb-2 flex items-center justify-between">
+                <div className="mb-1.5 flex items-center justify-between">
                   <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                     Password
                   </label>
-                  <a href="/forgot-password" className="text-xs font-medium text-[#1d6d58] hover:underline">
+                  <a href="/forgot-password" className="text-xs font-medium text-[#17233d]/70 hover:text-[#17233d]">
                     Forgot password?
                   </a>
                 </div>
@@ -189,23 +217,24 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
                 />
               </div>
 
               <button
-
-
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-[#1d6d58] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-md bg-[#17233d] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0f1729] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Signing in..." : "Access Portal"}
+                {loading ? "Signing in…" : "Sign in"}
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-500">
-              Don&apos;t have an account? <Link href="/register" className="font-semibold text-[#1d6d58] hover:underline">Register here</Link>
+            <p className="mt-8 text-center text-sm text-slate-500">
+              New student?{" "}
+              <Link href="/register" className="font-semibold text-[#17233d] hover:underline">
+                Create an account
+              </Link>
             </p>
           </div>
         </main>

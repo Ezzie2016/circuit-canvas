@@ -33,7 +33,7 @@ export default function AuthLayout({
   if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-        <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm text-center">
+        <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm text-center">
           <p className="text-sm text-slate-500">Checking authentication…</p>
         </div>
       </div>

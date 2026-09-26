@@ -142,7 +142,7 @@ export default function AttendanceManagementPage() {
   if (loading) return <div className="p-6 text-center text-slate-600">Loading...</div>;
   if (error) {
     return (
-      <div className="p-6 rounded-3xl border border-red-200 bg-red-50">
+      <div className="p-6 rounded-xl border border-red-200 bg-red-50">
         <p className="font-semibold text-red-800">Error Loading Attendance</p>
         <p className="mt-2 text-sm text-red-600">{error}</p>
       </div>
@@ -150,7 +150,7 @@ export default function AttendanceManagementPage() {
   }
   if (!sessionData) {
     return (
-      <div className="p-6 rounded-3xl border border-red-200 bg-red-50">
+      <div className="p-6 rounded-xl border border-red-200 bg-red-50">
         <p className="font-semibold text-red-800">Session not found</p>
       </div>
     );
@@ -170,7 +170,7 @@ export default function AttendanceManagementPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900">
+          <h1 className="font-display text-3xl font-semibold text-slate-900">
             Attendance: {sessionData.sessionTitle}
           </h1>
           <p className="mt-2 text-slate-600">
@@ -201,26 +201,26 @@ export default function AttendanceManagementPage() {
       </div>
 
       {saveFeedback && (
-        <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${saveFeedback.startsWith("Error") ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
+        <div className={`rounded-lg px-4 py-3 text-sm font-medium ${saveFeedback.startsWith("Error") ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
           {saveFeedback}
         </div>
       )}
 
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm text-slate-500">Total Students</p>
           <p className="mt-2 text-3xl font-bold text-slate-900">{sessionData.attendanceList.length}</p>
         </div>
-        <div className="rounded-3xl border border-green-200 bg-green-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-green-200 bg-green-50 p-6 shadow-sm">
           <p className="text-sm text-green-700">Present</p>
           <p className="mt-2 text-3xl font-bold text-green-600">{presentStudents.length}</p>
         </div>
-        <div className="rounded-3xl border border-orange-200 bg-orange-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 shadow-sm">
           <p className="text-sm text-orange-700">Left Early</p>
           <p className="mt-2 text-3xl font-bold text-orange-600">{leftEarlyStudents.length}</p>
         </div>
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
           <p className="text-sm text-red-700">Never Attended</p>
           <p className="mt-2 text-3xl font-bold text-red-600">{neverAttendedStudents.length}</p>
         </div>
@@ -243,7 +243,7 @@ export default function AttendanceManagementPage() {
       </div>
 
       {/* Teacher Override Info */}
-      <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5">
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
         <p className="text-sm font-semibold text-amber-900">Teacher Override</p>
         <p className="mt-1 text-sm text-amber-800">
           You can manually change any student&apos;s attendance status and add notes (e.g. &quot;late arrival approved&quot;, &quot;technical issue&quot;).
@@ -302,7 +302,7 @@ export default function AttendanceManagementPage() {
         )}
 
         {sessionData.attendanceList.length === 0 && (
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-10 text-center">
             <p className="text-slate-600">No students enrolled in this course yet.</p>
           </div>
         )}
@@ -343,7 +343,7 @@ function AttendanceTable({
   }[color];
 
   return (
-    <div className={`rounded-3xl border ${colorMap.border} ${colorMap.bg} p-6`}>
+    <div className={`rounded-xl border ${colorMap.border} ${colorMap.bg} p-6`}>
       <h2 className={`text-lg font-semibold ${colorMap.heading} mb-1`}>
         {title} ({records.length})
       </h2>

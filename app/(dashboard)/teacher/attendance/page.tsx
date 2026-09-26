@@ -25,11 +25,11 @@ export default function TeacherAttendancePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Attendance</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Attendance</h1>
         <p className="mt-2 text-slate-600">Track attendance records for your current classes.</p>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200 text-sm text-slate-700">
           <thead className="bg-slate-50 text-left text-slate-500">

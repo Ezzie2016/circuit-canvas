@@ -16,7 +16,7 @@ export default function MessageBubble({ senderName, text, timestamp, isOwn }: Me
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] rounded-2xl border px-4 py-3 ${
+        className={`max-w-[85%] rounded-lg border px-4 py-3 ${
           isOwn ? "border-[#bfe3d5] bg-[#eaf7f1]" : "border-slate-200 bg-white"
         }`}
       >

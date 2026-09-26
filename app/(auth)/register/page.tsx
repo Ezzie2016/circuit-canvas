@@ -4,6 +4,30 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+function Wordmark({ dark = false }: { dark?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        className={`font-display flex h-10 w-10 items-center justify-center rounded-md border text-lg font-semibold ${
+          dark
+            ? "border-white/20 bg-white/5 text-[#d9b877]"
+            : "border-[#17233d]/15 bg-[#17233d] text-[#d9b877]"
+        }`}
+      >
+        C
+      </span>
+      <div className="leading-tight">
+        <p className={`font-display text-base font-medium ${dark ? "text-white" : "text-[#17233d]"}`}>
+          Circuit Campus
+        </p>
+        <p className={`text-[11px] uppercase tracking-[0.2em] ${dark ? "text-white/50" : "text-slate-400"}`}>
+          JSS1 – SS3
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -67,90 +91,93 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.3fr_0.95fr]">
-        <aside className="relative flex items-center justify-center bg-[#1d6d58] px-6 py-12 lg:px-16">
-          <div className="max-w-xl space-y-10">
-            <div className="flex items-center rounded-2xl border border-white/10 bg-white/10 px-5 py-4 shadow-sm">
-              <span className="text-lg font-semibold text-emerald-100">Circuit Campus</span>
-            </div>
+    <div className="min-h-screen bg-[#faf8f4]">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.15fr_1fr]">
+        <aside className="relative hidden flex-col justify-between overflow-hidden bg-[#17233d] px-12 py-14 text-white lg:flex xl:px-20">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+              backgroundSize: "22px 22px",
+            }}
+          />
 
-            <div className="space-y-5">
-              <p className="inline-flex rounded-xl border border-emerald-200/20 bg-emerald-200/10 px-4 py-1 text-xs uppercase tracking-[0.35em] text-emerald-200">
-                Learning management
-              </p>
-              <h1 className="text-5xl font-semibold leading-tight tracking-tight md:text-6xl">
-                Courses, assignments, grades, and class links in one calm workspace.
-              </h1>
-              <p className="max-w-xl text-base leading-8 text-emerald-100/85 md:text-lg">
-                Students enroll and submit work. Teachers create courses, post assignments, add meeting links, and review submissions. Admins see the health of the school at a glance.
-              </p>
-            </div>
+          <Wordmark dark />
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Courses</p>
-                <p className="mt-3 text-sm font-semibold text-white">Enroll &amp; track</p>
+          <div className="relative max-w-lg space-y-7">
+            <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-[#d9b877]">
+              Student registration
+            </p>
+            <h1 className="font-display text-4xl leading-[1.15] font-normal xl:text-5xl">
+              Your courses, assignments, and grades — ready in a minute.
+            </h1>
+            <p className="max-w-md text-[15px] leading-7 text-white/60">
+              Create your account, enroll in classes, and submit work. Teachers
+              grade it, and you&apos;ll see the result the moment it&apos;s posted.
+            </p>
+          </div>
+
+          <div className="relative grid grid-cols-3 gap-px overflow-hidden rounded-md border border-white/10 bg-white/10">
+            {[
+              ["Enroll", "Any course"],
+              ["Submit", "Assignments"],
+              ["Join", "Live classes"],
+            ].map(([label, value]) => (
+              <div key={label} className="bg-[#17233d] px-4 py-5">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">{label}</p>
+                <p className="font-display mt-2 text-lg">{value}</p>
               </div>
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Assignments</p>
-                <p className="mt-3 text-sm font-semibold text-white">Submit &amp; get graded</p>
-              </div>
-              <div className="rounded-2xl bg-white/10 p-5 ring-1 ring-white/10 backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">Live classes</p>
-                <p className="mt-3 text-sm font-semibold text-white">Join sessions</p>
-              </div>
-            </div>
+            ))}
           </div>
         </aside>
 
-        <main className="flex items-center justify-center bg-slate-50 px-6 py-12 text-slate-900 lg:px-16">
-          <div className="w-full max-w-md rounded-[1.75rem] bg-white p-10 shadow-[0_40px_80px_rgba(15,23,42,0.12)]">
-            <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
-              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white p-1">
-                <Link
-                  href="/login"
-                  className="flex-1 rounded-xl px-4 py-3 text-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex-1 rounded-xl bg-[#1d6d58] px-4 py-3 text-center text-sm font-semibold text-white"
-                >
-                  Register
-                </Link>
-              </div>
+        <main className="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
+          <div className="w-full max-w-sm">
+            <div className="mb-10 flex items-center justify-between lg:hidden">
+              <Wordmark />
             </div>
 
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
-                Create your account
-              </p>
-              <h2 className="text-3xl font-semibold text-slate-900">Register and join Circuit Campus</h2>
+            <div className="mb-8 flex gap-6 border-b border-slate-200">
+              <Link
+                href="/login"
+                className="pb-3 text-sm font-medium text-slate-400 transition hover:text-slate-600"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/register"
+                className="border-b-2 border-[#17233d] pb-3 text-sm font-semibold text-[#17233d]"
+              >
+                Register
+              </Link>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="font-display text-3xl font-normal text-[#17233d]">Create your account</h2>
               <p className="text-sm text-slate-500">
-                Select your role and create a new account to access courses, assignments, and learning workflows.
+                Student sign-up only — teachers and admins are added by the school.
               </p>
-              <p className="text-sm text-slate-400">Already have an account? Sign in to continue.</p>
             </div>
 
             {registrationOpen === false ? (
-              <div className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-6 text-center">
-                <p className="text-sm font-semibold text-orange-800">Registration is currently closed</p>
-                <p className="mt-1 text-sm text-orange-700">Student sign-ups are not being accepted at this time. Contact your administrator for access.</p>
+              <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-4 text-center">
+                <p className="text-sm font-semibold text-amber-800">Registration is closed</p>
+                <p className="mt-1 text-sm text-amber-700">
+                  New sign-ups aren&apos;t being accepted right now. Contact your administrator.
+                </p>
               </div>
             ) : (
               <>
                 {error && (
-                  <div className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+                  <div className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                     {error}
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                <form onSubmit={handleSubmit} className="mt-7 space-y-5">
                   <div>
-                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700">
-                      Full Name
+                    <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-700">
+                      Full name
                     </label>
                     <input
                       id="name"
@@ -159,12 +186,12 @@ export default function RegisterPage() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Taylor Brooks"
                       required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
                       Email address
                     </label>
                     <input
@@ -172,69 +199,74 @@ export default function RegisterPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="user@campus.edu"
+                      placeholder="you@school.edu.ng"
                       required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="matricNumber" className="mb-2 block text-sm font-medium text-slate-700">
-                      Matric Number <span className="text-slate-400 font-normal">(optional)</span>
+                    <label htmlFor="matricNumber" className="mb-1.5 block text-sm font-medium text-slate-700">
+                      Matric number <span className="font-normal text-slate-400">(optional)</span>
                     </label>
                     <input
                       id="matricNumber"
                       type="text"
                       value={matricNumber}
                       onChange={(e) => setMatricNumber(e.target.value)}
-                      placeholder="e.g. JSS1/2024/001"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
+                      placeholder="e.g. JSS1/2026/001"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
                     />
                   </div>
 
-                  <div>
-                    <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••"
-                      required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                    />
-                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">
+                        Password
+                      </label>
+                      <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••"
+                        required
+                        className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
+                      />
+                    </div>
 
-                  <div>
-                    <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-slate-700">
-                      Confirm Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="••••••"
-                      required
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#1d6d58] focus:ring-2 focus:ring-emerald-100"
-                    />
+                    <div>
+                      <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-slate-700">
+                        Confirm
+                      </label>
+                      <input
+                        id="confirmPassword"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••"
+                        required
+                        className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition focus:border-[#17233d] focus:ring-2 focus:ring-[#17233d]/10"
+                      />
+                    </div>
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl bg-[#1d6d58] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#124e40] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-md bg-[#17233d] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#0f1729] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {loading ? "Creating account..." : "Create account"}
+                    {loading ? "Creating account…" : "Create account"}
                   </button>
                 </form>
               </>
             )}
 
-            <p className="mt-6 text-center text-sm text-slate-500">
-              Already have an account? <Link href="/login" className="font-semibold text-[#1d6d58] hover:underline">Sign in here</Link>
+            <p className="mt-8 text-center text-sm text-slate-500">
+              Already have an account?{" "}
+              <Link href="/login" className="font-semibold text-[#17233d] hover:underline">
+                Sign in
+              </Link>
             </p>
           </div>
         </main>

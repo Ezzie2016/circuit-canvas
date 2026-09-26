@@ -66,7 +66,7 @@ export default function AdminReportsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Reports</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Reports</h1>
         <p className="mt-2 text-slate-600">School-wide numbers updated in real time.</p>
       </div>
 
@@ -82,7 +82,7 @@ export default function AdminReportsPage() {
             { label: "Courses",           value: reports?.school.totalCourses },
             { label: "Total Enrollments", value: reports?.school.totalEnrollments },
           ].map((card) => (
-            <div key={card.label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div key={card.label} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-sm text-slate-500">{card.label}</p>
               <p className="mt-3 text-3xl font-semibold text-slate-900">{val(card.value)}</p>
             </div>
@@ -94,26 +94,26 @@ export default function AdminReportsPage() {
       <section>
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">Academic Performance</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Total Assignments</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{val(reports?.academic.totalAssignments)}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Submissions Received</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{val(reports?.academic.submittedCount)}</p>
             <p className="mt-1 text-xs text-slate-400">awaiting grading</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Graded</p>
-            <p className="mt-3 text-3xl font-semibold text-[#1d6d58]">{val(reports?.academic.gradedCount)}</p>
+            <p className="mt-3 text-3xl font-semibold text-[#17233d]">{val(reports?.academic.gradedCount)}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Not Yet Submitted</p>
             <p className="mt-3 text-3xl font-semibold text-amber-600">
               {loading ? "—" : (reports?.academic.pendingCount ?? 0) < 0 ? 0 : val(reports?.academic.pendingCount)}
             </p>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
             <p className="text-sm text-slate-500">Average Grade (graded submissions)</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">
               {loading ? "—" : reports?.academic.avgGrade != null ? `${reports.academic.avgGrade}%` : "No grades yet"}
@@ -121,7 +121,7 @@ export default function AdminReportsPage() {
             {reports?.academic.avgGrade != null && (
               <div className="mt-3 h-2 w-full rounded-full bg-slate-100">
                 <div
-                  className={`h-2 rounded-full ${reports.academic.avgGrade >= 50 ? "bg-[#1d6d58]" : "bg-red-400"}`}
+                  className={`h-2 rounded-full ${reports.academic.avgGrade >= 50 ? "bg-[#17233d]" : "bg-red-400"}`}
                   style={{ width: `${reports.academic.avgGrade}%` }}
                 />
               </div>
@@ -135,7 +135,7 @@ export default function AdminReportsPage() {
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">This Month vs Last Month</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Enrollments */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-2">
               <p className="text-sm text-slate-500">New Enrollments</p>
               {!loading && reports && (
@@ -153,7 +153,7 @@ export default function AdminReportsPage() {
           </div>
 
           {/* Registrations */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-2">
               <p className="text-sm text-slate-500">New Registrations</p>
               {!loading && reports && (

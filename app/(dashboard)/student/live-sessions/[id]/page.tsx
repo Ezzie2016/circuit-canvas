@@ -184,12 +184,12 @@ export default function StudentLiveSessionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">{session.title}</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">{session.title}</h1>
         <p className="mt-2 text-slate-600">{session.course.title}</p>
       </div>
 
       {/* Session Info */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <p className="text-sm text-slate-500">Scheduled Time</p>
@@ -220,8 +220,8 @@ export default function StudentLiveSessionPage() {
 
       {/* Session Ended */}
       {sessionExpired && !checkedIn && timerState === "not-joined" && (
-        <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
-          <h2 className="text-lg font-semibold text-red-900">Session Has Ended</h2>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <h2 className="font-display text-lg font-semibold text-red-900">Session Has Ended</h2>
           <p className="mt-2 text-sm text-red-800">
             This live session has ended. Contact your teacher if you need your attendance adjusted.
           </p>
@@ -230,8 +230,8 @@ export default function StudentLiveSessionPage() {
 
       {/* Check-in Code — primary attendance method */}
       {!checkedIn && sessionActive && timerState !== "left-present" && (
-        <div className="rounded-3xl border border-[#1d6d58] bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Enter Check-in Code</h2>
+        <div className="rounded-xl border border-[#17233d] bg-white p-6 shadow-sm">
+          <h2 className="font-display text-lg font-semibold text-slate-900">Enter Check-in Code</h2>
           <p className="mt-1 text-sm text-slate-500">
             Your teacher will share a 6-character code during the class. Enter it here to be marked
             Present immediately.
@@ -247,12 +247,12 @@ export default function StudentLiveSessionPage() {
               onKeyDown={(e) => e.key === "Enter" && handleCodeCheckin()}
               placeholder="e.g. XK7P2Q"
               maxLength={6}
-              className="w-48 rounded-xl border border-slate-300 px-4 py-3 text-center font-mono text-xl font-bold uppercase tracking-widest text-slate-900 placeholder:text-slate-300 focus:border-[#1d6d58] focus:outline-none"
+              className="w-48 rounded-xl border border-slate-300 px-4 py-3 text-center font-mono text-xl font-bold uppercase tracking-widest text-slate-900 placeholder:text-slate-300 focus:border-[#17233d] focus:outline-none"
             />
             <button
               onClick={handleCodeCheckin}
               disabled={codeSubmitting || codeInput.length < 6}
-              className="rounded-xl bg-[#1d6d58] px-6 py-3 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50 transition"
+              className="rounded-xl bg-[#17233d] px-6 py-3 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50 transition"
             >
               {codeSubmitting ? "Checking in..." : "Submit Code"}
             </button>
@@ -265,10 +265,10 @@ export default function StudentLiveSessionPage() {
 
       {/* Checked in via code */}
       {checkedIn && (
-        <div className="rounded-3xl border border-emerald-300 bg-emerald-50 p-6">
+        <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-6">
           <div className="text-center">
             <p className="text-5xl">✓</p>
-            <h2 className="mt-2 text-2xl font-bold text-emerald-700">
+            <h2 className="font-display mt-2 text-2xl font-bold text-emerald-700">
               Attendance Recorded — PRESENT
             </h2>
             <p className="mt-3 text-sm text-emerald-800">
@@ -281,8 +281,8 @@ export default function StudentLiveSessionPage() {
 
       {/* Video link */}
       {sessionActive && (
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900 mb-3">Join the Video Call</h2>
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="font-display text-base font-semibold text-slate-900 mb-3">Join the Video Call</h2>
           <a
             href={session.link}
             target="_blank"
@@ -296,7 +296,7 @@ export default function StudentLiveSessionPage() {
 
       {/* Timer — fallback attendance method */}
       {sessionActive && !checkedIn && (
-        <details className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <details className="rounded-xl border border-slate-200 bg-white shadow-sm">
           <summary className="cursor-pointer select-none px-6 py-4 text-sm font-semibold text-slate-600 hover:text-slate-900">
             Alternative: Track attendance by time (60-minute timer)
           </summary>

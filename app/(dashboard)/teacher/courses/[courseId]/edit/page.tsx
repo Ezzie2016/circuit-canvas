@@ -125,11 +125,11 @@ export default function TeacherCourseEditPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900">Edit Course</h1>
+        <h1 className="font-display text-3xl font-semibold text-slate-900">Edit Course</h1>
         <p className="mt-2 text-slate-600">Update the course title and details.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         {/* Row 1: Title + Code */}
         <div className="grid gap-6 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
@@ -137,7 +137,7 @@ export default function TeacherCourseEditPage() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
           <label className="space-y-2 text-sm text-slate-700">
@@ -146,7 +146,7 @@ export default function TeacherCourseEditPage() {
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="e.g. MAT101"
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             />
           </label>
         </div>
@@ -158,7 +158,7 @@ export default function TeacherCourseEditPage() {
             <select
               value={classLevel}
               onChange={(e) => setClassLevel(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             >
               <option value="">— Select class —</option>
               <optgroup label="Junior Secondary">
@@ -178,7 +178,7 @@ export default function TeacherCourseEditPage() {
             <select
               value={departmentId}
               onChange={(e) => setDepartmentId(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             >
               <option value="">— Select department —</option>
               {departments.map((d) => (
@@ -195,7 +195,7 @@ export default function TeacherCourseEditPage() {
             <input
               value={instructor}
               disabled
-              className="w-full rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-500"
+              className="w-full rounded-lg border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-500"
             />
           </label>
         </div>
@@ -205,7 +205,7 @@ export default function TeacherCourseEditPage() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
             rows={4}
           />
         </label>
@@ -215,7 +215,7 @@ export default function TeacherCourseEditPage() {
           <input
             value={meetingLink}
             onChange={(e) => setMeetingLink(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
           />
         </label>
 
@@ -224,12 +224,12 @@ export default function TeacherCourseEditPage() {
           <input
             value={thumbnail}
             onChange={(e) => setThumbnail(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
           />
         </label>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button type="submit" className="rounded-xl bg-[#1d6d58] px-5 py-3 text-sm font-semibold text-white hover:bg-[#124e40]">
+          <button type="submit" className="rounded-xl bg-[#17233d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0f1729]">
             Save changes
           </button>
           <button

@@ -172,16 +172,16 @@ export default function AssignmentDetailTeacherPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#1d6d58] border-t-transparent" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#17233d] border-t-transparent" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="rounded-3xl border border-red-200 bg-red-50 p-8 text-center">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
         <p className="text-red-700">{error || "Assignment not found"}</p>
-        <Link href="/teacher/assignments" className="mt-4 inline-block text-sm text-[#1d6d58] hover:underline">
+        <Link href="/teacher/assignments" className="mt-4 inline-block text-sm text-[#17233d] hover:underline">
           ← Back to assignments
         </Link>
       </div>
@@ -198,11 +198,11 @@ export default function AssignmentDetailTeacherPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Link href="/teacher/assignments" className="text-sm font-medium text-[#1d6d58] hover:underline">
+        <Link href="/teacher/assignments" className="text-sm font-medium text-[#17233d] hover:underline">
           ← Assignments
         </Link>
         <div className="mt-2 flex items-start gap-3 flex-wrap">
-          <h1 className="text-3xl font-semibold text-slate-900">{data.title}</h1>
+          <h1 className="font-display text-3xl font-semibold text-slate-900">{data.title}</h1>
           <span className={`mt-1.5 rounded-full px-3 py-0.5 text-xs font-bold ${typeInfo.color}`}>
             {typeInfo.label} · {typeInfo.max} marks
           </span>
@@ -216,7 +216,7 @@ export default function AssignmentDetailTeacherPage() {
 
       {/* Instructions */}
       {data.instructions && (
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="text-sm font-semibold text-slate-600 mb-2">Instructions</p>
           <p className="text-sm text-slate-700 whitespace-pre-wrap">{data.instructions}</p>
         </div>
@@ -224,22 +224,22 @@ export default function AssignmentDetailTeacherPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm text-center">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm text-center">
           <p className="text-sm text-slate-500">Enrolled</p>
           <p className="mt-1 text-3xl font-bold text-slate-900">{data.totalStudents}</p>
         </div>
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm text-center">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm text-center">
           <p className="text-sm text-emerald-700">Submitted</p>
           <p className="mt-1 text-3xl font-bold text-emerald-700">{data.submittedCount}</p>
         </div>
-        <div className="rounded-3xl border border-orange-200 bg-orange-50 p-5 shadow-sm text-center">
+        <div className="rounded-xl border border-orange-200 bg-orange-50 p-5 shadow-sm text-center">
           <p className="text-sm text-orange-700">Graded</p>
           <p className="mt-1 text-3xl font-bold text-orange-700">{graded.length}</p>
         </div>
       </div>
 
       {/* Direct score entry toggle */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="font-semibold text-slate-900">Direct Score Entry</p>
@@ -253,7 +253,7 @@ export default function AssignmentDetailTeacherPage() {
             className={`shrink-0 rounded-xl px-5 py-2 text-sm font-semibold transition ${
               showRoster
                 ? "bg-slate-200 text-slate-700"
-                : "bg-[#1d6d58] text-white hover:bg-[#124e40]"
+                : "bg-[#17233d] text-white hover:bg-[#0f1729]"
             }`}
           >
             {showRoster ? "Hide roster" : "Open roster"}
@@ -262,7 +262,7 @@ export default function AssignmentDetailTeacherPage() {
 
         {showRoster && (
           <div className="mt-5 border-t border-slate-100 pt-5 space-y-3">
-            <div className="rounded-2xl border border-slate-200 overflow-hidden">
+            <div className="rounded-lg border border-slate-200 overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
@@ -296,7 +296,7 @@ export default function AssignmentDetailTeacherPage() {
                               setRosterScores((prev) => ({ ...prev, [row.studentId]: e.target.value }))
                             }
                             placeholder="—"
-                            className="w-32 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-900 focus:border-[#1d6d58] focus:outline-none"
+                            className="w-32 rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-900 focus:border-[#17233d] focus:outline-none"
                           />
                         </td>
                         <td className="px-4 py-3">
@@ -318,7 +318,7 @@ export default function AssignmentDetailTeacherPage() {
               <button
                 onClick={handleRosterSave}
                 disabled={rosterSaving}
-                className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50 transition"
+                className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50 transition"
               >
                 {rosterSaving ? "Saving…" : "Save all scores"}
               </button>
@@ -345,8 +345,8 @@ export default function AssignmentDetailTeacherPage() {
             return (
               <div
                 key={row.studentId}
-                className={`rounded-3xl border shadow-sm transition-all ${
-                  isExpanded ? "border-[#1d6d58]" : "border-slate-200 bg-white"
+                className={`rounded-xl border shadow-sm transition-all ${
+                  isExpanded ? "border-[#17233d]" : "border-slate-200 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-4 p-5">
@@ -379,7 +379,7 @@ export default function AssignmentDetailTeacherPage() {
                     className={`shrink-0 rounded-xl px-4 py-2 text-sm font-semibold transition ${
                       isExpanded
                         ? "bg-slate-200 text-slate-700"
-                        : "bg-[#1d6d58] text-white hover:bg-[#124e40]"
+                        : "bg-[#17233d] text-white hover:bg-[#0f1729]"
                     }`}
                   >
                     {isExpanded ? "Close" : isGraded ? "Edit grade" : "Review & Grade"}
@@ -397,13 +397,13 @@ export default function AssignmentDetailTeacherPage() {
                           href={row.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-[#1d6d58] hover:border-[#1d6d58] transition"
+                          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-[#17233d] hover:border-[#17233d] transition"
                         >
                           📎 {row.fileName || "View file"}
                         </a>
                       )}
                       {row.response ? (
-                        <div className="mt-2 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-800 whitespace-pre-wrap">
+                        <div className="mt-2 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-800 whitespace-pre-wrap">
                           {row.response}
                         </div>
                       ) : !row.fileUrl ? (
@@ -423,7 +423,7 @@ export default function AssignmentDetailTeacherPage() {
                           step={0.5}
                           value={earnedInput}
                           onChange={(e) => { setEarnedInput(e.target.value); setSaveError(""); }}
-                          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-lg font-bold text-slate-900 focus:border-[#1d6d58] focus:outline-none"
+                          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-lg font-bold text-slate-900 focus:border-[#17233d] focus:outline-none"
                           placeholder={`0 – ${data.totalMarks}`}
                         />
                         {earnedInput !== "" && Number.isFinite(Number(earnedInput)) && (
@@ -441,7 +441,7 @@ export default function AssignmentDetailTeacherPage() {
                           value={feedbackInput}
                           onChange={(e) => setFeedbackInput(e.target.value)}
                           rows={3}
-                          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-800 focus:border-[#1d6d58] focus:outline-none resize-none"
+                          className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-800 focus:border-[#17233d] focus:outline-none resize-none"
                           placeholder="What did they do well? What needs improvement?"
                         />
                       </div>
@@ -459,7 +459,7 @@ export default function AssignmentDetailTeacherPage() {
                       <button
                         onClick={() => handleSave(row)}
                         disabled={saving || earnedInput === ""}
-                        className="rounded-xl bg-[#1d6d58] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#124e40] disabled:opacity-50 transition"
+                        className="rounded-xl bg-[#17233d] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0f1729] disabled:opacity-50 transition"
                       >
                         {saving ? "Saving…" : "Save Grade"}
                       </button>
@@ -478,7 +478,7 @@ export default function AssignmentDetailTeacherPage() {
           <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400">
             No Online Submission ({notSubmitted.length})
           </h2>
-          <div className="rounded-3xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
             {notSubmitted.map((row) => {
               const scored = row.earnedMarks != null;
               return (
