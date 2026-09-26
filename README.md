@@ -89,6 +89,12 @@ This project is deployed on [Vercel](https://vercel.com). To deploy your own:
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Secret key for signing JWT tokens |
 
-## Project Structureutm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/(public)` — marketing pages (home, about, courses)
+- `app/(auth)` — login and registration
+- `app/(dashboard)` — role-specific dashboards for students, teachers, and admins
+- `app/api` — REST API routes backed by Prisma
+- `components` — shared UI components, organized by feature
+- `lib` — auth, database, email, and storage helpers
+- `prisma` — schema and migrations

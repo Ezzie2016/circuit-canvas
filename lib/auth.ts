@@ -5,11 +5,6 @@ import { Pool } from "pg";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Ensure required environment variables are available
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is not set");
-}
-
 export const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
@@ -26,15 +21,34 @@ export function verifyJwt(token: string) {
   }
 }
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 2,
-  idleTimeoutMillis: 10_000,
-  connectionTimeoutMillis: 10_000,
+// Lazily constructed so that importing this module (e.g. during Next.js's
+// build-time route analysis) never requires DATABASE_URL to be set — only
+// actually using the client at runtime does.
+let _prisma: PrismaClient | null = null;
+
+function getPrismaClient(): PrismaClient {
+  if (!_prisma) {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 2,
+      idleTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
+    });
+    const adapter = new PrismaPg(pool);
+    _prisma = new PrismaClient({ adapter });
+  }
+  return _prisma;
+}
+
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getPrismaClient(), prop, receiver);
+  },
 });
-const adapter = new PrismaPg(pool);
-export const prisma = new PrismaClient({ adapter });
 
 export async function hashPassword(password: string): Promise<string> {
   return bcryptjs.hash(password, 12);
