@@ -20,30 +20,31 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // All enrolled courses with their assignments and the student's submissions
-  const enrollments = await prisma.enrollment.findMany({
-    where: { studentId: user.id },
-    include: {
-      course: {
-        include: {
-          assignments: {
-            include: {
-              submissions: {
-                where: { studentId: user.id },
-                select: { earnedMarks: true, status: true },
+  // Enrolled courses (with assignments + the student's submissions) and
+  // attendance are independent — fetch them in parallel.
+  const [enrollments, attendanceRecords] = await Promise.all([
+    prisma.enrollment.findMany({
+      where: { studentId: user.id },
+      include: {
+        course: {
+          include: {
+            assignments: {
+              include: {
+                submissions: {
+                  where: { studentId: user.id },
+                  select: { earnedMarks: true, status: true },
+                },
               },
             },
           },
         },
       },
-    },
-  });
-
-  // Attendance records grouped by courseId
-  const attendanceRecords = await prisma.attendanceRecord.findMany({
-    where: { studentId: user.id },
-    select: { courseId: true, status: true },
-  });
+    }),
+    prisma.attendanceRecord.findMany({
+      where: { studentId: user.id },
+      select: { courseId: true, status: true },
+    }),
+  ]);
 
   const attendanceByCourse = new Map<string, { present: number; total: number }>();
   for (const rec of attendanceRecords) {

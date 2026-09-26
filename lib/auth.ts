@@ -24,10 +24,13 @@ export function verifyJwt(token: string) {
 // Lazily constructed so that importing this module (e.g. during Next.js's
 // build-time route analysis) never requires DATABASE_URL to be set — only
 // actually using the client at runtime does.
-let _prisma: PrismaClient | null = null;
+// Cached on globalThis so dev-mode hot reloads reuse one client/pool instead
+// of opening a new connection pool on every module re-evaluation.
+const globalForPrisma = globalThis as unknown as { __prisma?: PrismaClient };
 
 function getPrismaClient(): PrismaClient {
-  if (!_prisma) {
+  let client = globalForPrisma.__prisma;
+  if (!client) {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL environment variable is not set");
     }
@@ -39,9 +42,10 @@ function getPrismaClient(): PrismaClient {
       connectionTimeoutMillis: 10_000,
     });
     const adapter = new PrismaPg(pool);
-    _prisma = new PrismaClient({ adapter });
+    client = new PrismaClient({ adapter });
+    globalForPrisma.__prisma = client;
   }
-  return _prisma;
+  return client;
 }
 
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
@@ -165,18 +169,62 @@ export async function createNotification(
   });
 }
 
-export async function getNotifications(role?: UserRole, userId?: string): Promise<Notification[]> {
+export async function createNotificationsForRecipients(
+  title: string,
+  message: string,
+  audience: NotificationAudience,
+  recipientIds: string[],
+): Promise<number> {
+  if (recipientIds.length === 0) return 0;
+  const { count } = await prisma.notification.createMany({
+    data: recipientIds.map((recipientId) => ({ title, message, audience, recipientId })),
+  });
+  return count;
+}
+
+// Most recent notifications only — the UI never needs the full history and the
+// SSE stream re-sends this list whenever something new arrives.
+export const NOTIFICATION_LIMIT = 100;
+
+// Broadcasts (no recipient) go to everyone in the audience; targeted
+// notifications (recipientId set) go only to that user. Without the
+// recipientId: null guard every student would see every other student's
+// personal "Assignment graded — 8/10" notification.
+//
+// The two halves are queried separately and merged: an OR across them forces
+// Postgres to fetch and sort every match, whereas the personal half on its own
+// is an ordered (recipientId, createdAt) index scan that stops at LIMIT, and
+// broadcasts are few.
+function notificationQueries(role?: UserRole, userId?: string) {
   const audienceFilter = role
     ? [notificationAudiences.ALL, roleToAudienceMap[role]]
     : [notificationAudiences.ALL];
+  return {
+    broadcast: { recipientId: null, audience: { in: audienceFilter } },
+    personal: userId ? { recipientId: userId } : null,
+  };
+}
 
-  return prisma.notification.findMany({
-    where: {
-      OR: [
-        { audience: { in: audienceFilter } },
-        ...(userId ? [{ recipientId: userId }] : []),
-      ],
-    },
-    orderBy: { createdAt: "desc" },
-  });
+const newestFirst = (a: { createdAt: Date }, b: { createdAt: Date }) =>
+  b.createdAt.getTime() - a.createdAt.getTime();
+
+export async function getNotifications(role?: UserRole, userId?: string): Promise<Notification[]> {
+  const { broadcast, personal } = notificationQueries(role, userId);
+  const query = { orderBy: { createdAt: "desc" as const }, take: NOTIFICATION_LIMIT };
+  const [broadcasts, personals] = await Promise.all([
+    prisma.notification.findMany({ where: broadcast, ...query }),
+    personal ? prisma.notification.findMany({ where: personal, ...query }) : [],
+  ]);
+  return [...broadcasts, ...personals].sort(newestFirst).slice(0, NOTIFICATION_LIMIT);
+}
+
+export async function getLatestNotificationId(role?: UserRole, userId?: string): Promise<string | null> {
+  const { broadcast, personal } = notificationQueries(role, userId);
+  const query = { orderBy: { createdAt: "desc" as const }, select: { id: true, createdAt: true } };
+  const latest = await Promise.all([
+    prisma.notification.findFirst({ where: broadcast, ...query }),
+    personal ? prisma.notification.findFirst({ where: personal, ...query }) : null,
+  ]);
+  const newest = latest.filter((n) => n !== null).sort(newestFirst)[0];
+  return newest?.id ?? null;
 }

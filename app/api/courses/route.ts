@@ -26,35 +26,24 @@ export async function GET() {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    let courses;
-    if (decoded.role === "TEACHER") {
-      courses = await prisma.course.findMany({
-        where: { teacherId: decoded.id },
-        include: {
-          enrollments: { include: { student: { select: { id: true, name: true, email: true } } } },
-          assignments: true,
-          teacher: { select: { id: true, name: true, email: true } },
-          department: { select: { id: true, name: true } },
+    const isTeacher = decoded.role === "TEACHER";
+    const isStudent = decoded.role === "STUDENT";
+
+    // Enrollment counts come from _count; enrollment rows are only loaded where
+    // the response needs them: a teacher's own roster, or otherwise just the
+    // viewer's own enrollment (to compute `enrolled`).
+    const courses = await prisma.course.findMany({
+      where: isTeacher ? { teacherId: decoded.id } : undefined,
+      include: {
+        teacher: { select: { id: true, name: true, email: true } },
+        department: { select: { id: true, name: true } },
+        _count: { select: { enrollments: true } },
+        enrollments: {
+          where: isTeacher ? undefined : { studentId: decoded.id },
+          select: { student: { select: { id: true, name: true, email: true } } },
         },
-      });
-    } else if (decoded.role === "STUDENT") {
-      courses = await prisma.course.findMany({
-        include: {
-          enrollments: { include: { student: { select: { id: true, name: true, email: true } } } },
-          teacher: { select: { id: true, name: true, email: true } },
-          assignments: true,
-          department: { select: { id: true, name: true } },
-        },
-      });
-    } else {
-      courses = await prisma.course.findMany({
-        include: {
-          enrollments: true,
-          teacher: { select: { id: true, name: true, email: true } },
-          department: { select: { id: true, name: true } },
-        },
-      });
-    }
+      },
+    });
 
     const formattedCourses = courses.map((course) => ({
       id: course.id,
@@ -67,14 +56,9 @@ export async function GET() {
       instructor: course.teacher.name,
       instructorEmail: course.teacher.email,
       teacherId: course.teacherId,
-      students: course.enrollments.length,
-      enrolled:
-        decoded.role === "STUDENT"
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ? course.enrollments.some((enrollment: any) => (enrollment.student?.id ?? enrollment.studentId) === decoded.id)
-          : false,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      studentList: (course.enrollments || []).map((e: any) => e.student ?? { id: e.studentId, name: "", email: "" }),
+      students: course._count.enrollments,
+      enrolled: isStudent && course.enrollments.length > 0,
+      studentList: isTeacher ? course.enrollments.map((e) => e.student) : [],
       status: "Open",
       meetingLink: course.meetingLink,
       thumbnail: course.thumbnail,

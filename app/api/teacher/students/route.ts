@@ -16,7 +16,7 @@ export async function GET() {
     // Find all enrollments for courses taught by this teacher
     const courses = await prisma.course.findMany({
       where: { teacherId: decoded.id },
-      include: { enrollments: { include: { student: true } } },
+      select: { enrollments: { select: { student: { select: { id: true, name: true, email: true } } } } },
     });
 
     const studentsMap: Record<string, { id: string; name: string; email: string }> = {};

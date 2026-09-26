@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type Assignment = {
   id: number;
@@ -39,10 +40,7 @@ export default function TeacherAssignmentsPage() {
   }, [loadAssignments]);
 
   // Poll for new submissions every 15 seconds
-  useEffect(() => {
-    const interval = setInterval(loadAssignments, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadAssignments]);
+  useVisiblePolling(loadAssignments, POLL_INTERVAL_MS);
 
   const pendingAssignments = assignments.filter((a) => a.status !== "Submitted");
   const submittedAssignments = assignments.filter((a) => a.status === "Submitted");

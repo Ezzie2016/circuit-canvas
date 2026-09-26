@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type LiveSession = {
   id: string;
@@ -56,10 +57,7 @@ export default function TeacherLiveSessionsPage() {
     loadSessions();
   }, [loadSessions]);
 
-  useEffect(() => {
-    const interval = setInterval(loadSessions, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadSessions]);
+  useVisiblePolling(loadSessions, POLL_INTERVAL_MS);
 
   const activeSessions = sessions.filter(isActive);
   const upcomingSessions = sessions.filter((s) => new Date(s.start) > new Date());

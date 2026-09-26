@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useVisiblePolling } from "@/hooks/useVisiblePolling";
 
 type LiveSession = {
   id: string;
@@ -56,10 +57,7 @@ export default function StudentLiveSessionsPage() {
   }, [loadSessions]);
 
   // Re-check every 30s so expiry status updates without a page reload
-  useEffect(() => {
-    const interval = setInterval(loadSessions, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [loadSessions]);
+  useVisiblePolling(loadSessions, POLL_INTERVAL_MS);
 
   const activeSessions = sessions.filter(isSessionActive);
   const upcomingSessions = sessions.filter(

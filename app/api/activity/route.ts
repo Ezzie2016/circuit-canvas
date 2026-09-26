@@ -22,6 +22,7 @@ export async function GET() {
       prisma.user.findMany({
         orderBy: { createdAt: "desc" },
         take: 10,
+        select: { id: true, name: true, role: true, createdAt: true },
       }),
       prisma.course.findMany({
         orderBy: { createdAt: "desc" },

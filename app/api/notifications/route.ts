@@ -18,16 +18,21 @@ export async function GET(request: Request) {
     const decoded = verifyJwt(token);
     if (!decoded) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    const url = new URL(request.url);
-    const role = url.searchParams.get("role") as "STUDENT" | "TEACHER" | "ADMIN" | null;
-    const userId = url.searchParams.get("userId") || undefined;
-
-    // Non-admins can only fetch their own notifications
-    if (decoded.role !== "ADMIN" && userId && userId !== decoded.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // Non-admins always get exactly their own feed, derived from the token —
+    // query params can't be used to read another role's or user's notifications.
+    let role: "STUDENT" | "TEACHER" | "ADMIN" | undefined;
+    let userId: string | undefined;
+    if (decoded.role === "ADMIN") {
+      const url = new URL(request.url);
+      const roleParam = url.searchParams.get("role");
+      role = roleParam === "STUDENT" || roleParam === "TEACHER" || roleParam === "ADMIN" ? roleParam : undefined;
+      userId = url.searchParams.get("userId") || undefined;
+    } else {
+      role = decoded.role === "TEACHER" ? "TEACHER" : "STUDENT";
+      userId = decoded.id;
     }
 
-    const notifications = await getNotifications(role || undefined, userId);
+    const notifications = await getNotifications(role, userId);
     return NextResponse.json(notifications ?? []);
   } catch (error) {
     console.error("Error fetching notifications:", error);
