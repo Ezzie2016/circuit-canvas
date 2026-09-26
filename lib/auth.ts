@@ -5,17 +5,51 @@ import { Pool } from "pg";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-export const JWT_SECRET =
-  process.env.JWT_SECRET || "your-secret-key-change-in-production";
+const DEV_JWT_SECRET = "your-secret-key-change-in-production";
 
-export function verifyJwt(token: string) {
+// Read lazily (not at import) so `next build` works without the variable.
+// In production a missing secret is a hard error: falling back to the public
+// dev string would let anyone sign their own admin token.
+export function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET environment variable is not set");
+  }
+  return DEV_JWT_SECRET;
+}
+
+export type SessionPayload = {
+  id: string;
+  email: string;
+  role: "STUDENT" | "TEACHER" | "ADMIN";
+  name?: string;
+};
+
+const SESSION_ROLES = new Set(["STUDENT", "TEACHER", "ADMIN"]);
+
+// Verifies a login session token. Password-reset and invite tokens are signed
+// with the same secret, so anything carrying a `type` claim, or lacking a
+// user id and a real role, is rejected — otherwise a teacher invite link
+// (role: "TEACHER") would work as a teacher login.
+export function verifyJwt(token: string): SessionPayload | null {
+  // Outside the try: a missing secret must surface as an error, not as
+  // every user silently appearing logged out.
+  const secret = getJwtSecret();
   try {
-    return jwt.verify(token, JWT_SECRET) as {
-      id: string;
-      email: string;
-      role: string;
-      name?: string;
-    };
+    const payload = jwt.verify(token, secret);
+    if (
+      typeof payload !== "object" ||
+      payload === null ||
+      "type" in payload ||
+      typeof payload.id !== "string" ||
+      !payload.id ||
+      typeof payload.role !== "string" ||
+      !SESSION_ROLES.has(payload.role)
+    ) {
+      return null;
+    }
+    return payload as SessionPayload;
   } catch {
     return null;
   }

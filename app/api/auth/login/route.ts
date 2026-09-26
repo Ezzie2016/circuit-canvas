@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { loginUser, JWT_SECRET } from "@/lib/auth";
+import { loginUser, getJwtSecret } from "@/lib/auth";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Create JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: "7d" },
     );
 

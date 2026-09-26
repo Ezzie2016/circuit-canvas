@@ -55,6 +55,7 @@ model Course {
   liveSessions LiveSession[]
 
   @@index([teacherId])
+  @@index([departmentId])
 }
 
 model Enrollment {

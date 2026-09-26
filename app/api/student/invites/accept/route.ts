@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { prisma, hashPassword } from "@/lib/auth";
+import { prisma, hashPassword, getJwtSecret } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     try {
       decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || "your-secret-key-change-in-production",
+        getJwtSecret(),
       ) as jwt.JwtPayload;
     } catch {
       return NextResponse.json({ error: "Invalid or expired invite link" }, { status: 400 });

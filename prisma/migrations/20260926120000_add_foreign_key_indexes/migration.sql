@@ -2,6 +2,9 @@
 CREATE INDEX "Course_teacherId_idx" ON "Course"("teacherId");
 
 -- CreateIndex
+CREATE INDEX "Course_departmentId_idx" ON "Course"("departmentId");
+
+-- CreateIndex
 CREATE INDEX "Enrollment_courseId_idx" ON "Enrollment"("courseId");
 
 -- CreateIndex

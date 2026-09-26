@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { prisma, verifyJwt } from "@/lib/auth";
+import { prisma, verifyJwt, getJwtSecret } from "@/lib/auth";
 import { sendTeacherInviteEmail } from "@/lib/emailService";
 
 /**
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         role: "TEACHER",
         type: "TEACHER_INVITE",
       },
-      process.env.JWT_SECRET || "your-secret-key-change-in-production",
+      getJwtSecret(),
       { expiresIn: "1d" },
     );
 
